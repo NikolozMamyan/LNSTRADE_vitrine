@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+{% set page_id = 'trading' %}
+{% set route_name = 'app_trading' %}
+{% set body_class = 'inner-page' %}
+{% set og_image = asset('images/trade-wholesale-hero.jpg') %}
+
+{% block body %}
+<main id="main">
+    <section class="page-hero">
+      <div class="page-hero-media"><img src="{{ asset('images/trade-wholesale-hero.jpg') }}" alt="{{ 'Palettes de boissons, pâtes à tartiner et snacks en quantités grossistes'|trans }}" width="1672" height="941" fetchpriority="high"></div>
+      <div class="shell"><div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> {{ '/ Trading'|trans }}</div><p class="eyebrow light"><span></span> {{ 'Sourcing · Import · Distribution'|trans }}</p><h1>{{ 'Le trade,'|trans }}<br><em>{{ 'sans friction.'|trans }}</em></h1><p>{{ 'Une équipe experte et un réseau structuré pour identifier les bonnes opportunités, sécuriser vos flux et livrer les produits attendus au bon moment.'|trans }}</p></div>
+    </section>
+    <section class="content-section">
+      <div class="shell content-grid reveal">
+        <div><div class="section-index">{{ 'LNS TRADE — EXPERTISE'|trans }}</div><h2>{{ 'Votre supply chain,'|trans }}<br><em>{{ 'notre mission.'|trans }}</em></h2></div>
+        <div class="prose">
+          <p>{{ 'LNS Trade accompagne les distributeurs et retailers dans leurs achats de boissons, snacks et produits alimentaires tendance, en France comme à l’international.'|trans }}</p>
+          <p>{{ 'Du premier repérage marché jusqu’à la livraison, nos équipes coordonnent les dimensions commerciales, réglementaires et logistiques de chaque opération. Vous gardez une vision claire de vos approvisionnements et pouvez vous concentrer sur vos clients.'|trans }}</p>
+          <h3>{{ 'Un sourcing orienté opportunités'|trans }}</h3><p>{{ 'Notre veille produits et notre connaissance des circuits de distribution nous permettent de repérer rapidement les références cohérentes avec votre canal, votre cible et votre positionnement prix.'|trans }}</p>
+          <h3>{{ 'Une importation maîtrisée'|trans }}</h3><p>{{ 'Nous organisons les échanges avec les fournisseurs, la conformité des marchandises et la coordination des flux. Chaque étape vise à limiter les imprévus et à rendre l’achat international plus simple.'|trans }}</p>
+          <h3>{{ 'Une distribution vraiment commerciale'|trans }}</h3><p>{{ 'Nos équipes ne s’arrêtent pas à la livraison. Elles vous conseillent sur l’assortiment, les quantités et la mise en avant pour transformer une référence disponible en produit performant.'|trans }}</p>
+        </div>
+        <div class="trade-volume-gallery">
+          <figure class="trade-volume-main">
+            <img src="{{ asset('images/trade-pallets-fmcg.jpg') }}" alt="{{ 'Palettes complètes de Fanta, Nutella, boissons et snacks prêtes à être expédiées'|trans }}" width="1536" height="1024" loading="lazy">
+            <figcaption><strong>{{ 'Volumes B2B'|trans }}</strong><span>{{ 'Des références connues, conditionnées pour vos flux.'|trans }}</span></figcaption>
+          </figure>
+          <figure class="trade-volume-detail">
+            <img src="{{ asset('images/trading-palette-fanta.jpg') }}" alt="{{ 'Palette filmée de canettes Fanta en stock'|trans }}" width="900" height="1600" loading="lazy">
+            <figcaption><strong>{{ 'Stock réel'|trans }}</strong><span>{{ 'Du produit à la palette.'|trans }}</span></figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="shell seo-cards">
+        <article class="seo-card reveal"><span>◎</span><h3>{{ 'Sourcing réactif'|trans }}</h3><p>{{ 'Une lecture rapide du marché et des tendances émergentes pour identifier les produits à potentiel.'|trans }}</p></article>
+        <article class="seo-card reveal"><span>◇</span><h3>{{ 'Flux coordonnés'|trans }}</h3><p>{{ 'Une organisation rigoureuse des achats, de la conformité et de la logistique internationale.'|trans }}</p></article>
+        <article class="seo-card reveal"><span>→</span><h3>{{ 'Suivi dédié'|trans }}</h3><p>{{ 'Un interlocuteur commercial qui comprend votre activité, vos contraintes et vos objectifs.'|trans }}</p></article>
+      </div>
+    </section>
+    <section class="content-section" style="background:#11110f;color:#fff">
+      <div class="shell content-grid reveal"><div><div class="section-index light">{{ 'UNE OFFRE SUR MESURE'|trans }}</div><h2>{{ 'Pour chaque canal,'|trans }}<br><em>{{ 'le bon mix.'|trans }}</em></h2></div><div class="prose" style="color:rgba(255,255,255,.66)"><p style="color:#fff">{{ 'Grossistes, centrales d’achat, réseaux spécialisés, commerces indépendants, e-commerce ou CHR : votre assortiment doit répondre à une réalité de terrain.'|trans }}</p><p>{{ 'Nous adaptons nos recommandations à vos rotations, à votre espace disponible, à votre zone géographique et au profil de vos consommateurs. Produits tendance, références exclusives ULTRAPOP ou besoins de sourcing spécifiques peuvent être réunis dans une proposition lisible.'|trans }}</p><h3 style="color:#fff">{{ 'Europe et international'|trans }}</h3><p>{{ 'Implantée à Strasbourg, LNS Trade développe ses activités en Europe et au Moyen-Orient et s’appuie sur des partenaires logistiques pour servir des clients dans le monde entier.'|trans }}</p><button class="button button-primary" type="button" data-open-contact data-interest="Sourcing / trading">{{ 'Parler de mon besoin'|trans }} <span>↗</span></button></div></div>
+    </section>
+    <section class="inline-cta"><div class="shell reveal"><h2>{{ 'Un besoin d’approvisionnement ou une opportunité à étudier ?'|trans }}</h2><button class="button" type="button" data-open-contact data-interest="Sourcing / trading">{{ 'Échanger avec un expert'|trans }} <span>↗</span></button></div></section>
+  </main>
+{% endblock %}

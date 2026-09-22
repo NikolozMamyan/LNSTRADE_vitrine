@@ -1,0 +1,36 @@
+<dialog class="contact-modal" id="contact-modal" aria-labelledby="contact-title">
+    {% include 'partials/_modal_skeleton.html.twig' with {variant: 'contact'} only %}
+    <div class="modal-panel">
+      <button class="modal-close" type="button" data-close-contact aria-label="{{ 'Fermer la fenêtre'|trans }}">×</button>
+      <div class="modal-aside">
+        <p class="eyebrow light"><span></span> {{ 'Parlons de votre projet'|trans }}</p>
+        <h2 id="contact-title">{{ 'Quel est votre'|trans }}<br>{{ 'prochain'|trans }} <em>{{ 'move ?'|trans }}</em></h2>
+        <p>{{ 'Assortiment, sourcing ou projet sur mesure : laissez-nous quelques informations. Notre équipe vous répondra avec une proposition pertinente.'|trans }}</p>
+        <div class="modal-contact">
+          <span>{{ 'Sans passer par le formulaire'|trans }}</span>
+          <a href="tel:+33388840380"><small>{{ 'Téléphone'|trans }}</small><strong>+33 3 88 84 03 80</strong></a>
+          <a href="mailto:info@lnstrade.fr"><small>{{ 'E-mail'|trans }}</small><strong>info@lnstrade.fr</strong></a>
+        </div>
+      </div>
+      <form class="contact-form" id="contact-form">
+        <input type="hidden" name="context" value="{{ 'Demande générale'|trans }}">
+        <div class="contact-journey" data-contact-journey>
+          <span>{{ 'Votre point de départ'|trans }}</span>
+          <strong data-contact-journey-title>{{ 'Projet sur mesure'|trans }}</strong>
+          <div data-contact-journey-tags><span>{{ 'Réponse humaine'|trans }}</span><span>{{ 'Sélection personnalisée'|trans }}</span><span>{{ 'Suivi B2B'|trans }}</span></div>
+        </div>
+        <div class="form-row">
+          <label>{{ 'Prénom et nom *'|trans }}<input type="text" name="name" autocomplete="name" required placeholder="{{ 'Votre nom'|trans }}"></label>
+          <label>{{ 'Société *'|trans }}<input type="text" name="company" autocomplete="organization" required placeholder="{{ 'Votre société'|trans }}"></label>
+        </div>
+        <div class="form-row">
+          <label>{{ 'E-mail professionnel *'|trans }}<input type="email" name="email" autocomplete="email" required placeholder="{{ 'vous@societe.com'|trans }}"></label>
+          <label>{{ 'Téléphone'|trans }} <span class="optional">{{ 'Facultatif'|trans }}</span><input type="tel" name="phone" autocomplete="tel" placeholder="+33 ..."></label>
+        </div>
+        <label>{{ 'N° de TVA'|trans }} <span class="optional">{{ 'Facultatif'|trans }}</span><input type="text" name="vat" autocomplete="off" placeholder="FR 00 000000000"></label>
+        <label>{{ 'Parlez-nous de votre projet'|trans }} <span class="optional">{{ 'Facultatif'|trans }}</span><textarea name="message" rows="3" placeholder="{{ 'Pays, type de produits, volumes estimés…'|trans }}"></textarea></label>
+        <button class="button button-primary form-submit" type="submit">{{ 'Envoyer ma demande'|trans }} <span aria-hidden="true">↗</span></button>
+        <p class="form-note" aria-live="polite">{{ 'En envoyant ce formulaire, vous acceptez notre'|trans }} <a href="https://lnstrade.fr/privacy-policy/">{{ 'politique de confidentialité'|trans }}</a>.</p>
+      </form>
+    </div>
+  </dialog>

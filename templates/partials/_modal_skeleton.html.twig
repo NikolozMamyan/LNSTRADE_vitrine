@@ -1,0 +1,14 @@
+<div class="modal-loading-skeleton modal-loading-skeleton-{{ variant }}" data-modal-skeleton aria-hidden="true">
+  {% if variant == 'contact' %}
+    <div class="modal-wire-contact-aside"><i></i><b></b><b class="short"></b><span></span><span class="short"></span><div><em></em><em></em></div></div>
+    <div class="modal-wire-form"><i></i><div><span></span><span></span></div><div><span></span><span></span></div><span></span><span class="textarea"></span><b></b></div>
+  {% elseif variant == 'catalogue' %}
+    <div class="modal-wire-toolbar"><span></span><i></i><b></b></div>
+    <div class="modal-wire-intro"><div><i></i><b></b></div><span></span></div>
+    <div class="modal-wire-document"><aside>{% for item in 1..5 %}<i></i>{% endfor %}</aside><main><b></b><span></span><span class="short"></span><div>{% for item in 1..3 %}<i></i>{% endfor %}</div></main></div>
+  {% else %}
+    <div class="modal-wire-toolbar"><span></span><i></i><b></b></div>
+    <div class="modal-wire-builder-head"><i></i><div><span></span><b></b><b class="short"></b></div></div>
+    <div class="modal-wire-builder-body"><div><i></i><b></b><span></span></div><section>{% for item in 1..4 %}<article><i></i><b></b><span></span></article>{% endfor %}</section></div>
+  {% endif %}
+</div>

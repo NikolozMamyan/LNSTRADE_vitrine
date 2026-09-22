@@ -1,0 +1,214 @@
+{% set range_products = [
+  {id: 'ice-tea-luffy', category: 'drinks', name: 'Ultra Ice Tea — Luffy', license: 'One Piece', kind: 'builder.kind.iced_tea', image: 'images/ultra-ice-tea-luffy.jpg'},
+  {id: 'ice-tea-naruto', category: 'drinks', name: 'Ultra Ice Tea — Naruto', license: 'Naruto Shippuden', kind: 'builder.kind.iced_tea', image: 'images/ultra-ice-tea-naruto.jpg'},
+  {id: 'drinks-selection', category: 'drinks', name: 'ULTRAPOP Drinks Selection', license: 'Multi-licences', kind: 'builder.kind.drinks_selection', image: 'images/ULTRAPOP-boissons.jpg'},
+  {id: 'chipsan-dbz', category: 'savoury', name: 'Chipsan', license: 'Dragon Ball Z', kind: 'builder.kind.savoury_snack', image: 'images/chipsan-lifestyle.jpg'},
+  {id: 'savoury-selection', category: 'savoury', name: 'ULTRAPOP Savoury Selection', license: 'Multi-licences', kind: 'builder.kind.savoury_selection', image: 'images/ULTRAPOP-sale.jpg'},
+  {id: 'candy-selection', category: 'sweet', name: 'ULTRAPOP Candy Selection', license: 'Multi-licences', kind: 'builder.kind.candy_selection', image: 'images/ULTRAPOP-sucre.jpg'},
+  {id: 'gummies-selection', category: 'sweet', name: 'ULTRAPOP Gummies Selection', license: 'Multi-licences', kind: 'builder.kind.gummies_selection', image: 'images/ULTRAPOP-sucre.jpg'},
+  {id: 'negisan-dbs', category: 'noodles', name: 'Negisan', license: 'Dragon Ball Super', kind: 'builder.kind.instant_noodles', image: 'images/negisan-lifestyle.jpg'},
+  {id: 'noodles-selection', category: 'noodles', name: 'ULTRAPOP Noodles Selection', license: 'Multi-licences', kind: 'builder.kind.noodles_selection', image: 'images/ULTRAPOP-sale.jpg'}
+] %}
+{% set range_categories = [
+  {id: 'drinks', label: 'builder.category.drinks', description: 'builder.category.drinks_description', image: 'images/ULTRAPOP-boissons.jpg'},
+  {id: 'sweet', label: 'builder.category.sweet', description: 'builder.category.sweet_description', image: 'images/ULTRAPOP-sucre.jpg'},
+  {id: 'savoury', label: 'builder.category.savoury', description: 'builder.category.savoury_description', image: 'images/chipsan-lifestyle.jpg'},
+  {id: 'noodles', label: 'builder.category.noodles', description: 'builder.category.noodles_description', image: 'images/negisan-lifestyle.jpg'}
+] %}
+
+<dialog
+  class="range-builder-modal"
+  id="range-builder-modal"
+  aria-labelledby="range-builder-title"
+  data-range-builder
+  data-storage-key="lns-range-builder-v1"
+  data-label-case="{{ 'builder.case'|trans }}"
+  data-label-cases="{{ 'builder.cases'|trans }}"
+  data-label-reference="{{ 'builder.reference'|trans }}"
+  data-label-references="{{ 'builder.references'|trans }}"
+  data-label-add="{{ 'builder.add'|trans }}"
+  data-label-added="{{ 'builder.added'|trans }}"
+  data-label-remove="{{ 'builder.remove'|trans }}"
+  data-mail-subject="{{ 'builder.mail_subject'|trans }}"
+  data-mail-selection="{{ 'builder.mail_selection'|trans }}"
+  data-mail-contact="{{ 'builder.mail_contact'|trans }}"
+>
+  {% include 'partials/_modal_skeleton.html.twig' with {variant: 'builder'} only %}
+  <div class="range-builder-window">
+    <div class="range-builder-toolbar">
+      <div class="catalogue-traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="range-builder-address"><span aria-hidden="true">◆</span> LNS Range Builder <b>{{ 'builder.prototype'|trans }}</b></div>
+      <div class="range-builder-toolbar-actions">
+        <span class="range-builder-save-state" data-builder-save-state><i></i>{{ 'builder.saved'|trans }}</span>
+        <button type="button" data-close-builder aria-label="{{ 'builder.close'|trans }}" title="{{ 'builder.close'|trans }}">×</button>
+      </div>
+    </div>
+
+    <div class="range-builder-head">
+      <div class="range-builder-brand">
+        <img src="{{ asset('images/logo-ULTRAPOP-white.png') }}" alt="ULTRAPOP" width="2690" height="592">
+        <span>{{ 'builder.badge'|trans }}</span>
+      </div>
+      <div class="range-builder-heading">
+        <div>
+          <p>{{ 'builder.eyebrow'|trans }}</p>
+          <h2 id="range-builder-title">{{ 'builder.title'|trans }}</h2>
+        </div>
+        <p>{{ 'builder.intro'|trans }}</p>
+      </div>
+      <ol class="range-builder-progress" aria-label="{{ 'builder.progress_label'|trans }}">
+        <li class="is-active" data-builder-progress="1"><span>01</span><strong>{{ 'builder.step.categories'|trans }}</strong></li>
+        <li data-builder-progress="2"><span>02</span><strong>{{ 'builder.step.products'|trans }}</strong></li>
+        <li data-builder-progress="3"><span>03</span><strong>{{ 'builder.step.basket'|trans }}</strong></li>
+        <li data-builder-progress="4"><span>04</span><strong>{{ 'builder.step.contact'|trans }}</strong></li>
+      </ol>
+    </div>
+
+    <div class="range-builder-body">
+      <section class="range-builder-panel is-active" data-builder-panel="1">
+        <div class="range-builder-panel-heading">
+          <div><span>01 — {{ 'builder.step.categories'|trans }}</span><h3>{{ 'builder.categories_title'|trans }}</h3></div>
+          <p>{{ 'builder.categories_intro'|trans }}</p>
+        </div>
+        <div class="range-builder-categories">
+          {% for category in range_categories %}
+            <button class="range-builder-category" type="button" data-builder-choose-category="{{ category.id }}">
+              <img src="{{ asset(category.image) }}" alt="" width="700" height="520" loading="lazy">
+              <span class="range-builder-category-overlay" aria-hidden="true"></span>
+              <span class="range-builder-category-index">0{{ loop.index }}</span>
+              <span class="range-builder-category-copy">
+                <strong>{{ category.label|trans }}</strong>
+                <small>{{ category.description|trans }}</small>
+                <b>{{ 'builder.explore'|trans }} <i>↗</i></b>
+              </span>
+            </button>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="range-builder-panel" data-builder-panel="2" hidden>
+        <div class="range-builder-products-layout">
+          <div class="range-builder-products-main">
+            <div class="range-builder-panel-heading compact">
+              <div><span>02 — {{ 'builder.step.products'|trans }}</span><h3>{{ 'builder.products_title'|trans }}</h3></div>
+              <p>{{ 'builder.products_intro'|trans }}</p>
+            </div>
+            <button class="range-builder-text-button range-builder-inline-back" type="button" data-builder-go="1">← {{ 'builder.change_category'|trans }}</button>
+            <div class="range-builder-filters" aria-label="{{ 'builder.filter_label'|trans }}">
+              <button type="button" data-builder-filter="all">{{ 'builder.category.all'|trans }}</button>
+              {% for category in range_categories %}<button type="button" data-builder-filter="{{ category.id }}">{{ category.label|trans }}</button>{% endfor %}
+            </div>
+            <div class="range-builder-products">
+              {% for product in range_products %}
+                {% set category = range_categories|filter(item => item.id == product.category)|first %}
+                <article
+                  class="range-builder-product"
+                  data-builder-product="{{ product.id }}"
+                  data-product-category="{{ product.category }}"
+                  data-product-category-label="{{ category.label|trans }}"
+                  data-product-name="{{ product.name }}"
+                  data-product-license="{{ product.license }}"
+                  data-product-kind="{{ product.kind|trans }}"
+                  data-product-image="{{ asset(product.image) }}"
+                >
+                  <div class="range-builder-product-media">
+                    <img src="{{ asset(product.image) }}" alt="{{ product.name }} — {{ product.license }}" width="720" height="720" loading="lazy">
+                    <span>{{ 'builder.professional_case'|trans }}</span>
+                    <i aria-hidden="true">✓</i>
+                  </div>
+                  <div class="range-builder-product-copy">
+                    <small>{{ product.license }}</small>
+                    <h4>{{ product.name }}</h4>
+                    <p>{{ product.kind|trans }}</p>
+                    <div class="range-builder-product-actions">
+                      <button class="range-builder-add" type="button" data-builder-add="{{ product.id }}" aria-pressed="false">{{ 'builder.add'|trans }} <span>+</span></button>
+                      <div class="range-builder-quantity" aria-label="{{ 'builder.quantity'|trans }}">
+                        <button type="button" data-builder-decrease="{{ product.id }}" aria-label="{{ 'builder.decrease'|trans }}">−</button>
+                        <output data-builder-quantity="{{ product.id }}">0</output>
+                        <button type="button" data-builder-increase="{{ product.id }}" aria-label="{{ 'builder.increase'|trans }}">+</button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              {% endfor %}
+            </div>
+          </div>
+
+          <aside class="range-builder-mini-cart">
+            <span>{{ 'builder.live_basket'|trans }}</span>
+            <strong><b data-builder-mini-count>0</b> {{ 'builder.references'|trans }}</strong>
+            <p><b data-builder-mini-cases>0</b> {{ 'builder.cases'|trans }}</p>
+            <div class="range-builder-mini-thumbs" data-builder-mini-thumbs aria-hidden="true"></div>
+            <button class="button button-primary" type="button" data-builder-go="3">{{ 'builder.view_basket'|trans }} <span>→</span></button>
+          </aside>
+        </div>
+      </section>
+
+      <section class="range-builder-panel" data-builder-panel="3" hidden>
+        <div class="range-builder-basket-layout">
+          <div>
+            <div class="range-builder-panel-heading compact">
+              <div><span>03 — {{ 'builder.step.basket'|trans }}</span><h3>{{ 'builder.basket_title'|trans }}</h3></div>
+              <p>{{ 'builder.basket_intro'|trans }}</p>
+            </div>
+            <button class="range-builder-text-button range-builder-inline-back" type="button" data-builder-go="2">← {{ 'builder.add_products'|trans }}</button>
+            <div class="range-builder-basket-list" data-builder-basket-list></div>
+            <div class="range-builder-empty" data-builder-empty>
+              <strong>{{ 'builder.empty_title'|trans }}</strong>
+              <p>{{ 'builder.empty_intro'|trans }}</p>
+              <button class="button button-primary" type="button" data-builder-go="2">{{ 'builder.browse_products'|trans }} <span>→</span></button>
+            </div>
+          </div>
+          <aside class="range-builder-summary">
+            <span>{{ 'builder.summary'|trans }}</span>
+            <div><small>{{ 'builder.selected_references'|trans }}</small><strong data-builder-summary-count>0</strong></div>
+            <div><small>{{ 'builder.total_cases'|trans }}</small><strong data-builder-summary-cases>0</strong></div>
+            <p>{{ 'builder.quote_note'|trans }}</p>
+            <button class="button button-primary" type="button" data-builder-go="4">{{ 'builder.continue'|trans }} <span>→</span></button>
+          </aside>
+        </div>
+      </section>
+
+      <section class="range-builder-panel" data-builder-panel="4" hidden>
+        <div class="range-builder-contact-layout" data-builder-contact-view>
+          <div class="range-builder-contact-aside">
+            <span>04 — {{ 'builder.step.contact'|trans }}</span>
+            <h3>{{ 'builder.contact_title'|trans }}</h3>
+            <p>{{ 'builder.contact_intro'|trans }}</p>
+            <button class="range-builder-text-button light" type="button" data-builder-go="3">← {{ 'builder.back_basket'|trans }}</button>
+            <div class="range-builder-contact-stats">
+              <div><strong data-builder-contact-count>0</strong><small>{{ 'builder.selected_references'|trans }}</small></div>
+              <div><strong data-builder-contact-cases>0</strong><small>{{ 'builder.total_cases'|trans }}</small></div>
+            </div>
+          </div>
+          <form class="range-builder-form" data-builder-form>
+            <input type="hidden" name="selection" data-builder-selection>
+            <div class="form-row">
+              <label>{{ 'builder.form.name'|trans }} *<input type="text" name="name" autocomplete="name" required placeholder="{{ 'Votre nom'|trans }}"></label>
+              <label>{{ 'builder.form.company'|trans }} *<input type="text" name="company" autocomplete="organization" required placeholder="{{ 'Votre société'|trans }}"></label>
+            </div>
+            <div class="form-row">
+              <label>{{ 'builder.form.email'|trans }} *<input type="email" name="email" autocomplete="email" required placeholder="{{ 'vous@societe.com'|trans }}"></label>
+              <label>{{ 'builder.form.phone'|trans }} <span>{{ 'Facultatif'|trans }}</span><input type="tel" name="phone" autocomplete="tel" placeholder="+33 ..."></label>
+            </div>
+            <label>{{ 'builder.form.vat'|trans }} <span>{{ 'Facultatif'|trans }}</span><input type="text" name="vat" autocomplete="off" placeholder="FR 00 000000000"></label>
+            <label>{{ 'builder.form.message'|trans }} <span>{{ 'Facultatif'|trans }}</span><textarea name="message" rows="3" placeholder="{{ 'builder.form.message_placeholder'|trans }}"></textarea></label>
+            <button class="button button-primary range-builder-submit" type="submit">{{ 'builder.prepare_request'|trans }} <span>↗</span></button>
+            <p class="range-builder-form-note">{{ 'builder.demo_note'|trans }} <a href="https://lnstrade.fr/privacy-policy/" target="_blank" rel="noopener">{{ 'politique de confidentialité'|trans }}</a>.</p>
+          </form>
+        </div>
+
+        <div class="range-builder-success" data-builder-success hidden>
+          <span class="range-builder-success-icon" aria-hidden="true">✓</span>
+          <p>{{ 'builder.prototype'|trans }}</p>
+          <h3>{{ 'builder.success_title'|trans }}</h3>
+          <p>{{ 'builder.success_intro'|trans }}</p>
+          <div><a class="button button-primary" href="mailto:info@lnstrade.fr" data-builder-email-link>{{ 'builder.send_email'|trans }} <span>↗</span></a><button class="button range-builder-outline" type="button" data-builder-edit>{{ 'builder.edit_request'|trans }}</button></div>
+          <button class="range-builder-text-button" type="button" data-builder-reset>{{ 'builder.start_again'|trans }}</button>
+        </div>
+      </section>
+    </div>
+
+    <button class="range-builder-mobile-cart" type="button" data-builder-go="3"><span><b data-builder-mobile-count>0</b> {{ 'builder.references'|trans }}</span><strong><b data-builder-mobile-cases>0</b> {{ 'builder.cases'|trans }} →</strong></button>
+  </div>
+</dialog>

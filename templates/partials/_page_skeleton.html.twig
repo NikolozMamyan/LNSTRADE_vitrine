@@ -1,0 +1,39 @@
+<div class="page-skeleton is-active" data-page-skeleton data-skeleton-variant="{{ skeleton_variant }}" aria-hidden="true">
+  <div class="minimal-skeleton-header">
+    <span class="wire-block wire-logo"></span>
+    <div>{% for item in 1..4 %}<i class="wire-block"></i>{% endfor %}</div>
+    <span class="wire-block wire-header-action"></span>
+  </div>
+
+  <div class="minimal-skeleton-layout minimal-skeleton-home">
+    <div class="wire-copy"><i class="wire-block wire-eyebrow"></i><b class="wire-block wire-title"></b><b class="wire-block wire-title short"></b><i class="wire-block wire-text"></i><i class="wire-block wire-text short"></i><div class="wire-actions"><span class="wire-block"></span><span class="wire-block"></span></div></div>
+    <span class="wire-block wire-hero-media"></span>
+    <div class="wire-logo-row">{% for item in 1..6 %}<span class="wire-block"></span>{% endfor %}</div>
+  </div>
+
+  <div class="minimal-skeleton-layout minimal-skeleton-trading">
+    <div class="wire-copy"><i class="wire-block wire-eyebrow"></i><b class="wire-block wire-title"></b><b class="wire-block wire-title"></b><b class="wire-block wire-title short"></b><i class="wire-block wire-text"></i><i class="wire-block wire-text short"></i></div>
+    <span class="wire-block wire-hero-media"></span>
+  </div>
+
+  <div class="minimal-skeleton-layout minimal-skeleton-ultrapop">
+    <span class="wire-block wire-brand-mark"></span>
+    <div class="wire-copy"><i class="wire-block wire-eyebrow"></i><b class="wire-block wire-title"></b><b class="wire-block wire-title short"></b><i class="wire-block wire-text"></i><div class="wire-actions"><span class="wire-block"></span><span class="wire-block"></span></div></div>
+    <span class="wire-block wire-hero-media"></span>
+  </div>
+
+  <div class="minimal-skeleton-layout minimal-skeleton-wholesale">
+    <div class="wire-page-heading"><i class="wire-block wire-eyebrow"></i><b class="wire-block wire-title short"></b><i class="wire-block wire-text"></i></div>
+    <div class="wire-card-grid">{% for item in 1..4 %}<span><i class="wire-block"></i><b class="wire-block"></b><em class="wire-block"></em></span>{% endfor %}</div>
+  </div>
+
+  <div class="minimal-skeleton-layout minimal-skeleton-blog">
+    <div class="wire-page-heading"><i class="wire-block wire-eyebrow"></i><b class="wire-block wire-title short"></b></div>
+    <div class="wire-card-grid wire-blog-grid">{% for item in 1..3 %}<span{% if item == 1 %} class="featured"{% endif %}><i class="wire-block"></i><b class="wire-block"></b><em class="wire-block"></em></span>{% endfor %}</div>
+  </div>
+
+  <div class="minimal-skeleton-layout minimal-skeleton-article">
+    <div class="wire-page-heading centered"><i class="wire-block wire-eyebrow"></i><b class="wire-block wire-title"></b><b class="wire-block wire-title short"></b><i class="wire-block wire-text"></i></div>
+    <div class="wire-article"><span class="wire-block"></span><div>{% for item in 1..7 %}<i class="wire-block wire-text{% if item in [3, 7] %} short{% endif %}"></i>{% endfor %}</div></div>
+  </div>
+</div>

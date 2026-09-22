@@ -1,0 +1,31 @@
+{% set blog_pages = ['blog', 'choosingWholesaler', 'merchandising', 'snackingTrends'] %}
+<header class="site-header" data-header>
+  <a class="brand" href="{{ path('app_home.' ~ app.request.locale) }}" aria-label="{{ 'LNS Trade — Accueil'|trans }}">
+    <img src="{{ asset('images/logo-lns-white.png') }}" alt="LNS Trade" width="1920" height="1080">
+  </a>
+
+  <nav class="main-nav" id="main-nav" aria-label="{{ 'Navigation principale'|trans }}">
+    <a href="{{ path('app_home.' ~ app.request.locale) }}"{% if page_id == 'home' %} class="active" aria-current="page"{% endif %}>{{ 'Notre savoir-faire'|trans }}</a>
+    <a href="{{ path('app_ultrapop.' ~ app.request.locale) }}"{% if page_id in ['ultrapop', 'wholesale'] %} class="active" aria-current="page"{% endif %}>ULTRAPOP</a>
+    <a href="{{ path('app_trading.' ~ app.request.locale) }}"{% if page_id == 'trading' %} class="active" aria-current="page"{% endif %}>Trading</a>
+    <a href="{{ path('app_blog.' ~ app.request.locale) }}"{% if page_id in blog_pages %} class="active" aria-current="page"{% endif %}>{{ 'Le Mag'|trans }}</a>
+    <a href="https://online.flippingbook.com/link/845542/" target="_blank" rel="noopener external">{{ 'Catalogue'|trans }}</a>
+  </nav>
+
+  <div class="language-switcher" data-language-switcher>
+    <button class="language-switcher-trigger" type="button" aria-expanded="false" aria-haspopup="listbox" aria-label="{{ 'selector.label'|trans }}">
+      <span class="language-current">{{ app.request.locale|upper }}</span><span aria-hidden="true">⌄</span>
+    </button>
+    <div class="language-menu" role="listbox" aria-label="{{ 'selector.label'|trans }}">
+      <a href="{{ path(route_name ~ '.en') }}" role="option" data-language="en" aria-selected="{{ app.request.locale == 'en' ? 'true' : 'false' }}"><span>EN</span><strong>{{ 'selector.english'|trans }}</strong></a>
+      <a href="{{ path(route_name ~ '.fr') }}" role="option" data-language="fr" aria-selected="{{ app.request.locale == 'fr' ? 'true' : 'false' }}"><span>FR</span><strong>{{ 'selector.french'|trans }}</strong></a>
+    </div>
+  </div>
+
+  <button class="header-cta" type="button" data-open-contact>
+    <span>{{ 'Parlons business'|trans }}</span><span aria-hidden="true">↗</span>
+  </button>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="{{ 'Ouvrir le menu'|trans }}">
+    <span></span><span></span>
+  </button>
+</header>

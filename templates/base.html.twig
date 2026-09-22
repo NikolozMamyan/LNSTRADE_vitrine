@@ -1,0 +1,132 @@
+{% set page_id = page_id|default('home') %}
+{% set route_name = route_name|default('app_home') %}
+{% set body_class = body_class|default('') %}
+{% set is_article = is_article|default(false) %}
+{% set skeleton_variant = page_id in ['choosingWholesaler', 'merchandising', 'snackingTrends'] ? 'article' : page_id %}
+{% set canonical_url = absolute_url(path(route_name ~ '.' ~ app.request.locale)) %}
+{% set english_url = absolute_url(path(route_name ~ '.en')) %}
+{% set french_url = absolute_url(path(route_name ~ '.fr')) %}
+{% set page_title = ('meta.' ~ page_id ~ '.title')|trans %}
+{% set page_description = ('meta.' ~ page_id ~ '.description')|trans %}
+{% set social_image = absolute_url(og_image|default(asset('images/ULTRAPOP-collection.jpg'))) %}
+<!doctype html>
+<html lang="{{ app.request.locale }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('js', 'skeleton-active')</script>
+  <title>{{ page_title }}</title>
+  <meta name="description" content="{{ page_description }}">
+  <meta name="theme-color" content="#11110f">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <link rel="alternate" hreflang="en" href="{{ english_url }}">
+  <link rel="alternate" hreflang="fr" href="{{ french_url }}">
+  <link rel="alternate" hreflang="x-default" href="{{ english_url }}">
+  <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" sizes="any">
+
+  <meta property="og:type" content="{{ is_article ? 'article' : 'website' }}">
+  <meta property="og:site_name" content="LNS Trade">
+  <meta property="og:locale" content="{{ app.request.locale == 'fr' ? 'fr_FR' : 'en_GB' }}">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ page_description }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:image" content="{{ social_image }}">
+  <meta property="og:image:alt" content="LNS Trade et ULTRAPOP">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ page_description }}">
+  <meta name="twitter:image" content="{{ social_image }}">
+  {% if is_article %}<meta property="article:published_time" content="{{ article_date }}T09:00:00+02:00">{% endif %}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  {{ turbo_refreshes_with(method: 'morph', scroll: 'preserve') }}
+  {{ importmap('app') }}
+
+  {% set organization_schema = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': absolute_url(path('app_home.en')) ~ '#organization',
+        'name': 'LNS Trade',
+        'alternateName': ['LNSTRADE', 'ULTRAPOP by LNS Trade'],
+        'url': absolute_url(path('app_home.en')),
+        'logo': absolute_url(asset('images/logo-lns-white.png')),
+        'description': 'seo.organization_description'|trans,
+        'foundingDate': '2014',
+        'address': {
+          '@type': 'PostalAddress',
+          'streetAddress': '13 Quai Kléber',
+          'postalCode': '67000',
+          'addressLocality': 'Strasbourg',
+          'addressCountry': 'FR'
+        },
+        'contactPoint': {
+          '@type': 'ContactPoint',
+          'contactType': 'sales',
+          'email': 'info@lnstrade.fr',
+          'telephone': '+33388840380',
+          'availableLanguage': ['fr', 'en']
+        },
+        'brand': {'@type': 'Brand', '@id': absolute_url(path('app_ultrapop.en')) ~ '#brand', 'name': 'ULTRAPOP'},
+        'hasOfferCatalog': {'@type': 'OfferCatalog', 'name': 'Catalogue professionnel ULTRAPOP', 'url': 'https://online.flippingbook.com/link/845542/'},
+        'sameAs': ['https://www.instagram.com/ULTRAPOP_/', 'https://www.tiktok.com/@ULTRAPOP_', 'https://fr.linkedin.com/company/ULTRAPOPbylnstrade']
+      },
+      {
+        '@type': 'WebSite',
+        '@id': absolute_url(path('app_home.en')) ~ '#website',
+        'url': absolute_url(path('app_home.' ~ app.request.locale)),
+        'name': 'seo.site_name'|trans,
+        'inLanguage': app.request.locale,
+        'publisher': {'@id': absolute_url(path('app_home.en')) ~ '#organization'}
+      },
+      {
+        '@type': is_article ? 'BlogPosting' : 'WebPage',
+        '@id': canonical_url ~ '#page',
+        'url': canonical_url,
+        'name': page_title,
+        'headline': page_title,
+        'description': page_description,
+        'inLanguage': app.request.locale,
+        'image': social_image,
+        'mainEntityOfPage': canonical_url,
+        'isPartOf': {'@id': absolute_url(path('app_home.en')) ~ '#website'},
+        'publisher': {'@id': absolute_url(path('app_home.en')) ~ '#organization'},
+        'datePublished': is_article ? article_date : null,
+        'dateModified': is_article ? article_date : null
+      }
+    ]
+  } %}
+  <script type="application/ld+json">{{ organization_schema|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
+</head>
+<body class="{{ body_class }}" data-route="{{ page_id }}">
+  {% include 'partials/_page_skeleton.html.twig' with {skeleton_variant: skeleton_variant} only %}
+  <a class="skip-link" href="#main">{{ 'Aller au contenu'|trans }}</a>
+  {% include 'partials/_header.html.twig' %}
+  {% block body %}{% endblock %}
+  {% include 'partials/_footer.html.twig' %}
+  {% include 'partials/_contact_modal.html.twig' %}
+  {% include 'partials/_catalogue_modal.html.twig' %}
+  {% include 'partials/_range_builder_modal.html.twig' %}
+  <script id="lns-ui-copy" type="application/json">{{ {
+    locale: app.request.locale,
+    mail: {
+      subject: 'form.mail.subject'|trans,
+      context: 'form.mail.context'|trans,
+      name: 'form.mail.name'|trans,
+      company: 'form.mail.company'|trans,
+      email: 'form.mail.email'|trans,
+      phone: 'form.mail.phone'|trans,
+      vat: 'form.mail.vat'|trans,
+      empty: 'form.mail.empty'|trans,
+      noMessage: 'form.mail.no_message'|trans,
+      origin: 'form.mail.origin'|trans,
+      note: 'form.mail.note'|trans
+    }
+  }|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
+</body>
+</html>

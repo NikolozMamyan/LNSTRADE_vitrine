@@ -1,0 +1,24 @@
+<dialog class="catalogue-modal" id="catalogue-modal" aria-labelledby="catalogue-title">
+  {% include 'partials/_modal_skeleton.html.twig' with {variant: 'catalogue'} only %}
+  <div class="catalogue-window">
+    <div class="catalogue-toolbar">
+      <div class="catalogue-traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="catalogue-address"><span aria-hidden="true">◆</span>{{ 'catalogue.address'|trans }}</div>
+      <div class="catalogue-window-actions">
+        <a href="https://online.flippingbook.com/link/845542/" target="_blank" rel="noopener external" aria-label="{{ 'catalogue.external'|trans }}" title="{{ 'catalogue.external'|trans }}">↗</a>
+        <button type="button" data-close-catalogue aria-label="{{ 'catalogue.close'|trans }}" title="{{ 'catalogue.close'|trans }}">×</button>
+      </div>
+    </div>
+    <div class="catalogue-intro">
+      <div><span>{{ 'catalogue.eyebrow'|trans }}</span><h2 id="catalogue-title">{{ 'catalogue.title'|trans }}</h2></div>
+      <p>{{ 'catalogue.description'|trans }}</p>
+    </div>
+    <div class="catalogue-frame-wrap">
+      <div class="catalogue-loader" data-catalogue-loader>
+        <div class="catalogue-loader-sidebar">{% for item in 1..5 %}<i></i>{% endfor %}</div>
+        <div class="catalogue-loader-page"><b></b><span></span><span class="short"></span><div>{% for item in 1..3 %}<i></i>{% endfor %}</div><small>{{ 'catalogue.loading'|trans }}</small></div>
+      </div>
+      <iframe data-catalogue-frame data-src="https://online.flippingbook.com/link/845542/" title="{{ 'catalogue.frame_title'|trans }}" allow="fullscreen"></iframe>
+    </div>
+  </div>
+</dialog>

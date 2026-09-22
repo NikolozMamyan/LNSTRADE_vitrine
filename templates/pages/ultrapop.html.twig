@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+{% set page_id = 'ultrapop' %}
+{% set route_name = 'app_ultrapop' %}
+{% set body_class = 'inner-page' %}
+{% set og_image = asset('images/ULTRAPOP-collection.jpg') %}
+
+{% block body %}
+<main id="main">
+  <section class="page-hero" style="background:#ff5535">
+    <div class="page-hero-media"><img src="{{ asset('images/chipsan-lifestyle.jpg') }}" alt="{{ 'Chipsan Dragon Ball Z, produit ULTRAPOP'|trans }}" width="1083" height="1083"></div>
+    <div class="shell">
+      <div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> {{ '/ ULTRAPOP'|trans }}</div>
+      <img class="page-ULTRAPOP-logo" src="{{ asset('images/logo-ULTRAPOP-white.png') }}" alt="ULTRAPOP" width="2690" height="592">
+      <h1>{{ 'La pop culture'|trans }}<br><em>{{ 'se déguste.'|trans }}</em></h1>
+      <p>{{ 'Une marque food conçue pour les fans, pensée pour les rayons et développée sous licences officielles.'|trans }}</p>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="shell content-grid reveal">
+      <div><div class="section-index">{{ 'UNE MARQUE LNS TRADE'|trans }}</div><h2>{{ 'Plus qu’un pack.'|trans }}<br><em>{{ 'Une expérience.'|trans }}</em></h2></div>
+      <div class="prose">
+        <p>{{ 'Lancée en 2021 par LNS Trade, ULTRAPOP imagine des boissons et des produits alimentaires qui rendent la culture pop tangible, gourmande et collectionnable.'|trans }}</p>
+        <p>{{ 'Chaque création part d’une question simple : comment traduire l’énergie d’une licence dans une expérience que l’on peut voir, partager et goûter ? Nos équipes travaillent le concept, le format, la recette et le packaging comme un ensemble cohérent.'|trans }}</p>
+        <h3>{{ 'Des produits conçus pour émerger'|trans }}</h3>
+        <p>{{ 'ULTRAPOP occupe un territoire visuel fort. Les couleurs, les personnages et le naming sont pensés pour capter l’attention, sans perdre la lisibilité indispensable en point de vente.'|trans }}</p>
+        <h3>{{ 'Une expertise de bout en bout'|trans }}</h3>
+        <p>{{ 'Grâce au savoir-faire LNS Trade, la marque réunit création produit, développement, qualité, importation, distribution et accompagnement commercial.'|trans }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ULTRAPOP section">
+    <div class="shell">
+      <div class="section-heading reveal">
+        <div><div class="section-index light">{{ 'LES UNIVERS'|trans }}</div><h2>{{ 'À chacun'|trans }}<br><em>{{ 'son power-up.'|trans }}</em></h2></div>
+        <p>{{ 'Une gamme multiformat pour multiplier les occasions de consommation et les points de contact avec les fans.'|trans }}</p>
+      </div>
+      <div class="product-gallery">
+        <article class="product-card card-wide reveal"><img src="{{ asset('images/ULTRAPOP-boissons.jpg') }}" alt="{{ 'Gamme de boissons manga ULTRAPOP'|trans }}" width="2000" height="800"><div class="product-card-copy"><span>Bubble tea · Ice tea · Juice</span><strong>{{ 'Boissons'|trans }}</strong></div></article>
+        <article class="product-card reveal"><img src="{{ asset('images/ULTRAPOP-sucre.jpg') }}" alt="{{ 'Gamme de confiseries ULTRAPOP'|trans }}" width="5208" height="3125"><div class="product-card-copy"><span>Gumis · Candy</span><strong>{{ 'Sucré'|trans }}</strong></div></article>
+        <article class="product-card reveal"><img src="{{ asset('images/ULTRAPOP-sale.jpg') }}" alt="{{ 'Gamme de snacks salés ULTRAPOP'|trans }}" width="1201" height="801"><div class="product-card-copy"><span>Chips · Rice chips · Noodles</span><strong>{{ 'Salé'|trans }}</strong></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="shell content-grid reveal">
+      <div><div class="section-index">{{ 'LICENCES OFFICIELLES'|trans }}</div><h2>{{ 'Des univers'|trans }}<br><em>{{ 'cultes.'|trans }}</em></h2></div>
+      <div class="prose">
+        <p>{{ 'ULTRAPOP développe ses collections avec des licences connues en France et à l’international, parmi lesquelles One Piece, Naruto Shippuden, Dragon Ball, Demon Slayer et League of Legends.'|trans }}</p>
+        <p>{{ 'Cette proximité avec des communautés engagées permet de créer des lancements attendus, des séries à collectionner et des assortiments qui renouvellent régulièrement l’intérêt en point de vente.'|trans }}</p>
+        <h3>{{ 'Une ambition européenne et internationale'|trans }}</h3>
+        <p>{{ 'La marque est distribuée via des partenaires, enseignes et commerces spécialisés en Europe et au Moyen-Orient. Notre équipe commerciale vous aide à construire une sélection adaptée à votre marché.'|trans }}</p>
+        <div class="ultrapop-action-row">
+          <button class="button button-primary" type="button" data-open-contact data-interest="Catalogue ULTRAPOP">{{ 'Découvrir le catalogue'|trans }} <span>↗</span></button>
+          <a class="button ultrapop-shop-button dark" href="https://ultrapop.com/" target="_blank" rel="noopener external">{{ 'shop.cta'|trans }} <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="inline-cta"><div class="shell"><h2>{{ 'Vous voulez ULTRAPOP dans vos rayons ?'|trans }}</h2><button class="button" type="button" data-open-contact data-interest="Catalogue ULTRAPOP">{{ 'Devenir partenaire'|trans }} <span>↗</span></button></div></section>
+</main>
+{% endblock %}

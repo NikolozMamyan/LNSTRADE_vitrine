@@ -1,0 +1,32 @@
+<footer class="site-footer">
+    <div class="footer-main shell">
+      <div class="footer-brand">
+        <img src="{{ asset('images/logo-lns-white.png') }}" alt="LNS Trade" width="1920" height="1080" loading="lazy">
+        <p>{{ 'Créateur, importateur et distributeur de produits alimentaires qui font bouger les tendances.'|trans }}</p>
+      </div>
+      <div class="footer-col">
+        <h2>{{ 'Explorer'|trans }}</h2>
+        <a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Notre savoir-faire'|trans }}</a>
+        <a href="{{ path('app_ultrapop.' ~ app.request.locale) }}">ULTRAPOP</a>
+        <a href="{{ path('app_trading.' ~ app.request.locale) }}">Trading</a>
+        <a href="{{ path('app_blog.' ~ app.request.locale) }}">{{ 'Le Mag'|trans }}</a>
+      </div>
+      <div class="footer-col">
+        <h2>{{ 'Solutions'|trans }}</h2>
+        <a href="{{ path('app_wholesale.' ~ app.request.locale) }}">{{ 'Grossiste manga'|trans }}</a>
+        <a href="https://online.flippingbook.com/link/845542/" target="_blank" rel="noopener external">{{ 'Voir le catalogue'|trans }}</a>
+        <button type="button" data-open-contact>{{ 'Nous contacter'|trans }}</button>
+      </div>
+      <div class="footer-col footer-contact">
+        <h2>{{ 'Nous trouver'|trans }}</h2>
+        <address>13 Quai Kléber<br>67000 Strasbourg, France</address>
+        <a href="tel:+33388840380">+33 3 88 84 03 80</a>
+        <a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a>
+      </div>
+    </div>
+    <div class="footer-bottom shell">
+      <span>© <span data-year>2026</span> LNS Trade</span>
+      <div><a href="https://lnstrade.fr/terms-and-conditions/">{{ 'Mentions légales'|trans }}</a><a href="https://lnstrade.fr/privacy-policy/">{{ 'Confidentialité'|trans }}</a></div>
+      <div class="socials"><a href="https://www.instagram.com/ULTRAPOP_/" target="_blank" rel="noopener">Instagram</a><a href="https://www.tiktok.com/@ULTRAPOP_" target="_blank" rel="noopener">TikTok</a><a href="https://fr.linkedin.com/company/ULTRAPOPbylnstrade" target="_blank" rel="noopener">LinkedIn</a></div>
+    </div>
+  </footer>
