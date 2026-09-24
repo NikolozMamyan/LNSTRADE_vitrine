@@ -14,7 +14,6 @@ final class WholesaleController extends AbstractController
         path: ['en' => '/en/manga-snacks-drinks-wholesaler', 'fr' => '/fr/grossiste-snacks-boissons-manga'],
         name: 'app_wholesale',
         methods: ['GET'],
-        options: ['sitemap' => ['priority' => 0.8, 'changefreq' => 'monthly', 'template' => 'pages/wholesale.html.twig']],
     )]
     public function __invoke(): Response
     {

@@ -14,7 +14,6 @@ final class UltrapopController extends AbstractController
         path: ['en' => '/en/ultrapop-brand', 'fr' => '/fr/marque-ultrapop'],
         name: 'app_ultrapop',
         methods: ['GET'],
-        options: ['sitemap' => ['priority' => 0.9, 'changefreq' => 'monthly', 'template' => 'pages/ultrapop.html.twig']],
     )]
     public function __invoke(): Response
     {

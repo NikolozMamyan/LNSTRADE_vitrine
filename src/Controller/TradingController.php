@@ -14,7 +14,6 @@ final class TradingController extends AbstractController
         path: ['en' => '/en/food-trading-import-distribution', 'fr' => '/fr/trading-import-distribution'],
         name: 'app_trading',
         methods: ['GET'],
-        options: ['sitemap' => ['priority' => 0.9, 'changefreq' => 'monthly', 'template' => 'pages/trading.html.twig']],
     )]
     public function __invoke(): Response
     {

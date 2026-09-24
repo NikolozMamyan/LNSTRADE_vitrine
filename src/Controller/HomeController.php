@@ -14,7 +14,6 @@ final class HomeController extends AbstractController
         path: ['en' => '/en/', 'fr' => '/fr/'],
         name: 'app_home',
         methods: ['GET'],
-        options: ['sitemap' => ['priority' => 1.0, 'changefreq' => 'weekly', 'template' => 'pages/home.html.twig']],
     )]
     public function __invoke(): Response
     {

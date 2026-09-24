@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 {% for url in urls %}
   <url>
     <loc>{{ url.loc }}</loc>
     <lastmod>{{ url.lastmod }}</lastmod>
-    <changefreq>{{ url.changefreq }}</changefreq>
-    <priority>{{ url.priority|number_format(1, '.', '') }}</priority>
 {% for locale, href in url.alternates %}
     <xhtml:link rel="alternate" hreflang="{{ locale }}" href="{{ href }}"/>
 {% endfor %}
-{% if url.alternates.en is defined %}
-    <xhtml:link rel="alternate" hreflang="x-default" href="{{ url.alternates.en }}"/>
-{% endif %}
   </url>
 {% endfor %}
 </urlset>

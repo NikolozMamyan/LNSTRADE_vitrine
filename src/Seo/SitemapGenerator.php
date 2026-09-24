@@ -6,12 +6,22 @@ namespace App\Seo;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 
 final readonly class SitemapGenerator
 {
+    private const PAGES = [
+        ['template' => 'pages/home.html.twig', 'routes' => ['en' => 'app_home.en', 'fr' => 'app_home.fr']],
+        ['template' => 'pages/trading.html.twig', 'routes' => ['en' => 'app_trading.en', 'fr' => 'app_trading.fr']],
+        ['template' => 'pages/ultrapop.html.twig', 'routes' => ['en' => 'app_ultrapop.en', 'fr' => 'app_ultrapop.fr']],
+        ['template' => 'pages/wholesale.html.twig', 'routes' => ['en' => 'app_wholesale.en', 'fr' => 'app_wholesale.fr']],
+        ['template' => 'pages/blog.html.twig', 'routes' => ['en' => 'app_blog.en', 'fr' => 'app_blog.fr']],
+        ['template' => 'pages/articles/choisir-grossiste.html.twig', 'routes' => ['en' => 'app_article_wholesaler.en', 'fr' => 'app_article_wholesaler.fr']],
+        ['template' => 'pages/articles/merchandising.html.twig', 'routes' => ['en' => 'app_article_merchandising.en', 'fr' => 'app_article_merchandising.fr']],
+        ['template' => 'pages/articles/tendances-snacking.html.twig', 'routes' => ['en' => 'app_article_trends.en', 'fr' => 'app_article_trends.fr']],
+    ];
+
     public function __construct(
-        private RouterInterface $router,
+        private UrlGeneratorInterface $urlGenerator,
         #[Autowire('%kernel.project_dir%')]
         private string $projectDir,
         #[Autowire('%env(DEFAULT_URI)%')]
@@ -23,66 +33,64 @@ final readonly class SitemapGenerator
      * @return list<array{
      *     loc: string,
      *     lastmod: string,
-     *     changefreq: string,
-     *     priority: float,
-     *     alternates: array<string, string>
+     *     alternates: array{en: string, fr: string, x-default: string}
      * }>
      */
     public function generate(): array
     {
-        $localizedRoutes = [];
-
-        foreach ($this->router->getRouteCollection() as $name => $route) {
-            $sitemap = $route->getOption('sitemap');
-            $locale = $route->getDefault('_locale');
-            $canonicalRoute = $route->getDefault('_canonical_route');
-
-            if (!is_array($sitemap) || !is_string($locale) || !in_array($locale, ['en', 'fr'], true) || !is_string($canonicalRoute)) {
-                continue;
-            }
-
-            $template = $sitemap['template'] ?? null;
-            $templatePaths = [
-                is_string($template) ? $this->projectDir.'/templates/'.$template : null,
-                $this->projectDir.'/translations/messages.'.$locale.'.json',
-                $this->projectDir.'/templates/base.html.twig',
-                $this->projectDir.'/templates/partials/_header.html.twig',
-                $this->projectDir.'/templates/partials/_footer.html.twig',
-            ];
-            $modifiedAt = max(array_map(
-                static fn (?string $path): int => $path && is_file($path) ? (int) filemtime($path) : 0,
-                $templatePaths,
-            ));
-
-            $localizedRoutes[$canonicalRoute][$locale] = [
-                'name' => $name,
-                'loc' => rtrim($this->baseUrl, '/').$this->router->generate($name, [], UrlGeneratorInterface::ABSOLUTE_PATH),
-                'lastmod' => date('Y-m-d', $modifiedAt ?: time()),
-                'changefreq' => (string) ($sitemap['changefreq'] ?? 'monthly'),
-                'priority' => (float) ($sitemap['priority'] ?? 0.5),
-            ];
-        }
-
         $urls = [];
-        foreach ($localizedRoutes as $routes) {
-            $alternates = [];
-            foreach ($routes as $locale => $route) {
-                $alternates[$locale] = $route['loc'];
-            }
 
-            foreach ($routes as $route) {
+        foreach (self::PAGES as $page) {
+            $alternates = [];
+            foreach ($page['routes'] as $locale => $route) {
+                $alternates[$locale] = $this->absoluteUrl($route);
+            }
+            $alternates['x-default'] = $alternates['en'];
+
+            foreach ($page['routes'] as $locale => $route) {
                 $urls[] = [
-                    'loc' => $route['loc'],
-                    'lastmod' => $route['lastmod'],
-                    'changefreq' => $route['changefreq'],
-                    'priority' => $route['priority'],
+                    'loc' => $this->absoluteUrl($route),
+                    'lastmod' => $this->pageLastModified($page['template'], $locale)->format('Y-m-d'),
                     'alternates' => $alternates,
                 ];
             }
         }
 
-        usort($urls, static fn (array $left, array $right): int => [$right['priority'], $left['loc']] <=> [$left['priority'], $right['loc']]);
+        usort($urls, static fn (array $left, array $right): int => $left['loc'] <=> $right['loc']);
 
         return $urls;
+    }
+
+    public function lastModified(): \DateTimeImmutable
+    {
+        $timestamps = [];
+        foreach (self::PAGES as $page) {
+            foreach ($page['routes'] as $locale => $_route) {
+                $timestamps[] = $this->pageLastModified($page['template'], $locale)->getTimestamp();
+            }
+        }
+
+        return (new \DateTimeImmutable('@'.max($timestamps)))->setTimezone(new \DateTimeZone('UTC'));
+    }
+
+    private function absoluteUrl(string $route): string
+    {
+        return rtrim($this->baseUrl, '/').$this->urlGenerator->generate($route, [], UrlGeneratorInterface::ABSOLUTE_PATH);
+    }
+
+    private function pageLastModified(string $template, string $locale): \DateTimeImmutable
+    {
+        $timestamps = array_filter([
+            $this->fileModifiedAt($this->projectDir.'/templates/'.$template),
+            $this->fileModifiedAt($this->projectDir.'/translations/messages.'.$locale.'.json'),
+        ]);
+        $timestamp = $timestamps ? max($timestamps) : time();
+
+        return (new \DateTimeImmutable('@'.$timestamp))->setTimezone(new \DateTimeZone('UTC'));
+    }
+
+    private function fileModifiedAt(string $path): int
+    {
+        return is_file($path) ? (int) filemtime($path) : 0;
     }
 }
