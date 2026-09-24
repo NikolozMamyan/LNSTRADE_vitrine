@@ -545,7 +545,13 @@ html.skeleton-active, html.skeleton-active body { overflow: hidden; }
 .contact-form label .optional { align-self: flex-end; margin-top: -18px; color: rgba(17,17,15,.42); font-size: 8px; font-weight: 600; text-transform: none; letter-spacing: 0; }
 .contact-form input, .contact-form select, .contact-form textarea { width: 100%; border: 1px solid rgba(17,17,15,.22); border-radius: 0; outline: 0; background: var(--white); padding: 13px 14px; color: var(--ink); font-size: 13px; text-transform: none; letter-spacing: 0; }
 .contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--orange); box-shadow: 0 0 0 1px var(--orange); }
+.contact-form [aria-invalid="true"] { border-color: #a92323; box-shadow: 0 0 0 1px #a92323; }
 .contact-form textarea { resize: vertical; min-height: 76px; }
+.contact-form .form-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.contact-form .form-status { margin: 0; font-size: 12px; font-weight: 700; }
+.contact-form .form-status.is-success { color: #247a3d; }
+.contact-form .form-status.is-error { color: #a92323; }
+.contact-form .form-submit:disabled { cursor: wait; opacity: .55; }
 .contact-form .check { flex-direction: row; align-items: flex-start; gap: 10px; font-weight: 500; text-transform: none; letter-spacing: 0; line-height: 1.4; }
 .contact-form .check input { width: 15px; margin-top: 2px; accent-color: var(--orange); }
 .form-submit { width: 100%; }

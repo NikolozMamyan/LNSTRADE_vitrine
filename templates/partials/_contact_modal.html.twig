@@ -12,8 +12,12 @@
           <a href="mailto:info@lnstrade.fr"><small>{{ 'E-mail'|trans }}</small><strong>info@lnstrade.fr</strong></a>
         </div>
       </div>
-      <form class="contact-form" id="contact-form">
+      <form class="contact-form" id="contact-form" action="{{ path('app_contact_submit') }}" method="post">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('contact') }}">
+        <input type="hidden" name="locale" value="{{ app.request.locale }}">
+        <input type="hidden" name="origin" value="">
         <input type="hidden" name="context" value="{{ 'Demande générale'|trans }}">
+        <div class="form-honeypot" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
         <div class="contact-journey" data-contact-journey>
           <span>{{ 'Votre point de départ'|trans }}</span>
           <strong data-contact-journey-title>{{ 'Projet sur mesure'|trans }}</strong>
@@ -30,6 +34,7 @@
         <label>{{ 'N° de TVA'|trans }} <span class="optional">{{ 'Facultatif'|trans }}</span><input type="text" name="vat" autocomplete="off" placeholder="FR 00 000000000"></label>
         <label>{{ 'Parlez-nous de votre projet'|trans }} <span class="optional">{{ 'Facultatif'|trans }}</span><textarea name="message" rows="3" placeholder="{{ 'Pays, type de produits, volumes estimés…'|trans }}"></textarea></label>
         <button class="button button-primary form-submit" type="submit">{{ 'Envoyer ma demande'|trans }} <span aria-hidden="true">↗</span></button>
+        <p class="form-status" data-contact-status aria-live="polite" hidden></p>
         <p class="form-note" aria-live="polite">{{ 'En envoyant ce formulaire, vous acceptez notre'|trans }} <a href="https://lnstrade.fr/privacy-policy/">{{ 'politique de confidentialité'|trans }}</a>.</p>
       </form>
     </div>

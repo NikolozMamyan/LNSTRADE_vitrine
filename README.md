@@ -26,7 +26,11 @@ APP_ENV=prod
 APP_DEBUG=0
 APP_SECRET=remplacer-par-un-secret-long-et-aleatoire
 DEFAULT_URI=https://lnstrade.fr
+HUBSPOT_ACCESS_TOKEN=pat-votre-token-prive
+HUBSPOT_OWNER_ID=65157022
 ```
+
+Le token HubSpot doit autoriser la lecture et l’écriture des entreprises ainsi que l’écriture des contacts. Le formulaire crée ou met à jour le contact par e-mail, réutilise une entreprise portant le même nom, associe les deux fiches et ajoute une note avec le message reçu. Le client secret HubSpot n’est pas nécessaire avec ce token privé et ne doit pas être exposé côté navigateur.
 
 ## Apache
 

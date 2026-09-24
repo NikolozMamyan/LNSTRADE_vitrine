@@ -14,6 +14,8 @@ final readonly class SitemapGenerator
         private RouterInterface $router,
         #[Autowire('%kernel.project_dir%')]
         private string $projectDir,
+        #[Autowire('%env(DEFAULT_URI)%')]
+        private string $baseUrl,
     ) {
     }
 
@@ -42,6 +44,7 @@ final readonly class SitemapGenerator
             $template = $sitemap['template'] ?? null;
             $templatePaths = [
                 is_string($template) ? $this->projectDir.'/templates/'.$template : null,
+                $this->projectDir.'/translations/messages.'.$locale.'.json',
                 $this->projectDir.'/templates/base.html.twig',
                 $this->projectDir.'/templates/partials/_header.html.twig',
                 $this->projectDir.'/templates/partials/_footer.html.twig',
@@ -53,7 +56,7 @@ final readonly class SitemapGenerator
 
             $localizedRoutes[$canonicalRoute][$locale] = [
                 'name' => $name,
-                'loc' => $this->router->generate($name, [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'loc' => rtrim($this->baseUrl, '/').$this->router->generate($name, [], UrlGeneratorInterface::ABSOLUTE_PATH),
                 'lastmod' => date('Y-m-d', $modifiedAt ?: time()),
                 'changefreq' => (string) ($sitemap['changefreq'] ?? 'monthly'),
                 'priority' => (float) ($sitemap['priority'] ?? 0.5),

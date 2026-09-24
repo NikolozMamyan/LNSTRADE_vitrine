@@ -3,12 +3,15 @@
 {% set body_class = body_class|default('') %}
 {% set is_article = is_article|default(false) %}
 {% set skeleton_variant = page_id in ['choosingWholesaler', 'merchandising', 'snackingTrends'] ? 'article' : page_id %}
-{% set canonical_url = absolute_url(path(route_name ~ '.' ~ app.request.locale)) %}
-{% set english_url = absolute_url(path(route_name ~ '.en')) %}
-{% set french_url = absolute_url(path(route_name ~ '.fr')) %}
+{% set site_origin = site_url|trim('/') %}
+{% set canonical_url = site_origin ~ path(route_name ~ '.' ~ app.request.locale) %}
+{% set english_url = site_origin ~ path(route_name ~ '.en') %}
+{% set french_url = site_origin ~ path(route_name ~ '.fr') %}
 {% set page_title = ('meta.' ~ page_id ~ '.title')|trans %}
 {% set page_description = ('meta.' ~ page_id ~ '.description')|trans %}
-{% set social_image = absolute_url(og_image|default(asset('images/ULTRAPOP-collection.jpg'))) %}
+{% set social_image = site_origin ~ (og_image|default(asset('images/ULTRAPOP-collection.jpg'))) %}
+{% set organization_id = site_origin ~ '/#organization' %}
+{% set website_id = site_origin ~ '/#website' %}
 <!doctype html>
 <html lang="{{ app.request.locale }}">
 <head>
@@ -28,15 +31,17 @@
   <meta property="og:type" content="{{ is_article ? 'article' : 'website' }}">
   <meta property="og:site_name" content="LNS Trade">
   <meta property="og:locale" content="{{ app.request.locale == 'fr' ? 'fr_FR' : 'en_GB' }}">
+  <meta property="og:locale:alternate" content="{{ app.request.locale == 'fr' ? 'en_GB' : 'fr_FR' }}">
   <meta property="og:title" content="{{ page_title }}">
   <meta property="og:description" content="{{ page_description }}">
   <meta property="og:url" content="{{ canonical_url }}">
   <meta property="og:image" content="{{ social_image }}">
-  <meta property="og:image:alt" content="LNS Trade et ULTRAPOP">
+  <meta property="og:image:alt" content="{{ 'seo.social_image_alt'|trans }}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ page_title }}">
   <meta name="twitter:description" content="{{ page_description }}">
   <meta name="twitter:image" content="{{ social_image }}">
+  <meta name="twitter:image:alt" content="{{ 'seo.social_image_alt'|trans }}">
   {% if is_article %}<meta property="article:published_time" content="{{ article_date }}T09:00:00+02:00">{% endif %}
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,11 +56,11 @@
     '@graph': [
       {
         '@type': 'Organization',
-        '@id': absolute_url(path('app_home.en')) ~ '#organization',
+        '@id': organization_id,
         'name': 'LNS Trade',
         'alternateName': ['LNSTRADE', 'ULTRAPOP by LNS Trade'],
-        'url': absolute_url(path('app_home.en')),
-        'logo': absolute_url(asset('images/logo-lns-white.png')),
+        'url': site_origin ~ '/',
+        'logo': site_origin ~ asset('images/logo-lns-white.png'),
         'description': 'seo.organization_description'|trans,
         'foundingDate': '2014',
         'address': {
@@ -72,17 +77,17 @@
           'telephone': '+33388840380',
           'availableLanguage': ['fr', 'en']
         },
-        'brand': {'@type': 'Brand', '@id': absolute_url(path('app_ultrapop.en')) ~ '#brand', 'name': 'ULTRAPOP'},
-        'hasOfferCatalog': {'@type': 'OfferCatalog', 'name': 'Catalogue professionnel ULTRAPOP', 'url': 'https://online.flippingbook.com/link/845542/'},
+        'brand': {'@type': 'Brand', '@id': site_origin ~ path('app_ultrapop.en') ~ '#brand', 'name': 'ULTRAPOP'},
+        'hasOfferCatalog': {'@type': 'OfferCatalog', 'name': 'seo.catalog_name'|trans, 'url': 'https://online.flippingbook.com/link/845542/'},
         'sameAs': ['https://www.instagram.com/ULTRAPOP_/', 'https://www.tiktok.com/@ULTRAPOP_', 'https://fr.linkedin.com/company/ULTRAPOPbylnstrade']
       },
       {
         '@type': 'WebSite',
-        '@id': absolute_url(path('app_home.en')) ~ '#website',
-        'url': absolute_url(path('app_home.' ~ app.request.locale)),
+        '@id': website_id,
+        'url': site_origin ~ '/',
         'name': 'seo.site_name'|trans,
         'inLanguage': app.request.locale,
-        'publisher': {'@id': absolute_url(path('app_home.en')) ~ '#organization'}
+        'publisher': {'@id': organization_id}
       },
       {
         '@type': is_article ? 'BlogPosting' : 'WebPage',
@@ -94,8 +99,9 @@
         'inLanguage': app.request.locale,
         'image': social_image,
         'mainEntityOfPage': canonical_url,
-        'isPartOf': {'@id': absolute_url(path('app_home.en')) ~ '#website'},
-        'publisher': {'@id': absolute_url(path('app_home.en')) ~ '#organization'},
+        'isPartOf': {'@id': website_id},
+        'author': is_article ? {'@id': organization_id} : null,
+        'publisher': {'@id': organization_id},
         'datePublished': is_article ? article_date : null,
         'dateModified': is_article ? article_date : null
       }
@@ -114,18 +120,11 @@
   {% include 'partials/_range_builder_modal.html.twig' %}
   <script id="lns-ui-copy" type="application/json">{{ {
     locale: app.request.locale,
-    mail: {
-      subject: 'form.mail.subject'|trans,
-      context: 'form.mail.context'|trans,
-      name: 'form.mail.name'|trans,
-      company: 'form.mail.company'|trans,
-      email: 'form.mail.email'|trans,
-      phone: 'form.mail.phone'|trans,
-      vat: 'form.mail.vat'|trans,
-      empty: 'form.mail.empty'|trans,
-      noMessage: 'form.mail.no_message'|trans,
-      origin: 'form.mail.origin'|trans,
-      note: 'form.mail.note'|trans
+    contact: {
+      sending: 'form.contact.sending'|trans,
+      success: 'form.contact.success'|trans,
+      error: 'form.contact.error'|trans,
+      invalid: 'form.contact.invalid'|trans
     }
   }|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
 </body>

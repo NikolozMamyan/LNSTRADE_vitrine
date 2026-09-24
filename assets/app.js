@@ -573,6 +573,12 @@ const initializePage = () => {
     if (!contactModal) return;
     if (catalogueModal?.open) catalogueModal.close();
     if (rangeBuilderModal?.open) rangeBuilderModal.close();
+    const status = contactForm?.querySelector('[data-contact-status]');
+    if (status) {
+      status.hidden = true;
+      status.className = 'form-status';
+      status.textContent = '';
+    }
     updateContactJourney({ ...defaultJourney, ...journey });
     playModalSkeleton(contactModal);
     if (!contactModal.open) contactModal.showModal();
@@ -661,26 +667,53 @@ const initializePage = () => {
   if (window.location.hash === '#contact') openContact(defaultJourney);
   if (window.location.hash === '#catalogue') openCatalogue();
 
-  listen(contactForm, 'submit', (event) => {
+  listen(contactForm, 'submit', async (event) => {
     event.preventDefault();
-    const data = new FormData(contactForm);
-    const copy = uiCopy.mail || {};
-    const subject = encodeURIComponent(`${copy.subject || 'LNS Trade'} — ${data.get('company')}`);
-    const body = encodeURIComponent([
-      `${copy.context || 'Context'} : ${data.get('context') || defaultJourney.context}`,
-      `${copy.name || 'Name'} : ${data.get('name')}`,
-      `${copy.company || 'Company'} : ${data.get('company')}`,
-      `${copy.email || 'Email'} : ${data.get('email')}`,
-      `${copy.phone || 'Phone'} : ${data.get('phone') || copy.empty || '-'}`,
-      `${copy.vat || 'VAT'} : ${data.get('vat') || copy.empty || '-'}`,
-      '',
-      data.get('message') || copy.noMessage || '',
-      '',
-      `${copy.origin || 'Source'} : ${window.location.href}`,
-    ].join('\n'));
-    const note = contactForm.querySelector('.form-note');
-    if (note && copy.note) note.textContent = copy.note;
-    window.location.href = `mailto:info@lnstrade.fr?subject=${subject}&body=${body}`;
+    if (!contactForm.reportValidity()) return;
+
+    const copy = uiCopy.contact || {};
+    contactForm.querySelectorAll('[aria-invalid="true"]').forEach((field) => field.removeAttribute('aria-invalid'));
+    const submitButton = contactForm.querySelector('[type="submit"]');
+    const status = contactForm.querySelector('[data-contact-status]');
+    const origin = contactForm.elements.namedItem('origin');
+    if (origin) origin.value = window.location.href;
+    if (submitButton) submitButton.disabled = true;
+    if (status) {
+      status.hidden = false;
+      status.className = 'form-status';
+      status.textContent = copy.sending || 'Sending…';
+    }
+
+    try {
+      const response = await fetch(contactForm.action, {
+        method: 'POST',
+        body: new FormData(contactForm),
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin',
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) {
+        if ('validation' === result.error && Array.isArray(result.fields)) {
+          result.fields.forEach((name) => contactForm.elements.namedItem(name)?.setAttribute('aria-invalid', 'true'));
+          contactForm.querySelector('[aria-invalid="true"]')?.focus();
+        }
+        const message = 'validation' === result.error ? copy.invalid : copy.error;
+        throw new Error(message || 'Unable to send your request.');
+      }
+
+      contactForm.reset();
+      if (status) {
+        status.classList.add('is-success');
+        status.textContent = copy.success || 'Your request has been sent.';
+      }
+    } catch (error) {
+      if (status) {
+        status.classList.add('is-error');
+        status.textContent = error.message || copy.error || 'Unable to send your request.';
+      }
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
   });
 
   if ('IntersectionObserver' in window) {
