@@ -37,9 +37,21 @@
         <p>{{ 'Une gamme multiformat pour multiplier les occasions de consommation et les points de contact avec les fans.'|trans }}</p>
       </div>
       <div class="product-gallery">
-        <article class="product-card card-wide reveal"><img src="{{ asset('images/ULTRAPOP-boissons.jpg') }}" alt="{{ 'Gamme de boissons manga ULTRAPOP'|trans }}" width="2000" height="800"><div class="product-card-copy"><span>Bubble tea · Ice tea · Juice</span><strong>{{ 'Boissons'|trans }}</strong></div></article>
-        <article class="product-card reveal"><img src="{{ asset('images/ULTRAPOP-sucre.jpg') }}" alt="{{ 'Gamme de confiseries ULTRAPOP'|trans }}" width="5208" height="3125"><div class="product-card-copy"><span>Gumis · Candy</span><strong>{{ 'Sucré'|trans }}</strong></div></article>
-        <article class="product-card reveal"><img src="{{ asset('images/ULTRAPOP-sale.jpg') }}" alt="{{ 'Gamme de snacks salés ULTRAPOP'|trans }}" width="1201" height="801"><div class="product-card-copy"><span>Chips · Rice chips · Noodles</span><strong>{{ 'Salé'|trans }}</strong></div></article>
+        <a class="product-card product-card-link card-wide reveal" href="https://ultrapop.com/boutique?category={{ 'Boissons'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les boissons ULTRAPOP'|trans }}">
+          <img src="{{ asset('images/ULTRAPOP-boissons.jpg') }}" alt="{{ 'Gamme de boissons manga ULTRAPOP'|trans }}" width="2000" height="800">
+          <div class="product-card-copy"><span>Bubble tea · Ice tea · Juice</span><strong>{{ 'Boissons'|trans }}</strong></div>
+          <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
+        </a>
+        <a class="product-card product-card-link reveal" href="https://ultrapop.com/boutique?category={{ 'Épicerie sucrée'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les produits sucrés ULTRAPOP'|trans }}">
+          <img src="{{ asset('images/ULTRAPOP-sucre.jpg') }}" alt="{{ 'Gamme de confiseries ULTRAPOP'|trans }}" width="5208" height="3125">
+          <div class="product-card-copy"><span>Gumis · Candy</span><strong>{{ 'Sucré'|trans }}</strong></div>
+          <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
+        </a>
+        <a class="product-card product-card-link reveal" href="https://ultrapop.com/boutique?category={{ 'Épicerie salée'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les snacks salés ULTRAPOP'|trans }}">
+          <img src="{{ asset('images/ULTRAPOP-sale.jpg') }}" alt="{{ 'Gamme de snacks salés ULTRAPOP'|trans }}" width="1201" height="801">
+          <div class="product-card-copy"><span>Chips · Rice chips · Noodles</span><strong>{{ 'Salé'|trans }}</strong></div>
+          <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
+        </a>
       </div>
     </div>
   </section>
@@ -53,8 +65,8 @@
         <h3>{{ 'Une ambition européenne et internationale'|trans }}</h3>
         <p>{{ 'La marque est distribuée via des partenaires, enseignes et commerces spécialisés en Europe et au Moyen-Orient. Notre équipe commerciale vous aide à construire une sélection adaptée à votre marché.'|trans }}</p>
         <div class="ultrapop-action-row">
-          <button class="button button-primary" type="button" data-open-contact data-interest="Catalogue ULTRAPOP">{{ 'Découvrir le catalogue'|trans }} <span>↗</span></button>
-          <a class="button ultrapop-shop-button dark" href="https://ultrapop.com/" target="_blank" rel="noopener external">{{ 'shop.cta'|trans }} <span aria-hidden="true">↗</span></a>
+          <a class="button button-primary" href="https://ultrapop.com/licences" target="_blank" rel="noopener external">{{ 'Voir toutes les licences'|trans }} <span aria-hidden="true">↗</span></a>
+          <a class="button ultrapop-shop-button dark" href="https://ultrapop.com/boutique" target="_blank" rel="noopener external">{{ 'shop.cta'|trans }} <span aria-hidden="true">↗</span></a>
         </div>
       </div>
     </div>

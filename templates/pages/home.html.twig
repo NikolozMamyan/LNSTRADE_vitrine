@@ -144,20 +144,33 @@
       </div>
 
       <div class="product-gallery shell">
-        <article class="product-card card-wide reveal">
+        <a class="product-card product-card-link card-wide reveal" href="https://ultrapop.com/boutique?category={{ 'Boissons'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les boissons ULTRAPOP'|trans }}">
           <img src="{{ asset('images/ULTRAPOP-boissons.jpg') }}" alt="{{ 'Boissons ULTRAPOP sous licences manga'|trans }}" width="2000" height="800" loading="lazy">
           <div class="product-card-copy"><span>{{ 'Boissons'|trans }}</span><strong>{{ 'Fraîches. Iconiques.'|trans }}</strong></div>
-        </article>
-        <article class="product-card reveal">
+          <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
+        </a>
+        <a class="product-card product-card-link reveal" href="https://ultrapop.com/boutique?category={{ 'Épicerie salée'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les snacks salés ULTRAPOP'|trans }}">
           <img src="{{ asset('images/chipsan-lifestyle.jpg') }}" alt="{{ 'Chipsan Dragon Ball Z par ULTRAPOP'|trans }}" width="1083" height="1083" loading="lazy">
           <div class="product-card-copy"><span>{{ 'Salé'|trans }}</span><strong>{{ 'Le snack passe au niveau supérieur.'|trans }}</strong></div>
-        </article>
-        <article class="product-card reveal">
+          <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
+        </a>
+        <a class="product-card product-card-link reveal" href="https://ultrapop.com/boutique?category={{ 'Négisan - Nouilles instantanées'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les nouilles instantanées ULTRAPOP'|trans }}">
           <img src="{{ asset('images/negisan-lifestyle.jpg') }}" alt="{{ 'Negisan Dragon Ball Super par ULTRAPOP'|trans }}" width="1083" height="1083" loading="lazy">
           <div class="product-card-copy"><span>{{ 'Instant food'|trans }}</span><strong>{{ 'Une pause qui ne ressemble à aucune autre.'|trans }}</strong></div>
-        </article>
+          <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
+        </a>
       </div>
 
+      {% set licenses = [
+        {image: 'licences/MENU_LICENCE-01.png', name: 'One Piece', alt: 'Licence One Piece'|trans},
+        {image: 'licences/MENU_LICENCE-02.png', name: 'Naruto', alt: 'Licence Naruto Shippuden'|trans},
+        {image: 'licences/MENU_LICENCE-03.png', name: 'Dragon Ball Z', alt: 'Licence Dragon Ball Z'|trans},
+        {image: 'licences/MENU_LICENCE-04.png', name: 'Dragon Ball Super', alt: 'Licence Dragon Ball Super'|trans},
+        {image: 'licences/MENU_LICENCE-05.png', name: 'League Of Legends', alt: 'Licence Arcane League of Legends'|trans},
+        {image: 'licences/MENU_LICENCE-06.png', name: 'Demon Slayer', alt: 'Licence Demon Slayer'|trans},
+        {image: 'licences/MENU_LICENCE-07.png', name: 'Jujutsu Kaisen', alt: 'Licence Jujutsu Kaisen'|trans},
+        {image: 'licences/licenses-league-of-legends-c0558db7973198d0.jpg', name: 'League Of Legends', alt: 'Licence League of Legends'|trans}
+      ] %}
       <div class="license-strip shell reveal" aria-labelledby="license-carousel-title">
         <div class="license-carousel-heading">
           <span id="license-carousel-title">{{ 'Licences officielles'|trans }}</span>
@@ -165,26 +178,15 @@
         </div>
         <div class="license-carousel-viewport">
           <div class="ticker-track license-carousel-track">
-            <div class="license-carousel-group">
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-01.png') }}" alt="{{ 'Licence One Piece'|trans }}" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-02.png') }}" alt="{{ 'Licence Naruto Shippuden'|trans }}" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-03.png') }}" alt="{{ 'Licence Dragon Ball Z'|trans }}" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-04.png') }}" alt="{{ 'Licence Dragon Ball Super'|trans }}" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-05.png') }}" alt="{{ 'Licence Arcane League of Legends'|trans }}" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-06.png') }}" alt="{{ 'Licence Demon Slayer'|trans }}" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-07.png') }}" alt="{{ 'Licence Jujutsu Kaisen'|trans }}" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/licenses-league-of-legends-c0558db7973198d0.jpg') }}" alt="{{ 'Licence League of Legends'|trans }}" width="3365" height="1448" loading="lazy" decoding="async"></span>
-            </div>
-            <div class="license-carousel-group" aria-hidden="true">
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-01.png') }}" alt="" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-02.png') }}" alt="" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-03.png') }}" alt="" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-04.png') }}" alt="" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-05.png') }}" alt="" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-06.png') }}" alt="" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/MENU_LICENCE-07.png') }}" alt="" width="1615" height="695" loading="lazy" decoding="async"></span>
-              <span class="license-carousel-card"><img src="{{ asset('licences/licenses-league-of-legends-c0558db7973198d0.jpg') }}" alt="" width="3365" height="1448" loading="lazy" decoding="async"></span>
-            </div>
+            {% for duplicate in 0..1 %}
+              <div class="license-carousel-group"{% if duplicate == 1 %} aria-hidden="true"{% endif %}>
+                {% for license in licenses %}
+                  <a class="license-carousel-card" href="https://ultrapop.com/licences?license={{ license.name|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Voir les produits %license%'|trans({'%license%': license.name}) }}"{% if duplicate == 1 %} tabindex="-1"{% endif %}>
+                    <img src="{{ asset(license.image) }}" alt="{{ duplicate == 0 ? license.alt : '' }}" width="1615" height="695" loading="lazy" decoding="async">
+                  </a>
+                {% endfor %}
+              </div>
+            {% endfor %}
           </div>
         </div>
       </div>
