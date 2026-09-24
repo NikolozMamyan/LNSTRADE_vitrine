@@ -1,0 +1,10 @@
+{% if indexable -%}
+User-agent: *
+Allow: /
+Disallow: /contact
+
+Sitemap: {{ site_url|trim('/') ~ path('app_seo_sitemap') }}
+{% else -%}
+User-agent: *
+Disallow: /
+{% endif %}

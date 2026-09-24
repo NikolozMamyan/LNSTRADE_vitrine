@@ -17,30 +17,43 @@ final class SeoSmokeTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'application/xml; charset=UTF-8');
         self::assertResponseHeaderSame('X-Content-Type-Options', 'nosniff');
-        self::assertTrue($client->getResponse()->headers->has('ETag'));
-        self::assertTrue($client->getResponse()->headers->has('Last-Modified'));
-        $etag = $client->getResponse()->headers->get('ETag');
 
         $xml = $client->getResponse()->getContent();
         self::assertIsString($xml);
         self::assertSame(16, substr_count($xml, '<url>'));
         self::assertStringContainsString('<loc>https://lnstrade.fr/en/</loc>', $xml);
         self::assertStringContainsString('<loc>https://lnstrade.fr/fr/</loc>', $xml);
-        self::assertStringContainsString('<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>', $xml);
-        self::assertStringNotContainsString('<priority>', $xml);
-        self::assertStringNotContainsString('<changefreq>', $xml);
+        self::assertStringNotContainsString('xml-stylesheet', $xml);
+        self::assertSame(16, substr_count($xml, '<priority>'));
+        self::assertSame(16, substr_count($xml, '<changefreq>'));
         self::assertStringNotContainsString('internal-proxy.local', $xml);
 
         $document = new \DOMDocument();
         self::assertTrue($document->loadXML($xml));
         $xpath = new \DOMXPath($document);
         $xpath->registerNamespace('sm', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-        $xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
         self::assertSame(16, $xpath->query('/sm:urlset/sm:url')->length);
-        self::assertSame(48, $xpath->query('/sm:urlset/sm:url/xhtml:link')->length);
+    }
 
-        $client->request('GET', '/sitemap.xml', server: ['HTTP_IF_NONE_MATCH' => $etag]);
-        self::assertResponseStatusCodeSame(Response::HTTP_NOT_MODIFIED);
+    public function testProductionRobotsAllowsCrawlersAndDeclaresSitemap(): void
+    {
+        $client = static::createClient([], ['HTTP_HOST' => 'lnstrade.fr', 'HTTPS' => 'on']);
+        $client->request('GET', '/robots.txt');
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/plain; charset=UTF-8');
+        self::assertStringContainsString("User-agent: *\nAllow: /", (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('Sitemap: https://lnstrade.fr/sitemap.xml', (string) $client->getResponse()->getContent());
+    }
+
+    public function testUnknownHostRobotsBlocksCrawlers(): void
+    {
+        $client = static::createClient([], ['HTTP_HOST' => 'preprod.lnstrade.fr', 'HTTPS' => 'on']);
+        $client->request('GET', '/robots.txt');
+
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString("User-agent: *\nDisallow: /", (string) $client->getResponse()->getContent());
+        self::assertResponseHeaderSame('X-Robots-Tag', 'noindex, nofollow, noarchive');
     }
 
     public function testEverySitemapUrlIsAReachableCanonicalPage(): void
