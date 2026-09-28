@@ -98,6 +98,11 @@ class Prospect
         return $this->name;
     }
 
+    public function getCompany(): string
+    {
+        return $this->company;
+    }
+
     public function getPhone(): ?string
     {
         return $this->phone;
@@ -111,6 +116,16 @@ class Prospect
     public function getSubmissionCount(): int
     {
         return $this->submissionCount;
+    }
+
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    public function getLastSubmittedAt(): \DateTimeImmutable
+    {
+        return $this->lastSubmittedAt;
     }
 
     public function getHubSpotSyncedAt(): ?\DateTimeImmutable

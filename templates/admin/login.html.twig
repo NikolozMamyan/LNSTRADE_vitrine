@@ -4,27 +4,86 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#11110f">
   <title>Connexion — Administration LNS Trade</title>
+  <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+  {{ importmap('admin') }}
 </head>
-<body>
-  <main>
-    <h1>Administration LNS Trade</h1>
+<body class="admin-login-body">
+  <main class="admin-login-shell">
+    <section class="login-brand-panel" aria-label="LNS Trade">
+      <div class="login-brand-glow"></div>
+      <span class="login-orbit login-orbit-one"></span>
+      <span class="login-orbit login-orbit-two"></span>
 
-    {% for message in app.flashes('admin_login_error') %}
-      <p role="alert">{{ message }}</p>
-    {% endfor %}
+      <a class="login-logo" href="{{ path('app_home.fr') }}" aria-label="Retour au site LNS Trade">
+        <img src="{{ asset('images/logo-lns-white.png') }}" alt="LNS Trade">
+      </a>
 
-    <form method="post" action="{{ path('app_admin_login') }}">
-      <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+      <div class="login-brand-copy">
+        <p class="login-kicker"><span></span> Espace réservé</p>
+        <h1>Le pilotage<br><em>commence ici.</em></h1>
+        <p>Centralisez vos demandes commerciales et gardez une vision claire de l’activité LNS Trade.</p>
+      </div>
 
-      <label for="admin-email">Adresse e-mail</label>
-      <input id="admin-email" name="email" type="email" autocomplete="username" required autofocus>
+      {# <div class="login-trust-row">
+        <span><i>01</i> Accès sécurisé</span>
+        <span><i>02</i> Sessions multi-postes</span>
+      </div> #}
+    </section>
 
-      <label for="admin-password">Mot de passe</label>
-      <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+    <section class="login-form-panel">
+      <div class="login-form-wrap">
+        <div class="login-form-heading">
+          <span class="login-mobile-mark">LNS / ADMIN</span>
+          <p class="admin-eyebrow"><span></span> Back-office</p>
+          <h2>Bon retour.</h2>
+          <p>Connectez-vous avec vos identifiants administrateur.</p>
+        </div>
 
-      <button type="submit">Se connecter</button>
-    </form>
+        {% for message in app.flashes('admin_login_error') %}
+          <div class="login-alert" role="alert">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 4.6 2.6 18a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.6a2 2 0 0 0-3.4 0Z"/></svg>
+            <span><strong>Connexion impossible</strong>{{ message }}</span>
+          </div>
+        {% endfor %}
+
+        <form class="admin-login-form" method="post" action="{{ path('app_admin_login') }}">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+          <div class="admin-field">
+            <label for="admin-email">Adresse e-mail</label>
+            <div class="admin-input-wrap">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm0 2 8 6 8-6"/></svg>
+              <input id="admin-email" name="email" type="email" value="{{ last_username }}" placeholder="admin@lnstrade.fr" autocomplete="username" required autofocus>
+            </div>
+          </div>
+
+          <div class="admin-field">
+            <label for="admin-password">Mot de passe</label>
+            <div class="admin-input-wrap">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10V7a6 6 0 0 1 12 0v3M4 10h16v11H4V10Z"/></svg>
+              <input id="admin-password" name="password" type="password" placeholder="Votre mot de passe" autocomplete="current-password" required>
+              <button class="password-toggle" type="button" data-password-toggle aria-label="Afficher le mot de passe">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="admin-login-submit" type="submit">
+            <span>Se connecter</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </form>
+
+        <p class="login-help">Accès strictement réservé aux équipes autorisées.</p>
+      </div>
+      <a class="login-back-link" href="{{ path('app_home.fr') }}"><span>←</span> Retour au site</a>
+    </section>
   </main>
 </body>
 </html>

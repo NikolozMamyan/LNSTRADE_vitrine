@@ -1,21 +1,133 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
-  <title>Administration — LNS Trade</title>
-</head>
-<body>
-  <header>
-    <p>Connecté en tant que {{ app.user.userIdentifier }}</p>
-    <form method="post" action="{{ path('app_admin_logout') }}">
-      <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-      <button type="submit">Se déconnecter</button>
-    </form>
-  </header>
-  <main>
-    <h1>Back-office</h1>
-  </main>
-</body>
-</html>
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+{% block page_name %}Tableau de bord{% endblock %}
+
+{% block body %}
+  <section class="dashboard-hero">
+    <div>
+      <p class="admin-eyebrow"><span></span> Vue d’ensemble</p>
+      <h1>Bonjour, {{ app.user.userIdentifier|split('@')|first|capitalize }}.</h1>
+      <p>Voici ce qui se passe chez LNS Trade aujourd’hui.</p>
+    </div>
+    <div class="dashboard-date">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3m10-3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/></svg>
+      <span><small>Aujourd’hui</small>{{ 'now'|date('d / m / Y') }}</span>
+    </div>
+  </section>
+
+  <section class="dashboard-metrics" aria-label="Indicateurs clés">
+    <article class="metric-card metric-card-dark">
+      <div class="metric-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m7-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span class="metric-value">{{ dashboard.prospectCount|number_format(0, ',', ' ') }}</span>
+      <span class="metric-label">Prospects enregistrés</span>
+      <span class="metric-note">Base de contacts consolidée</span>
+    </article>
+
+    <article class="metric-card">
+      <div class="metric-icon metric-icon-orange">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20V10m0 0L7 15m5-5 5 5M5 4h14"/></svg>
+      </div>
+      <span class="metric-value">{{ dashboard.recentProspectCount|number_format(0, ',', ' ') }}</span>
+      <span class="metric-label">Nouveaux prospects</span>
+      <span class="metric-note">Sur les 7 derniers jours</span>
+    </article>
+
+    <article class="metric-card">
+      <div class="metric-icon metric-icon-yellow">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H5.17L4 17.17V4Zm4 5h8M8 12h5"/></svg>
+      </div>
+      <span class="metric-value">{{ dashboard.submissionCount|number_format(0, ',', ' ') }}</span>
+      <span class="metric-label">Demandes reçues</span>
+      <span class="metric-note">Tous formulaires confondus</span>
+    </article>
+
+    <article class="metric-card">
+      <div class="metric-icon metric-icon-violet">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9M12 7v5l3 2m3-11v5h-5"/></svg>
+      </div>
+      <span class="metric-value">{{ dashboard.pendingSyncCount|number_format(0, ',', ' ') }}</span>
+      <span class="metric-label">Synchronisations en attente</span>
+      <span class="metric-note">Contacts à envoyer vers HubSpot</span>
+    </article>
+  </section>
+
+  <section class="dashboard-grid" id="recent-activity">
+    <article class="admin-panel activity-panel">
+      <header class="admin-panel-head">
+        <div>
+          <p class="admin-eyebrow"><span></span> Activité</p>
+          <h2>Derniers contacts</h2>
+        </div>
+        <span class="admin-panel-count">{{ dashboard.prospectCount }} au total</span>
+      </header>
+
+      {% if dashboard.recentProspects is empty %}
+        <div class="admin-empty-state">
+          <span>01</span>
+          <h3>Aucun contact pour le moment</h3>
+          <p>Les prochaines demandes envoyées depuis le site apparaîtront ici.</p>
+        </div>
+      {% else %}
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Contact</th>
+                <th>Entreprise</th>
+                <th>Langue</th>
+                <th>Demandes</th>
+                <th>HubSpot</th>
+                <th>Dernière activité</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for prospect in dashboard.recentProspects %}
+                <tr>
+                  <td>
+                    <span class="contact-cell">
+                      <span class="contact-avatar">{{ prospect.name|first|upper }}</span>
+                      <span><strong>{{ prospect.name }}</strong><small>{{ prospect.email }}</small></span>
+                    </span>
+                  </td>
+                  <td>{{ prospect.company }}</td>
+                  <td><span class="locale-badge">{{ prospect.locale|upper }}</span></td>
+                  <td>{{ prospect.submissionCount }}</td>
+                  <td>
+                    {% if prospect.hubSpotSyncedAt %}
+                      <span class="status-badge status-success"><i></i> Synchronisé</span>
+                    {% else %}
+                      <span class="status-badge status-pending"><i></i> En attente</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ prospect.lastSubmittedAt|date('d/m/Y à H:i') }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </article>
+
+    <aside class="dashboard-side-stack">
+      <article class="admin-panel session-panel">
+        <div class="session-panel-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm3 16h8m-4-3v3"/></svg>
+        </div>
+        <p class="admin-eyebrow"><span></span> Sécurité</p>
+        <strong class="session-count">{{ dashboard.activeSessionCount }}</strong>
+        <h2>Session{{ dashboard.activeSessionCount > 1 ? 's' : '' }} active{{ dashboard.activeSessionCount > 1 ? 's' : '' }}</h2>
+        <p>Votre compte peut rester connecté sur plusieurs postes, chaque accès étant suivi séparément.</p>
+      </article>
+
+      <article class="admin-panel quick-panel">
+        <p class="admin-eyebrow"><span></span> Accès rapide</p>
+        <h2>Site public</h2>
+        <p>Consultez directement la version française actuellement en ligne.</p>
+        <a href="{{ path('app_home.fr') }}" target="_blank" rel="noopener noreferrer">Ouvrir le site <span>↗</span></a>
+      </article>
+    </aside>
+  </section>
+{% endblock %}

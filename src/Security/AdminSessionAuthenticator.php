@@ -19,6 +19,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Symfony\Component\Security\Http\SecurityRequestAttributes;
 
 final class AdminSessionAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
@@ -92,6 +93,10 @@ final class AdminSessionAuthenticator extends AbstractAuthenticator implements A
         $response = new RedirectResponse($this->urlGenerator->generate('app_admin_login'));
 
         if ('app_admin_login' === $request->attributes->get('_route')) {
+            $request->getSession()->set(
+                SecurityRequestAttributes::LAST_USERNAME,
+                strtolower(trim($request->request->getString('email'))),
+            );
             $request->getSession()->getFlashBag()->add('admin_login_error', 'Identifiants invalides.');
         } else {
             $request->getSession()->getFlashBag()->add('admin_login_error', 'Votre session a expiré.');

@@ -92,6 +92,20 @@ final class SeoSmokeTest extends WebTestCase
         self::assertNotSame('', $crawler->filter('meta[name="description"]')->attr('content'));
     }
 
+    public function testPublicPagesLoadGoogleTagManagerAndAnalytics(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/fr/');
+
+        self::assertResponseIsSuccessful();
+        self::assertSame(1, $crawler->filter('script[src="https://www.googletagmanager.com/gtag/js?id=G-55X3CXZ5B7"]')->count());
+        self::assertSame(1, $crawler->filter('noscript iframe[src="https://www.googletagmanager.com/ns.html?id=GTM-WX33M7V8"]')->count());
+
+        $html = (string) $client->getResponse()->getContent();
+        self::assertStringContainsString("gtag('config', 'G-55X3CXZ5B7')", $html);
+        self::assertStringContainsString("'GTM-WX33M7V8'", $html);
+    }
+
     public function testLegacyWordPressSitemapsAreGoneWithoutRedirect(): void
     {
         $client = static::createClient();
