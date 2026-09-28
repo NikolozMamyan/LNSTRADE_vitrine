@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Connexion — Administration LNS Trade</title>
+</head>
+<body>
+  <main>
+    <h1>Administration LNS Trade</h1>
+
+    {% for message in app.flashes('admin_login_error') %}
+      <p role="alert">{{ message }}</p>
+    {% endfor %}
+
+    <form method="post" action="{{ path('app_admin_login') }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+      <label for="admin-email">Adresse e-mail</label>
+      <input id="admin-email" name="email" type="email" autocomplete="username" required autofocus>
+
+      <label for="admin-password">Mot de passe</label>
+      <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+
+      <button type="submit">Se connecter</button>
+    </form>
+  </main>
+</body>
+</html>

@@ -15,6 +15,13 @@
 <!doctype html>
 <html lang="{{ app.request.locale }}">
 <head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WX33M7V8');</script>
+  <!-- End Google Tag Manager -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>document.documentElement.classList.add('js', 'skeleton-active')</script>
@@ -110,6 +117,10 @@
   <script type="application/ld+json">{{ organization_schema|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
 </head>
 <body class="{{ body_class }}" data-route="{{ page_id }}">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WX33M7V8"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   {% include 'partials/_page_skeleton.html.twig' with {skeleton_variant: skeleton_variant} only %}
   <a class="skip-link" href="#main">{{ 'Aller au contenu'|trans }}</a>
   {% include 'partials/_header.html.twig' %}

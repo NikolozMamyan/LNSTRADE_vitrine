@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Administration — LNS Trade</title>
+</head>
+<body>
+  <header>
+    <p>Connecté en tant que {{ app.user.userIdentifier }}</p>
+    <form method="post" action="{{ path('app_admin_logout') }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+      <button type="submit">Se déconnecter</button>
+    </form>
+  </header>
+  <main>
+    <h1>Back-office</h1>
+  </main>
+</body>
+</html>
