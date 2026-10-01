@@ -15,11 +15,17 @@ export default class extends Controller {
     if (this.pageTargets.length === 0) return;
 
     this.isConnected = true;
+    this.isNavigating = false;
+    this.bookElement = this.bookTarget;
+    this.bookPages = this.pageTargets;
+    this.zoomShellElement = this.zoomShellTarget;
     this.currentIndex = 0;
     this.pdfDocuments = new Map();
-    this.loadingStartedAt = performance.now();
+    this.pdfRenders = new WeakMap();
+    this.pdfjs = pdfjs;
+    this.pdfjs.GlobalWorkerOptions.workerSrc = this.workerUrlValue;
 
-    await this.prepareInitialMedia();
+    await this.preparePages(this.bookPages.slice(0, 1));
     if (!this.isConnected) return;
 
     this.initializeBook();
@@ -50,21 +56,31 @@ export default class extends Controller {
     });
     this.pageFlip.on('init', () => {
       this.update(0, false);
-      const remaining = Math.max(0, 900 - (performance.now() - this.loadingStartedAt));
-      this.loadingTimer = window.setTimeout(() => this.loadingTarget.classList.add('is-hidden'), remaining);
+      this.loadingTarget.classList.add('is-hidden');
     });
     this.pageFlip.on('flip', (event) => this.update(Number(event.data)));
     this.pageFlip.on('changeState', (event) => this.stageTarget.classList.toggle('is-flipping', ['flipping', 'user_fold'].includes(event.data)));
-    this.pageFlip.loadFromHTML(this.pageTargets);
+    this.pageFlip.loadFromHTML(this.bookPages);
     this.setZoom(90);
   }
 
   disconnect() {
     this.isConnected = false;
     window.clearTimeout(this.zoomRefreshTimer);
-    window.clearTimeout(this.loadingTimer);
     this.thumbnailObserver?.disconnect();
-    this.pageFlip?.destroy();
+    if (this.pageFlip) {
+      const book = this.bookElement.cloneNode(false);
+      book.classList.remove('stf__parent');
+      book.removeAttribute('style');
+      this.bookPages.forEach((page) => {
+        const copy = page.cloneNode(true);
+        copy.removeAttribute('style');
+        book.appendChild(copy);
+      });
+      this.pageFlip.destroy();
+      this.zoomShellElement.appendChild(book);
+      this.pageFlip = null;
+    }
     if (this.pdfDocuments) {
       Promise.allSettled([...this.pdfDocuments.values()]).then((results) => {
         results.forEach((result) => {
@@ -75,10 +91,18 @@ export default class extends Controller {
     }
   }
 
-  previous() { this.pageFlip?.flipPrev('top'); }
-  next() { this.pageFlip?.flipNext('top'); }
+  previous() {
+    const pages = this.pageFlip?.getPageCollection();
+    const spread = pages?.getSpread()[pages.getCurrentSpreadIndex() - 1];
+    if (spread) this.goToIndex(spread[0]);
+  }
+  next() {
+    const pages = this.pageFlip?.getPageCollection();
+    const spread = pages?.getSpread()[pages.getCurrentSpreadIndex() + 1];
+    if (spread) this.goToIndex(spread[0]);
+  }
   first() { this.goToIndex(0); }
-  last() { this.goToIndex(this.pageTargets.length - 1); }
+  last() { this.goToIndex(this.bookPages.length - 1); }
 
   returnToSite(event) {
     if (window.opener && !window.opener.closed) {
@@ -102,16 +126,24 @@ export default class extends Controller {
     this.closeMenu();
   }
 
-  goToIndex(index) {
-    const safeIndex = Math.max(0, Math.min(index, this.pageTargets.length - 1));
-    this.pageFlip?.flip(safeIndex, 'top');
-    this.update(safeIndex);
+  async goToIndex(index) {
+    if (!this.pageFlip || this.isNavigating || this.pageFlip.getState() !== 'read') return;
+    const safeIndex = Math.max(0, Math.min(index, this.bookPages.length - 1));
+    const pages = this.pageFlip.getPageCollection();
+    const spread = pages.getSpread()[pages.getSpreadIndexByPage(safeIndex)];
+    this.isNavigating = true;
+    try {
+      await this.preparePages(spread.map((pageIndex) => this.bookPages[pageIndex]));
+      if (this.isConnected) this.pageFlip.flip(safeIndex, 'top');
+    } finally {
+      this.isNavigating = false;
+    }
   }
 
   update(index, announce = true) {
-    this.currentIndex = Math.max(0, Math.min(index, this.pageTargets.length - 1));
-    const page = this.pageTargets[this.currentIndex];
-    const count = this.pageTargets.length;
+    this.currentIndex = Math.max(0, Math.min(index, this.bookPages.length - 1));
+    const page = this.bookPages[this.currentIndex];
+    const count = this.bookPages.length;
     this.currentTitleTarget.textContent = page.dataset.title;
     this.progressTarget.style.width = `${count > 1 ? (this.currentIndex / (count - 1)) * 100 : 100}%`;
     this.pageNumberTarget.textContent = `${String(this.currentIndex + 1).padStart(2, '0')} / ${String(count).padStart(2, '0')}`;
@@ -127,7 +159,7 @@ export default class extends Controller {
     this.downloadTarget.hidden = !pdf;
     if (pdf) this.downloadTarget.href = pdf;
     else this.downloadTarget.removeAttribute('href');
-    this.renderPdfPagesNear(this.currentIndex);
+    this.preparePagesNear(this.currentIndex);
     if (announce) this.announcementTarget.textContent = `Page affichée : ${page.dataset.title}`;
   }
 
@@ -186,14 +218,15 @@ export default class extends Controller {
 
   async refreshZoomResolution() {
     this.pageFlip?.update();
-    const visiblePages = this.pageTargets.slice(Math.max(0, this.currentIndex - 1), Math.min(this.pageTargets.length, this.currentIndex + 3));
+    const visiblePages = this.bookPages.slice(Math.max(0, this.currentIndex - 1), Math.min(this.bookPages.length, this.currentIndex + 3));
     const images = visiblePages.flatMap((page) => [...page.querySelectorAll('img')]);
     await Promise.allSettled(images.map((image) => image.decode()));
+    if (!this.isConnected) return;
     images.forEach((image) => {
       image.style.opacity = '0.999';
       requestAnimationFrame(() => image.style.removeProperty('opacity'));
     });
-    await this.renderPdfPagesNear(this.currentIndex, true);
+    await this.preparePagesNear(this.currentIndex);
   }
 
   outsideClick(event) {
@@ -236,85 +269,98 @@ export default class extends Controller {
     if (event.key === 'End') this.last();
   }
 
-  async prepareInitialMedia() {
-    const initialPages = this.pageTargets.slice(0, Math.min(4, this.pageTargets.length));
-    const images = initialPages.flatMap((page) => [...page.querySelectorAll('img')]);
-    await Promise.allSettled(images.map((image) => image.decode()));
-
-    const canvases = initialPages.map((page) => page.querySelector('.catalog-pdf-canvas')).filter(Boolean);
-    if (canvases.length === 0) return;
-
-    this.pdfjs = pdfjs;
-    this.pdfjs.GlobalWorkerOptions.workerSrc = this.workerUrlValue;
-    const results = await Promise.allSettled(canvases.map((canvas) => this.renderPdfCanvas(this.pdfjs, canvas, 1200)));
-    results.forEach((result, index) => {
-      if (result.status === 'rejected') canvases[index].classList.add('has-error');
-    });
+  async preparePages(pages) {
+    await Promise.allSettled(pages.flatMap((page) => [...page.querySelectorAll('img')]).map((image) => {
+      if (!image.dataset.pdfSource) {
+        image.loading = 'eager';
+        return image.decode();
+      }
+      const displayedWidth = this.pageFlip ? image.getBoundingClientRect().width || 595 : 595;
+      const targetWidth = Math.max(1000, Math.min(1800, Math.ceil(displayedWidth * Math.min(window.devicePixelRatio || 1, 2) * 1.15)));
+      return this.renderPdfImage(image, targetWidth);
+    }));
   }
 
   setupThumbnailRendering() {
     if (!this.pdfjs) return;
 
-    const canvases = this.thumbnailTargets
-      .map((thumbnail) => thumbnail.querySelector('canvas[data-pdf-source]'))
+    const images = this.thumbnailTargets
+      .map((thumbnail) => thumbnail.querySelector('img[data-pdf-source]'))
       .filter(Boolean);
     if (!('IntersectionObserver' in window)) return;
 
     this.thumbnailObserver = new IntersectionObserver((entries) => {
+      if (!this.menuTarget.classList.contains('is-visible')) return;
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         this.thumbnailObserver.unobserve(entry.target);
-        this.renderPdfCanvas(this.pdfjs, entry.target, 260).catch(() => entry.target.classList.add('has-error'));
+        this.renderPdfImage(entry.target, 260).catch(() => {});
       });
     }, {
       root: this.menuTarget.querySelector('.catalog-thumbnails'),
       rootMargin: '240px 0px',
     });
-    canvases.forEach((canvas) => this.thumbnailObserver.observe(canvas));
+    images.forEach((image) => this.thumbnailObserver.observe(image));
   }
 
   renderThumbnailWindow(index) {
     if (!this.pdfjs) return;
     this.thumbnailTargets
       .slice(Math.max(0, index - 2), Math.min(this.thumbnailTargets.length, index + 8))
-      .map((thumbnail) => thumbnail.querySelector('canvas[data-pdf-source]'))
+      .map((thumbnail) => thumbnail.querySelector('img[data-pdf-source]'))
       .filter(Boolean)
-      .forEach((canvas) => this.renderPdfCanvas(this.pdfjs, canvas, 260).catch(() => canvas.classList.add('has-error')));
+      .forEach((image) => this.renderPdfImage(image, 260).catch(() => {}));
   }
 
-  async renderPdfPagesNear(index, force = false) {
-    if (!this.pdfjs) return;
-    const candidates = this.pageTargets.slice(Math.max(0, index - 1), Math.min(this.pageTargets.length, index + 3));
-    await Promise.all(candidates.map((page) => {
-      const canvas = page.querySelector('.catalog-pdf-canvas');
-      if (!canvas) return Promise.resolve();
-      const displayedWidth = canvas.getBoundingClientRect().width || 595;
-      const targetWidth = Math.max(1000, Math.min(1800, Math.ceil(displayedWidth * Math.min(window.devicePixelRatio || 1, 2) * 1.15)));
-      return this.renderPdfCanvas(this.pdfjs, canvas, targetWidth, force);
-    }));
+  preparePagesNear(index) {
+    return this.preparePages(this.bookPages.slice(Math.max(0, index - 2), Math.min(this.bookPages.length, index + 5)));
   }
 
-  async renderPdfCanvas(pdfjsLibrary, canvas, targetWidth, force = false) {
-    const renderedWidth = Number(canvas.dataset.renderedWidth || 0);
-    if (canvas.dataset.rendering === 'true' || (!force && renderedWidth >= targetWidth)) return;
-    canvas.dataset.rendering = 'true';
+  async renderPdfImage(image, targetWidth) {
+    if (!this.isConnected) return;
+    if (Number(image.dataset.renderedWidth || 0) >= targetWidth) return;
+    const pendingRender = this.pdfRenders.get(image);
+    if (pendingRender) {
+      await pendingRender;
+      return this.renderPdfImage(image, targetWidth);
+    }
+    const rendering = this.renderPdfImageContent(image, targetWidth);
+    this.pdfRenders.set(image, rendering);
     try {
-      const source = canvas.dataset.pdfSource;
+      await rendering;
+    } finally {
+      this.pdfRenders.delete(image);
+    }
+  }
+
+  async renderPdfImageContent(image, targetWidth) {
+    try {
+      const source = image.dataset.pdfSource;
       if (!this.pdfDocuments.has(source)) {
-        this.pdfDocuments.set(source, pdfjsLibrary.getDocument({ url: source }).promise);
+        this.pdfDocuments.set(source, this.pdfjs.getDocument({ url: source, disableAutoFetch: true, disableStream: true, httpHeaders: { 'Cache-Control': 'no-cache' } }).promise.catch((error) => {
+          this.pdfDocuments.delete(source);
+          throw error;
+        }));
       }
       const document = await this.pdfDocuments.get(source);
-      const page = await document.getPage(Number(canvas.dataset.pdfPage || 1));
+      if (!this.isConnected) return;
+      const page = await document.getPage(Number(image.dataset.pdfPage || 1));
       const viewport = page.getViewport({ scale: 1 });
       const renderViewport = page.getViewport({ scale: targetWidth / viewport.width });
+      const canvas = window.document.createElement('canvas');
       canvas.width = Math.floor(renderViewport.width);
       canvas.height = Math.floor(renderViewport.height);
       await page.render({ canvasContext: canvas.getContext('2d'), viewport: renderViewport }).promise;
-      canvas.dataset.renderedWidth = String(canvas.width);
-      canvas.dataset.rendered = 'true';
-      canvas.classList.add('is-ready');
-    } finally {
-      canvas.dataset.rendering = 'false';
+      if (!this.isConnected) return;
+      image.src = canvas.toDataURL('image/jpeg', 0.9);
+      await image.decode();
+      image.dataset.renderedWidth = String(canvas.width);
+      image.dataset.rendered = 'true';
+      image.classList.remove('has-error');
+      image.classList.add('is-ready');
+    } catch (error) {
+      image.classList.add('has-error');
+      throw error;
     }
   }
 }
