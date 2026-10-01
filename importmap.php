@@ -20,6 +20,10 @@ return [
         'path' => './assets/admin.js',
         'entrypoint' => true,
     ],
+    'catalog' => [
+        'path' => './assets/catalog.js',
+        'entrypoint' => true,
+    ],
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],
@@ -28,5 +32,14 @@ return [
     ],
     '@hotwired/turbo' => [
         'version' => '8.0.23',
+    ],
+    'page-flip' => [
+        'version' => '2.0.7',
+    ],
+    'pdfjs-dist' => [
+        'version' => '6.3.289',
+    ],
+    'pdfjs-dist/build/pdf.worker.min.mjs' => [
+        'version' => '6.3.289',
     ],
 ];

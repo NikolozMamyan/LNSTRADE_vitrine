@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="{{ isPreview ? 'noindex,nofollow' : 'index,follow' }}">
+  <meta name="theme-color" content="#11110f">
+  <title>{{ catalog.title }} · ULTRAPOP</title>
+  <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('styles/catalog.css') }}">
+  {{ importmap('catalog') }}
+</head>
+<body class="catalog-body" data-controller="catalog" data-catalog-worker-url-value="{{ asset('vendor/pdfjs-dist/build/pdf.worker.min.mjs.js') }}" data-action="keydown@window->catalog#keyboard fullscreenchange@document->catalog#fullscreenChanged click@window->catalog#outsideClick">
+  <a class="catalog-skip-link" href="#catalog-book">Aller au catalogue</a>
+  {% if isPreview %}<div class="catalog-preview-banner">Aperçu administrateur · <a href="{{ path('admin_catalog') }}">Retour au constructeur</a></div>{% endif %}
+
+  <a class="catalog-brand" href="{{ path('app_locale') }}" aria-label="Fermer le catalogue et revenir au site ULTRAPOP" data-action="catalog#returnToSite">
+    <img src="{{ asset('images/logo-ultrapop-red.png') }}" alt="ULTRAPOP">
+  </a>
+
+  <main class="catalog-viewer{{ isPreview ? ' is-preview' : '' }}">
+    <div class="catalog-stage" data-catalog-target="stage">
+      <div class="catalog-stage-glow" aria-hidden="true"></div>
+      <button class="catalog-stage-nav catalog-stage-nav-previous" type="button" aria-label="Page précédente" data-catalog-target="stagePrevious" data-action="catalog#previous"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button class="catalog-stage-nav catalog-stage-nav-next" type="button" aria-label="Page suivante" data-catalog-target="stageNext" data-action="catalog#next"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      <div class="catalog-drag-hint" data-catalog-target="hint" aria-hidden="true"><span><i></i></span><p><strong>Maintenez et glissez</strong>pour tourner la page</p></div>
+      <div class="catalog-loading" data-catalog-target="loading" role="status" aria-live="polite">
+        <div class="catalog-loading-card">
+          <img src="{{ asset('images/logo-lns-white.png') }}" alt="LNS Trade">
+          <span class="catalog-loading-spinner" aria-hidden="true"><i></i><b></b></span>
+          <strong>Préparation du catalogue</strong>
+          <small>Les premières pages arrivent…</small>
+        </div>
+      </div>
+      <div class="catalog-book-zoom" data-catalog-target="zoomShell">
+        <div class="catalog-book" id="catalog-book" data-catalog-target="book" aria-label="{{ catalog.title }}">
+          {% for catalogPage in catalogPages %}
+            <div class="catalog-page-source{{ loop.first or loop.last ? ' catalog-page-source-hard' : '' }}" data-catalog-target="page" data-title="{{ catalogPage.title|e('html_attr') }}" data-pdf="{{ catalogPage.pdfPath|default('')|e('html_attr') }}" data-page-index="{{ loop.index0 }}"{% if loop.first or loop.last %} data-density="hard"{% endif %}>
+              <article class="catalog-page-sheet">
+                {% if catalogPage.imagePath %}
+                  <img src="{{ asset(catalogPage.imagePath) }}" alt="{{ catalogPage.title }}" draggable="false"{% if loop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
+                {% elseif catalogPage.pdfPath %}
+                  <canvas class="catalog-pdf-canvas" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" aria-label="{{ catalogPage.title }}"></canvas>
+                {% endif %}
+                {% if catalogPage.linkUrl %}
+                  <a class="catalog-page-link" href="{{ catalogPage.linkUrl }}"{% if catalogPage.opensLinkInNewTab %} target="_blank" rel="noopener noreferrer"{% endif %} aria-label="Ouvrir le lien associé à {{ catalogPage.title }}"><span>Ouvrir</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+                {% endif %}
+              </article>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <nav class="catalog-toolbar" aria-label="Navigation du catalogue">
+      <button class="catalog-tool catalog-tool-menu" type="button" aria-label="Afficher les miniatures" title="Sommaire" aria-expanded="false" data-catalog-target="menuButton" data-action="catalog#toggleMenu"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></button>
+      <span class="catalog-divider" aria-hidden="true"></span>
+      <a class="catalog-tool" href="{{ path('app_locale') }}" aria-label="Fermer le catalogue et revenir au site" title="Retour au site" data-action="catalog#returnToSite"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6M9 12h11"/></svg></a>
+      <button class="catalog-tool" type="button" aria-label="Première page" title="Première page" data-catalog-target="first" data-action="catalog#first"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 5v14M18 6l-6 6 6 6"/></svg></button>
+      <button class="catalog-tool" type="button" aria-label="Page précédente" title="Page précédente" data-catalog-target="previous" data-action="catalog#previous"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <div class="catalog-current-page"><small>ULTRAPOP</small><strong data-catalog-target="currentTitle">{{ (catalogPages|first).title }}</strong></div>
+      <div class="catalog-progress" aria-hidden="true"><span data-catalog-target="progress"></span></div>
+      <span class="catalog-page-number" data-catalog-target="pageNumber">01 / {{ catalogPages|length }}</span>
+      <button class="catalog-tool" type="button" aria-label="Page suivante" title="Page suivante" data-catalog-target="next" data-action="catalog#next"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      <button class="catalog-tool" type="button" aria-label="Dernière page" title="Dernière page" data-catalog-target="last" data-action="catalog#last"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M19 5v14M6 6l6 6-6 6"/></svg></button>
+      <span class="catalog-divider" aria-hidden="true"></span>
+      <button class="catalog-tool" type="button" aria-label="Partager le catalogue" title="Partager" data-action="catalog#share"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></svg></button>
+      <a class="catalog-tool" href="#" target="_blank" rel="noopener" aria-label="Télécharger le PDF" title="Télécharger le PDF" data-catalog-target="download" hidden><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 18v3h14v-3"/></svg></a>
+      <button class="catalog-tool" type="button" aria-label="Régler le zoom" title="Zoom" aria-expanded="false" data-catalog-target="zoomButton" data-action="catalog#toggleZoom"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5M10.5 7.5v6M7.5 10.5h6"/></svg></button>
+      <button class="catalog-tool" type="button" aria-label="Plein écran" title="Plein écran" data-catalog-target="fullscreen" data-action="catalog#fullscreen"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M8 21H3v-5m13 5h5v-5"/></svg></button>
+      <div class="catalog-zoom-panel" data-catalog-target="zoomPanel" hidden>
+        <button type="button" aria-label="Dézoomer" data-action="catalog#zoomOut" data-catalog-target="zoomOut"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 12h12"/></svg></button>
+        <input type="range" min="75" max="125" step="5" value="90" aria-label="Niveau de zoom" data-catalog-target="zoomRange" data-action="input->catalog#zoomChanged change->catalog#zoomAnnounced">
+        <button type="button" aria-label="Zoomer" data-action="catalog#zoomIn" data-catalog-target="zoomIn"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg></button>
+        <output data-catalog-target="zoomValue">90%</output>
+      </div>
+    </nav>
+  </main>
+
+  <aside class="catalog-menu" aria-hidden="true" data-catalog-target="menu">
+    <header><div><span>Sommaire</span><h2>{{ catalog.title }}</h2><p>{{ catalogPages|length }} pages</p></div><button type="button" aria-label="Fermer le sommaire" data-action="catalog#closeMenu"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
+    <div class="catalog-thumbnails">
+      {% for catalogPage in catalogPages %}
+        <button type="button" data-page-index="{{ loop.index0 }}" data-action="catalog#goTo" data-catalog-target="thumbnail">
+          <span class="catalog-thumbnail-media">{% if catalogPage.imagePath %}<img src="{{ asset(catalogPage.imagePath) }}" alt="" loading="lazy">{% else %}<canvas data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}"></canvas>{% endif %}<i>{{ '%02d'|format(loop.index) }}</i></span>
+          <strong>{{ catalogPage.title }}</strong>
+        </button>
+      {% endfor %}
+    </div>
+  </aside>
+  <button class="catalog-menu-backdrop" type="button" aria-label="Fermer le sommaire" data-catalog-target="backdrop" data-action="catalog#closeMenu" hidden></button>
+  <p class="catalog-sr-only" aria-live="polite" data-catalog-target="announcement"></p>
+</body>
+</html>

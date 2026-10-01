@@ -14,7 +14,7 @@
       <div class="footer-col">
         <h2>{{ 'Solutions'|trans }}</h2>
         <a href="{{ path('app_wholesale.' ~ app.request.locale) }}">{{ 'Grossiste manga'|trans }}</a>
-        <a href="https://online.flippingbook.com/link/845542/" target="_blank" rel="noopener external">{{ 'Voir le catalogue'|trans }}</a>
+        <a href="{{ path('app_catalog') }}" target="_blank" rel="opener">{{ 'Voir le catalogue'|trans }}</a>
         <button type="button" data-open-contact>{{ 'Nous contacter'|trans }}</button>
       </div>
       <div class="footer-col footer-contact">

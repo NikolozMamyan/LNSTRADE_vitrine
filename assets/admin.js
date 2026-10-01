@@ -1,3 +1,5 @@
+import './stimulus_bootstrap.js';
+
 const setupAdminUi = () => {
   const body = document.body;
   const openButton = document.querySelector('[data-admin-nav-open]');
@@ -25,6 +27,12 @@ const setupAdminUi = () => {
     passwordInput.type = showPassword ? 'text' : 'password';
     passwordToggle.setAttribute('aria-label', showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
     passwordToggle.classList.toggle('is-visible', showPassword);
+  });
+
+  document.querySelectorAll('form[data-confirm]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+    });
   });
 };
 

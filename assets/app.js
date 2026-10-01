@@ -590,7 +590,11 @@ const initializePage = () => {
   };
 
   const openCatalogue = () => {
-    if (!catalogueModal) return;
+    if (!catalogueModal) {
+      const catalogWindow = window.open(document.body.dataset.catalogUrl || '/catalogue', '_blank');
+      if (!catalogWindow) window.location.assign(document.body.dataset.catalogUrl || '/catalogue');
+      return;
+    }
     if (contactModal?.open) contactModal.close();
     if (rangeBuilderModal?.open) rangeBuilderModal.close();
     playModalSkeleton(catalogueModal);
@@ -621,16 +625,6 @@ const initializePage = () => {
       benefits: defaultJourney.benefits,
     });
   }));
-
-  document.querySelectorAll('a[href*="online.flippingbook.com/link/845542"]').forEach((link) => {
-    if (link.closest('#catalogue-modal')) return;
-    listen(link, 'click', (event) => {
-      event.preventDefault();
-      openCatalogue();
-      mainNav?.classList.remove('open');
-      menuToggle?.setAttribute('aria-expanded', 'false');
-    });
-  });
 
   document.querySelectorAll('[data-contact-card]').forEach((card) => {
     const openCard = () => openContact({

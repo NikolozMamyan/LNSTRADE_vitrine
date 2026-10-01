@@ -1,0 +1,86 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Catalogue ULTRAPOP{% endblock %}
+{% block page_name %}Catalogue ULTRAPOP{% endblock %}
+
+{% block body %}
+<div data-controller="catalog-admin" data-catalog-admin-worker-url-value="{{ asset('vendor/pdfjs-dist/build/pdf.worker.min.mjs.js') }}">
+  <header class="admin-catalog-heading">
+    <div>
+      <p class="admin-eyebrow"><span></span> Module commercial</p>
+      <h1>Catalogue <em>ULTRAPOP</em></h1>
+      <p>Importez votre PDF, organisez les pages et publiez le catalogue quand il est prêt.</p>
+    </div>
+    <a class="admin-button admin-button-light" href="{{ path('admin_catalog_preview') }}" target="_blank" rel="noopener">Aperçu <span>↗</span></a>
+  </header>
+
+  <section class="admin-panel admin-catalog-settings">
+    <form action="{{ path('admin_catalog_settings') }}" method="post">
+      <input type="hidden" name="_token" value="{{ csrf_token('catalog_settings') }}">
+      <div class="admin-catalog-status"><i class="{{ catalog.enabled ? 'is-online' : '' }}"></i><span><strong>{{ catalog.enabled ? 'Catalogue publié' : 'Catalogue désactivé' }}</strong><small>{{ catalog.enabled ? 'Le lecteur public est accessible.' : 'Le catalogue reste masqué tant qu’il n’est pas prêt.' }}</small></span></div>
+      <label class="admin-catalog-field"><span>Titre du catalogue</span><input type="text" name="title" maxlength="180" required value="{{ catalog.title }}"></label>
+      <label class="admin-catalog-toggle"><input type="checkbox" name="enabled" value="1"{% if catalog.enabled %} checked{% endif %}><span><strong>Publier le catalogue</strong><small>Active le lecteur public</small></span><i><b></b></i></label>
+      <button class="admin-button admin-button-primary" type="submit">Enregistrer <span>✓</span></button>
+    </form>
+  </section>
+
+  <div class="admin-catalog-import-grid">
+    <section class="admin-panel admin-catalog-import">
+      <header><span class="admin-catalog-import-icon">PDF</span><div><p class="admin-eyebrow"><span></span> Import principal</p><h2>Importer un PDF</h2><p>Un PDF multipage crée automatiquement une page par feuille.</p></div></header>
+      <form action="{{ path('admin_catalog_import_pdf') }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_token" value="{{ csrf_token('catalog_import_pdf') }}">
+        <input type="hidden" name="pdfPageCount" data-catalog-admin-target="pdfPageCount">
+        <label class="admin-catalog-field"><span>Nom du document <small>optionnel</small></span><input type="text" name="pdfTitle" maxlength="150" placeholder="Catalogue ULTRAPOP 2026"></label>
+        <label class="admin-catalog-file"><input type="file" name="pdf" accept=".pdf,application/pdf" required data-catalog-admin-target="pdfInput" data-action="change->catalog-admin#inspectPdf"><span>PDF</span><strong>Choisir un PDF</strong><small>90 Mo maximum · 200 pages</small></label>
+        <p class="admin-catalog-file-status" data-catalog-admin-target="pdfStatus">Le nombre de pages sera détecté avant l’import.</p>
+        <button class="admin-button admin-button-primary" type="submit" data-catalog-admin-target="pdfSubmit">Importer le PDF <span>↗</span></button>
+      </form>
+    </section>
+
+    <section class="admin-panel admin-catalog-import">
+      <header><span class="admin-catalog-import-icon admin-catalog-import-icon-image">IMG</span><div><p class="admin-eyebrow"><span></span> Pages visuelles</p><h2>Ajouter des images</h2><p>Ajoutez plusieurs pages JPG, PNG ou WebP en une seule fois.</p></div></header>
+      <form action="{{ path('admin_catalog_add_images') }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_token" value="{{ csrf_token('catalog_add_images') }}">
+        <label class="admin-catalog-file"><input type="file" name="images[]" accept="image/jpeg,image/png,image/webp" multiple required><span>IMG</span><strong>Choisir des images</strong><small>15 Mo maximum par image · 50 images</small></label>
+        <p class="admin-catalog-file-status">Les images sont optimisées en WebP haute définition.</p>
+        <button class="admin-button admin-button-primary" type="submit">Ajouter les pages <span>↗</span></button>
+      </form>
+    </section>
+  </div>
+
+  <section class="admin-catalog-pages" id="pages">
+    <header><div><p class="admin-eyebrow"><span></span> Composition</p><h2>{{ catalogPages|length }} page{{ catalogPages|length > 1 ? 's' : '' }}</h2><p>Modifiez le titre, le média, la visibilité et le lien de chaque page.</p></div><span>Mis à jour le {{ catalog.updatedAt|date('d/m/Y à H:i') }}</span></header>
+    <div class="admin-catalog-page-grid">
+      {% for catalogPage in catalogPages %}
+        <article class="admin-panel admin-catalog-page{{ catalogPage.enabled ? '' : ' is-disabled' }}" id="page-{{ catalogPage.id }}">
+          <div class="admin-catalog-page-preview">
+            {% if catalogPage.imagePath %}<img src="{{ asset(catalogPage.imagePath) }}" alt="">{% else %}<span><strong>PDF</strong><small>Page {{ catalogPage.pdfPage|default(1) }}</small></span>{% endif %}
+            <i>{{ '%02d'|format(catalogPage.position) }}</i>
+            {% if not catalogPage.enabled %}<b>Masquée</b>{% endif %}
+          </div>
+          <form class="admin-catalog-page-form" action="{{ path('admin_catalog_page_update', {id: catalogPage.id}) }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="_token" value="{{ csrf_token('catalog_page_' ~ catalogPage.id) }}">
+            <label><span>Titre</span><input type="text" name="title" maxlength="180" required value="{{ catalogPage.title }}"></label>
+            <label><span>Redirection de la page</span><input type="text" inputmode="url" name="linkUrl" maxlength="2048" value="{{ catalogPage.linkUrl }}" placeholder="https://… ou /contact"></label>
+            <div class="admin-catalog-page-toggles">
+              <label><input type="checkbox" name="enabled" value="1"{% if catalogPage.enabled %} checked{% endif %}> Page visible</label>
+              <label><input type="checkbox" name="openInNewTab" value="1"{% if catalogPage.opensLinkInNewTab %} checked{% endif %}> Nouvel onglet</label>
+            </div>
+            <label class="admin-catalog-replace"><span>Remplacer le média</span><input type="file" name="media" accept="image/jpeg,image/png,image/webp,.pdf,application/pdf"><small>Image ou PDF · facultatif</small></label>
+            <button class="admin-button admin-button-primary" type="submit">Enregistrer</button>
+          </form>
+          <footer>
+            <div>
+              <form action="{{ path('admin_catalog_page_move', {id: catalogPage.id, direction: 'up'}) }}" method="post"><input type="hidden" name="_token" value="{{ csrf_token('catalog_move_' ~ catalogPage.id) }}"><button type="submit" aria-label="Monter la page" title="Monter"{% if loop.first %} disabled{% endif %}>↑</button></form>
+              <form action="{{ path('admin_catalog_page_move', {id: catalogPage.id, direction: 'down'}) }}" method="post"><input type="hidden" name="_token" value="{{ csrf_token('catalog_move_' ~ catalogPage.id) }}"><button type="submit" aria-label="Descendre la page" title="Descendre"{% if loop.last %} disabled{% endif %}>↓</button></form>
+            </div>
+            <form action="{{ path('admin_catalog_page_delete', {id: catalogPage.id}) }}" method="post" data-confirm="Supprimer définitivement cette page du catalogue ?"><input type="hidden" name="_token" value="{{ csrf_token('catalog_delete_' ~ catalogPage.id) }}"><button class="admin-catalog-delete" type="submit">Supprimer</button></form>
+          </footer>
+        </article>
+      {% else %}
+        <div class="admin-panel admin-catalog-empty"><img src="{{ asset('images/logo-ultrapop-red.png') }}" alt="ULTRAPOP"><h2>Le catalogue est vide</h2><p>Importez votre PDF pour créer automatiquement les premières pages.</p></div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

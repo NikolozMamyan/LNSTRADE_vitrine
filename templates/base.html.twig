@@ -93,7 +93,7 @@
           'availableLanguage': ['fr', 'en']
         },
         'brand': {'@type': 'Brand', '@id': site_origin ~ path('app_ultrapop.en') ~ '#brand', 'name': 'ULTRAPOP'},
-        'hasOfferCatalog': {'@type': 'OfferCatalog', 'name': 'seo.catalog_name'|trans, 'url': 'https://online.flippingbook.com/link/845542/'},
+        'hasOfferCatalog': {'@type': 'OfferCatalog', 'name': 'seo.catalog_name'|trans, 'url': absolute_url(path('app_catalog'))},
         'sameAs': ['https://www.instagram.com/ULTRAPOP_/', 'https://www.tiktok.com/@ULTRAPOP_', 'https://fr.linkedin.com/company/ULTRAPOPbylnstrade']
       },
       {
@@ -124,7 +124,7 @@
   } %}
   <script type="application/ld+json">{{ organization_schema|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
 </head>
-<body class="{{ body_class }}" data-route="{{ page_id }}">
+<body class="{{ body_class }}" data-route="{{ page_id }}" data-catalog-url="{{ path('app_catalog') }}">
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WX33M7V8"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -135,7 +135,6 @@
   {% block body %}{% endblock %}
   {% include 'partials/_footer.html.twig' %}
   {% include 'partials/_contact_modal.html.twig' %}
-  {% include 'partials/_catalogue_modal.html.twig' %}
   {% include 'partials/_range_builder_modal.html.twig' %}
   <script id="lns-ui-copy" type="application/json">{{ {
     locale: app.request.locale,

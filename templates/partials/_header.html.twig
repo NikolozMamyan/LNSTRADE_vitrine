@@ -9,7 +9,7 @@
     <a href="{{ path('app_ultrapop.' ~ app.request.locale) }}"{% if page_id in ['ultrapop', 'wholesale'] %} class="active" aria-current="page"{% endif %}>ULTRAPOP</a>
     <a href="{{ path('app_trading.' ~ app.request.locale) }}"{% if page_id == 'trading' %} class="active" aria-current="page"{% endif %}>Trading</a>
     <a href="{{ path('app_blog.' ~ app.request.locale) }}"{% if page_id in blog_pages %} class="active" aria-current="page"{% endif %}>{{ 'Le Mag'|trans }}</a>
-    <a href="https://online.flippingbook.com/link/845542/" target="_blank" rel="noopener external">{{ 'Catalogue'|trans }}</a>
+    <a href="{{ path('app_catalog') }}" target="_blank" rel="opener">{{ 'Catalogue'|trans }}</a>
   </nav>
 
   <div class="language-switcher" data-language-switcher>
