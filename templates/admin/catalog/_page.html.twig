@@ -1,0 +1,31 @@
+<article class="admin-panel admin-catalog-page{{ catalogPage.enabled ? '' : ' is-disabled' }}" id="page-{{ catalogPage.id }}" data-page-id="{{ catalogPage.id }}">
+  <div class="admin-catalog-page-preview">
+    {% if catalogPage.imagePath %}
+      <img src="{{ asset(catalogPage.imagePath) }}" alt="Aperçu de {{ catalogPage.title }}" loading="lazy">
+    {% else %}
+      <img data-catalog-admin-target="pdfPreview" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" alt="Aperçu de {{ catalogPage.title }}" hidden>
+      <span><strong>PDF</strong><small>Page {{ catalogPage.pdfPage|default(1) }}</small></span>
+    {% endif %}
+    <i>{{ '%02d'|format(catalogPage.position) }}</i>
+    {% if not catalogPage.enabled %}<b>Masquée</b>{% endif %}
+  </div>
+  <form class="admin-catalog-page-form" action="{{ path('admin_catalog_page_update', {id: catalogPage.id}) }}" method="post" enctype="multipart/form-data" data-catalog-operation="update">
+    <input type="hidden" name="_token" value="{{ csrf_token('catalog_page_' ~ catalogPage.id) }}">
+    <label><span>Titre</span><input type="text" name="title" maxlength="180" required value="{{ catalogPage.title }}"></label>
+    <label><span>Redirection de la page</span><input type="text" inputmode="url" name="linkUrl" maxlength="2048" value="{{ catalogPage.linkUrl }}" placeholder="https://… ou /contact"></label>
+    <div class="admin-catalog-page-toggles">
+      <label><input type="checkbox" name="enabled" value="1"{% if catalogPage.enabled %} checked{% endif %}> Page visible</label>
+      <label><input type="checkbox" name="openInNewTab" value="1"{% if catalogPage.opensLinkInNewTab %} checked{% endif %}> Nouvel onglet</label>
+    </div>
+    <label class="admin-catalog-replace"><span>Remplacer le média</span><input type="file" name="media" accept="image/jpeg,image/png,image/webp,.pdf,application/pdf" data-action="change->catalog-admin#previewMedia"><small>Image ou PDF · facultatif</small></label>
+    <div class="admin-catalog-upload-previews" data-upload-previews hidden></div>
+    <button class="admin-button admin-button-primary" type="submit">Enregistrer</button>
+  </form>
+  <footer>
+    <div>
+      <form action="{{ path('admin_catalog_page_move', {id: catalogPage.id, direction: 'up'}) }}" method="post" data-catalog-operation="move"><input type="hidden" name="_token" value="{{ csrf_token('catalog_move_' ~ catalogPage.id) }}"><button type="submit" aria-label="Monter la page" title="Monter"{% if catalogPage.id == (catalogPages|first).id %} disabled{% endif %}>↑</button></form>
+      <form action="{{ path('admin_catalog_page_move', {id: catalogPage.id, direction: 'down'}) }}" method="post" data-catalog-operation="move"><input type="hidden" name="_token" value="{{ csrf_token('catalog_move_' ~ catalogPage.id) }}"><button type="submit" aria-label="Descendre la page" title="Descendre"{% if catalogPage.id == (catalogPages|last).id %} disabled{% endif %}>↓</button></form>
+    </div>
+    <form action="{{ path('admin_catalog_page_delete', {id: catalogPage.id}) }}" method="post" data-catalog-operation="delete" data-confirm="Supprimer définitivement cette page du catalogue ?"><input type="hidden" name="_token" value="{{ csrf_token('catalog_delete_' ~ catalogPage.id) }}"><button class="admin-catalog-delete" type="submit">Supprimer</button></form>
+  </footer>
+</article>

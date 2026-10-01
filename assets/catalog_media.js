@@ -53,7 +53,7 @@ export const createCatalogRenderer = (workerUrl) => {
     })().catch((error) => {
       if (documentPromise && documents.get(source) === documentPromise) {
         documents.delete(source);
-        documentPromise.then((document) => document.destroy()).catch(() => {});
+        documentPromise.then((document) => document.loadingTask.destroy()).catch(() => {});
       }
       throw error;
     }).finally(() => renders.delete(cacheKey));
@@ -65,11 +65,7 @@ export const createCatalogRenderer = (workerUrl) => {
     renderPage,
     destroy() {
       destroyed = true;
-      Promise.allSettled([...documents.values()]).then((results) => {
-        results.forEach((result) => {
-          if (result.status === 'fulfilled') result.value.destroy();
-        });
-      });
+      Promise.allSettled([...documents.values()].map((document) => document.then((value) => value.loadingTask.destroy())));
       documents.clear();
     },
   };

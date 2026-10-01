@@ -254,7 +254,7 @@ svg { display: block; }
 .admin-catalog-page.is-disabled { opacity: .65; }
 .admin-catalog-page:target { box-shadow: 0 0 0 3px rgba(255,85,53,.2); }
 .admin-catalog-page-preview { position: relative; overflow: hidden; aspect-ratio: 1.58; background: linear-gradient(145deg,#ece9e0,#fff); }
-.admin-catalog-page-preview > img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.admin-catalog-page-preview > img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
 .admin-catalog-page-preview > span { height: 100%; display: grid; place-items: center; align-content: center; gap: 4px; color: var(--admin-muted); }
 .admin-catalog-page-preview > span strong { color: var(--admin-orange); font-family: var(--admin-display); font-size: 26px; }
 .admin-catalog-page-preview > span small { font-size: 8px; }
@@ -282,6 +282,14 @@ svg { display: block; }
 .admin-catalog-empty img { width: 150px; height: 65px; margin: 0 auto 15px; object-fit: contain; }
 .admin-catalog-empty h2 { margin: 0 0 7px; }
 .admin-catalog-empty p { margin: 0; color: var(--admin-muted); font-size: 10px; }
+.admin-catalog-page-grid { overflow-anchor: none; }
+.admin-catalog-page.is-saving { opacity: .6; }
+.admin-catalog-feedback { position: fixed; z-index: 100; right: 22px; bottom: 16px; max-width: min(440px,calc(100vw - 44px)); margin: 0; box-shadow: 0 8px 28px rgba(17,17,15,.12); }
+.admin-catalog-upload-previews { display: grid; grid-template-columns: repeat(auto-fill,minmax(92px,1fr)); gap: 10px; }
+.admin-catalog-upload-previews[hidden] { display: none; }
+.admin-catalog-upload-previews figure { min-width: 0; margin: 0; padding: 7px; border: 1px solid var(--admin-line); border-radius: 9px; background: #fff; }
+.admin-catalog-upload-previews img { display: block; width: 100%; height: 118px; object-fit: contain; }
+.admin-catalog-upload-previews figcaption { margin-top: 5px; overflow: hidden; color: var(--admin-muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 
 @media (max-width: 1180px) {
   .admin-catalog-settings > form { grid-template-columns: 1fr 1fr; }

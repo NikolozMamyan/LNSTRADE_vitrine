@@ -29,11 +29,10 @@ const setupAdminUi = () => {
     passwordToggle.classList.toggle('is-visible', showPassword);
   });
 
-  document.querySelectorAll('form[data-confirm]').forEach((form) => {
-    form.addEventListener('submit', (event) => {
-      if (!window.confirm(form.dataset.confirm)) event.preventDefault();
-    });
-  });
+  document.addEventListener('submit', (event) => {
+    const message = event.target.dataset.confirm;
+    if (message && !window.confirm(message)) event.preventDefault();
+  }, true);
 };
 
 if (document.readyState === 'loading') {
