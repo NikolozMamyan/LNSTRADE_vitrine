@@ -33,6 +33,7 @@
           <span class="catalog-loading-spinner" aria-hidden="true"><i></i><b></b></span>
           <strong>Préparation du catalogue</strong>
           <small>Les premières pages arrivent…</small>
+          <button type="button" data-catalog-target="loadingRetry" data-action="catalog#retryLoading" hidden>Réessayer</button>
         </div>
       </div>
       <div class="catalog-book-zoom" data-catalog-target="zoomShell">
@@ -43,7 +44,7 @@
                 {% if catalogPage.imagePath %}
                   <img src="{{ asset(catalogPage.imagePath) }}" alt="{{ catalogPage.title }}" draggable="false"{% if loop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
                 {% elseif catalogPage.pdfPath %}
-                  <img class="catalog-pdf-image" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" alt="{{ catalogPage.title }}" draggable="false">
+                  <img class="catalog-pdf-image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" alt="{{ catalogPage.title }}" draggable="false">
                 {% endif %}
                 {% if catalogPage.linkUrl %}
                   <a class="catalog-page-link" href="{{ catalogPage.linkUrl }}"{% if catalogPage.opensLinkInNewTab %} target="_blank" rel="noopener noreferrer"{% endif %} aria-label="Ouvrir le lien associé à {{ catalogPage.title }}"><span>Ouvrir</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
@@ -85,7 +86,7 @@
     <div class="catalog-thumbnails">
       {% for catalogPage in catalogPages %}
         <button type="button" data-page-index="{{ loop.index0 }}" data-action="catalog#goTo" data-catalog-target="thumbnail">
-          <span class="catalog-thumbnail-media">{% if catalogPage.imagePath %}<img src="{{ asset(catalogPage.imagePath) }}" alt="" loading="lazy">{% else %}<img class="catalog-pdf-image" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" alt="">{% endif %}<i>{{ '%02d'|format(loop.index) }}</i></span>
+          <span class="catalog-thumbnail-media">{% if catalogPage.imagePath %}<img src="{{ asset(catalogPage.imagePath) }}" alt="" loading="lazy">{% else %}<img class="catalog-pdf-image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" alt="">{% endif %}<i>{{ '%02d'|format(loop.index) }}</i></span>
           <strong>{{ catalogPage.title }}</strong>
         </button>
       {% endfor %}

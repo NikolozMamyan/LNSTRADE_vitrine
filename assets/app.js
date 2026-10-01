@@ -7,6 +7,20 @@ let revealObserver = null;
 let skeletonTimer = null;
 let skeletonShownAt = document.querySelector('[data-page-skeleton].is-active') ? performance.now() : 0;
 const modalSkeletonTimers = new WeakMap();
+let catalogPreloadPromise = null;
+
+const preloadCatalogue = () => {
+  const url = document.body.dataset.catalogUrl;
+  if (!url || catalogPreloadPromise) return;
+  const start = () => {
+    if (catalogPreloadPromise) return;
+    catalogPreloadPromise = import('./catalog_media.js')
+      .then(({ preloadCatalog }) => preloadCatalog(url))
+      .catch(() => { catalogPreloadPromise = null; });
+  };
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start, { once: true });
+};
 
 const playModalSkeleton = (modal, duration = 360) => {
   const skeleton = modal?.querySelector('[data-modal-skeleton]');
@@ -760,6 +774,7 @@ const initializePage = () => {
   }
 
   hidePageSkeleton();
+  preloadCatalogue();
 };
 
 document.addEventListener('turbo:before-visit', (event) => {

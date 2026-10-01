@@ -1,12 +1,12 @@
 /* stimulusFetch: 'lazy' */
 import { Controller } from '@hotwired/stimulus';
 import { PageFlip } from 'page-flip';
-import * as pdfjs from 'pdfjs-dist';
+import { createCatalogRenderer } from '../catalog_media.js';
 
 export default class extends Controller {
   static values = { workerUrl: String };
   static targets = [
-    'stage', 'book', 'page', 'loading', 'previous', 'next', 'first', 'last', 'stagePrevious', 'stageNext',
+    'stage', 'book', 'page', 'loading', 'loadingRetry', 'previous', 'next', 'first', 'last', 'stagePrevious', 'stageNext',
     'hint', 'currentTitle', 'progress', 'pageNumber', 'download', 'menu', 'menuButton', 'backdrop', 'thumbnail',
     'zoomShell', 'zoomButton', 'zoomPanel', 'zoomRange', 'zoomValue', 'zoomOut', 'zoomIn', 'fullscreen', 'announcement',
   ];
@@ -20,12 +20,19 @@ export default class extends Controller {
     this.bookPages = this.pageTargets;
     this.zoomShellElement = this.zoomShellTarget;
     this.currentIndex = 0;
-    this.pdfDocuments = new Map();
     this.pdfRenders = new WeakMap();
-    this.pdfjs = pdfjs;
-    this.pdfjs.GlobalWorkerOptions.workerSrc = this.workerUrlValue;
+    this.renderer?.destroy();
+    this.renderer = createCatalogRenderer(this.workerUrlValue);
+    this.loadingRetryTarget.hidden = true;
+    this.loadingTarget.querySelector('strong').textContent = 'Préparation du catalogue';
+    this.loadingTarget.querySelector('small').textContent = 'Les premières pages arrivent…';
 
-    await this.preparePages(this.bookPages.slice(0, 1));
+    try {
+      await this.preparePages(this.bookPages.slice(0, 1));
+    } catch {
+      if (this.isConnected) this.loadingFailed();
+      return;
+    }
     if (!this.isConnected) return;
 
     this.initializeBook();
@@ -61,6 +68,22 @@ export default class extends Controller {
     this.pageFlip.on('flip', (event) => this.update(Number(event.data)));
     this.pageFlip.on('changeState', (event) => this.stageTarget.classList.toggle('is-flipping', ['flipping', 'user_fold'].includes(event.data)));
     this.pageFlip.loadFromHTML(this.bookPages);
+    this.prepareDrag = (event) => {
+      if (event.target.closest('a, button')) return;
+      const pages = this.pageFlip.getPageCollection();
+      const nearbyPages = pages.getSpread()
+        .slice(Math.max(0, pages.getCurrentSpreadIndex() - 1), pages.getCurrentSpreadIndex() + 2)
+        .flat().map((index) => this.bookPages[index]);
+      const images = nearbyPages.flatMap((page) => [...page.querySelectorAll('img')]);
+      if (!this.isNavigating && images.every((image) => image.complete && image.naturalWidth > 0 && (!image.dataset.pdfSource || image.dataset.rendered === 'true'))) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.preparePages(nearbyPages).catch(() => {
+        if (this.isConnected) this.announcementTarget.textContent = 'Les pages ne sont pas encore disponibles. Réessayez dans un instant.';
+      });
+    };
+    this.bookElement.addEventListener('mousedown', this.prepareDrag, { capture: true });
+    this.bookElement.addEventListener('touchstart', this.prepareDrag, { capture: true, passive: false });
     this.setZoom(90);
   }
 
@@ -68,6 +91,8 @@ export default class extends Controller {
     this.isConnected = false;
     window.clearTimeout(this.zoomRefreshTimer);
     this.thumbnailObserver?.disconnect();
+    this.bookElement?.removeEventListener('mousedown', this.prepareDrag, true);
+    this.bookElement?.removeEventListener('touchstart', this.prepareDrag, true);
     if (this.pageFlip) {
       const book = this.bookElement.cloneNode(false);
       book.classList.remove('stf__parent');
@@ -81,14 +106,7 @@ export default class extends Controller {
       this.zoomShellElement.appendChild(book);
       this.pageFlip = null;
     }
-    if (this.pdfDocuments) {
-      Promise.allSettled([...this.pdfDocuments.values()]).then((results) => {
-        results.forEach((result) => {
-          if (result.status === 'fulfilled' && typeof result.value.destroy === 'function') result.value.destroy();
-        });
-      });
-      this.pdfDocuments.clear();
-    }
+    this.renderer?.destroy();
   }
 
   previous() {
@@ -131,13 +149,34 @@ export default class extends Controller {
     const safeIndex = Math.max(0, Math.min(index, this.bookPages.length - 1));
     const pages = this.pageFlip.getPageCollection();
     const spread = pages.getSpread()[pages.getSpreadIndexByPage(safeIndex)];
+    this.pendingIndex = safeIndex;
     this.isNavigating = true;
+    this.loadingRetryTarget.hidden = true;
+    this.loadingTarget.querySelector('strong').textContent = 'Chargement des pages';
+    this.loadingTarget.querySelector('small').textContent = 'Votre page arrive…';
+    this.loadingTarget.classList.remove('is-hidden');
     try {
       await this.preparePages(spread.map((pageIndex) => this.bookPages[pageIndex]));
-      if (this.isConnected) this.pageFlip.flip(safeIndex, 'top');
+      if (this.isConnected) {
+        this.loadingTarget.classList.add('is-hidden');
+        this.pageFlip.flip(safeIndex, 'top');
+      }
+    } catch {
+      if (this.isConnected) this.loadingFailed();
     } finally {
       this.isNavigating = false;
     }
+  }
+
+  loadingFailed() {
+    this.loadingTarget.querySelector('strong').textContent = 'Chargement interrompu';
+    this.loadingTarget.querySelector('small').textContent = 'Réessayez sans recharger la page.';
+    this.loadingRetryTarget.hidden = false;
+  }
+
+  retryLoading() {
+    if (this.pageFlip) this.goToIndex(this.pendingIndex);
+    else this.connect();
   }
 
   update(index, announce = true) {
@@ -270,7 +309,7 @@ export default class extends Controller {
   }
 
   async preparePages(pages) {
-    await Promise.allSettled(pages.flatMap((page) => [...page.querySelectorAll('img')]).map((image) => {
+    await Promise.all(pages.flatMap((page) => [...page.querySelectorAll('img')]).map((image) => {
       if (!image.dataset.pdfSource) {
         image.loading = 'eager';
         return image.decode();
@@ -282,8 +321,6 @@ export default class extends Controller {
   }
 
   setupThumbnailRendering() {
-    if (!this.pdfjs) return;
-
     const images = this.thumbnailTargets
       .map((thumbnail) => thumbnail.querySelector('img[data-pdf-source]'))
       .filter(Boolean);
@@ -304,7 +341,6 @@ export default class extends Controller {
   }
 
   renderThumbnailWindow(index) {
-    if (!this.pdfjs) return;
     this.thumbnailTargets
       .slice(Math.max(0, index - 2), Math.min(this.thumbnailTargets.length, index + 8))
       .map((thumbnail) => thumbnail.querySelector('img[data-pdf-source]'))
@@ -313,12 +349,12 @@ export default class extends Controller {
   }
 
   preparePagesNear(index) {
-    return this.preparePages(this.bookPages.slice(Math.max(0, index - 2), Math.min(this.bookPages.length, index + 5)));
+    return this.preparePages(this.bookPages.slice(Math.max(0, index - 2), Math.min(this.bookPages.length, index + 5))).catch(() => {});
   }
 
   async renderPdfImage(image, targetWidth) {
     if (!this.isConnected) return;
-    if (Number(image.dataset.renderedWidth || 0) >= targetWidth) return;
+    if (image.complete && image.naturalWidth > 0 && Number(image.dataset.renderedWidth || 0) >= targetWidth) return;
     const pendingRender = this.pdfRenders.get(image);
     if (pendingRender) {
       await pendingRender;
@@ -335,26 +371,11 @@ export default class extends Controller {
 
   async renderPdfImageContent(image, targetWidth) {
     try {
-      const source = image.dataset.pdfSource;
-      if (!this.pdfDocuments.has(source)) {
-        this.pdfDocuments.set(source, this.pdfjs.getDocument({ url: source, disableAutoFetch: true, disableStream: true, httpHeaders: { 'Cache-Control': 'no-cache' } }).promise.catch((error) => {
-          this.pdfDocuments.delete(source);
-          throw error;
-        }));
-      }
-      const document = await this.pdfDocuments.get(source);
+      const preview = await this.renderer.renderPage(image.dataset.pdfSource, Number(image.dataset.pdfPage || 1), targetWidth);
       if (!this.isConnected) return;
-      const page = await document.getPage(Number(image.dataset.pdfPage || 1));
-      const viewport = page.getViewport({ scale: 1 });
-      const renderViewport = page.getViewport({ scale: targetWidth / viewport.width });
-      const canvas = window.document.createElement('canvas');
-      canvas.width = Math.floor(renderViewport.width);
-      canvas.height = Math.floor(renderViewport.height);
-      await page.render({ canvasContext: canvas.getContext('2d'), viewport: renderViewport }).promise;
-      if (!this.isConnected) return;
-      image.src = canvas.toDataURL('image/jpeg', 0.9);
+      image.src = preview.src;
       await image.decode();
-      image.dataset.renderedWidth = String(canvas.width);
+      image.dataset.renderedWidth = String(preview.width);
       image.dataset.rendered = 'true';
       image.classList.remove('has-error');
       image.classList.add('is-ready');
