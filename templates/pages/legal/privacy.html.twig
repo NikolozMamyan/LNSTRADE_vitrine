@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+{% set page_id = 'privacy' %}
+{% set route_name = 'app_privacy' %}
+{% set body_class = 'inner-page' %}
+
+{% block body %}
+<main id="main">
+  <header class="page-hero legal-hero">
+    <div class="shell">
+      <div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> / {{ 'Politique de confidentialité'|trans }}</div>
+      <p class="eyebrow light"><span></span> LNS Trade</p>
+      <h1>{{ 'Politique de confidentialité'|trans }}</h1>
+    </div>
+  </header>
+  <article class="legal-document shell">
+    {% if app.request.locale == 'fr' %}
+      <p class="legal-updated">Date d’entrée en vigueur : 5 avril 2024</p>
+      <p class="legal-lead">LNS Trade, situé en France, s’engage à protéger la confidentialité et la sécurité des visiteurs de son site web et de ses clients. Cette politique décrit les informations que nous pouvons recueillir lorsque vous visitez le site LNS Trade, ainsi que nos pratiques en matière de collecte, d’utilisation, de conservation, de protection et de divulgation de ces informations.</p>
+
+      <h2>Informations que nous recueillons</h2>
+      <p>Nous recueillons plusieurs types d’informations auprès des utilisateurs de notre site web et à leur sujet, notamment :</p>
+      <ul>
+        <li><strong>Informations d’identification personnelle :</strong> nom, adresse électronique, numéro de téléphone et autres informations que vous fournissez en remplissant les formulaires du site, en demandant un service ou en nous contactant.</li>
+        <li><strong>Informations non personnelles :</strong> nom du navigateur, type d’appareil, système d’exploitation, fournisseur d’accès à Internet et autres informations techniques relatives à votre connexion au site.</li>
+      </ul>
+
+      <h2>Utilisation de vos informations</h2>
+      <p>Nous utilisons les informations recueillies ou fournies :</p>
+      <ul>
+        <li>pour vous présenter notre site web et son contenu ;</li>
+        <li>pour vous fournir les informations, produits ou services que vous nous demandez ;</li>
+        <li>pour répondre à toute autre finalité pour laquelle vous les avez fournies ;</li>
+        <li>pour vous informer des modifications apportées à notre site, à nos produits ou à nos services ;</li>
+        <li>à toute autre fin avec votre consentement.</li>
+      </ul>
+
+      <h2>Divulgation de vos informations</h2>
+      <p>Nous ne vendons pas, n’échangeons pas et ne louons pas les informations d’identification personnelle des utilisateurs à des tiers. Nous pouvons partager des informations démographiques agrégées, qui ne sont liées à aucune information d’identification personnelle, avec nos partenaires commerciaux, nos affiliés de confiance et nos annonceurs aux fins décrites ci-dessus.</p>
+
+      <h2>Sécurité des données</h2>
+      <p>Nous mettons en œuvre des mesures de sécurité lorsqu’un utilisateur saisit, soumet ou consulte ses informations afin de préserver la sécurité de ses données personnelles.</p>
+
+      <h2>Modification de cette politique</h2>
+      <p>Nous publions sur cette page toute modification apportée à notre politique de confidentialité. La date de la dernière révision est indiquée en haut de la page.</p>
+
+      <h2>Nous contacter</h2>
+      <p>Pour toute question concernant cette politique et nos pratiques en matière de confidentialité, contactez-nous à l’adresse <a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a>.</p>
+    {% else %}
+      <p class="legal-updated">Effective date: 5 April 2024</p>
+      <p class="legal-lead">LNS Trade, located in France, is committed to protecting the privacy and security of its website visitors and customers. This policy describes the information we may collect when you visit the LNS Trade website and our practices for collecting, using, maintaining, protecting and disclosing that information.</p>
+
+      <h2>Information we collect</h2>
+      <p>We collect several types of information from and about users of our website, including:</p>
+      <ul>
+        <li><strong>Personal identification information:</strong> your name, email address, phone number and other information you provide by completing forms, requesting a service or contacting us.</li>
+        <li><strong>Non-personal information:</strong> browser name, device type, operating system, internet service provider and other technical information about how you connect to the website.</li>
+      </ul>
+
+      <h2>How we use your information</h2>
+      <p>We use the information we collect or that you provide:</p>
+      <ul>
+        <li>to present our website and its content to you;</li>
+        <li>to provide the information, products or services you request;</li>
+        <li>to fulfil any other purpose for which you provide it;</li>
+        <li>to notify you about changes to our website, products or services;</li>
+        <li>for any other purpose with your consent.</li>
+      </ul>
+
+      <h2>Disclosure of your information</h2>
+      <p>We do not sell, trade or rent users’ personal identification information to others. We may share aggregated demographic information that is not linked to personal identification information with our business partners, trusted affiliates and advertisers for the purposes described above.</p>
+
+      <h2>Data security</h2>
+      <p>We implement security measures when a user enters, submits or accesses information in order to protect personal data.</p>
+
+      <h2>Changes to this policy</h2>
+      <p>We publish any changes to our privacy policy on this page. The date of the latest revision is shown at the top of the page.</p>
+
+      <h2>Contact us</h2>
+      <p>If you have questions about this policy or our privacy practices, contact us at <a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a>.</p>
+    {% endif %}
+  </article>
+</main>
+{% endblock %}

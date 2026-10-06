@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+{% set page_id = 'terms' %}
+{% set route_name = 'app_terms' %}
+{% set body_class = 'inner-page' %}
+
+{% block body %}
+<main id="main">
+  <header class="page-hero legal-hero">
+    <div class="shell">
+      <div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> / {{ 'Conditions générales'|trans }}</div>
+      <p class="eyebrow light"><span></span> LNS Trade</p>
+      <h1>{{ 'Conditions générales'|trans }}</h1>
+    </div>
+  </header>
+  <article class="legal-document shell">
+    {% if app.request.locale == 'fr' %}
+      <p class="legal-updated">Dernière mise à jour : 5 avril 2024</p>
+      <p class="legal-lead">Bienvenue sur LNS Trade. Si vous continuez à naviguer et à utiliser ce site web, vous acceptez de vous conformer aux conditions d’utilisation suivantes. Avec notre politique de confidentialité, elles régissent les relations entre LNS Trade et vous concernant ce site web.</p>
+
+      <h2>Utilisation du site web</h2>
+      <ul>
+        <li>Le contenu des pages de ce site web est destiné à votre information et à votre utilisation générales uniquement. Il peut être modifié sans préavis.</li>
+        <li>Ni nous ni aucun tiers ne fournissons de garantie quant à l’exactitude, l’opportunité, la performance, l’exhaustivité ou l’adéquation des informations et du matériel trouvés ou proposés sur ce site web pour un usage particulier.</li>
+        <li>L’utilisation des informations ou du matériel figurant sur ce site se fait entièrement à vos risques et périls, et nous n’en sommes pas responsables. Il est de votre responsabilité de vous assurer que les produits, services ou informations disponibles sur ce site répondent à vos besoins spécifiques.</li>
+      </ul>
+
+      <h2>Droit d’auteur</h2>
+      <p>La conception, la mise en page, l’aspect, l’apparence et les éléments graphiques du site web sont protégés par les lois sur le droit d’auteur. Toute reproduction est interdite, sauf si elle est conforme à l’avis de droit d’auteur.</p>
+
+      <h2>Marques déposées</h2>
+      <p>Les marques, logos et marques de service figurant sur le site web sont la propriété de LNS Trade ou de tiers. Les utilisateurs ne sont pas autorisés à utiliser ces marques sans le consentement écrit préalable de LNS Trade ou de la tierce partie propriétaire de la marque.</p>
+
+      <h2>Modification des conditions générales</h2>
+      <p>Nous nous réservons le droit de modifier ces conditions à tout moment. Le fait de continuer à utiliser le site après la publication de modifications sera considéré comme une acceptation de ces modifications.</p>
+
+      <h2>Droit applicable</h2>
+      <p>Les présentes conditions générales sont régies et interprétées conformément au droit français. Vous vous soumettez irrévocablement à la compétence exclusive des tribunaux français.</p>
+
+      <h2>Nous contacter</h2>
+      <p>Pour toute question concernant les présentes conditions générales, contactez-nous à l’adresse <a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a>.</p>
+    {% else %}
+      <p class="legal-updated">Last updated: 5 April 2024</p>
+      <p class="legal-lead">Welcome to LNS Trade. By continuing to browse and use this website, you agree to comply with and be bound by the following terms of use. Together with our privacy policy, they govern the relationship between LNS Trade and you regarding this website.</p>
+
+      <h2>Website use</h2>
+      <ul>
+        <li>The content of this website is provided for your general information and use only. It is subject to change without notice.</li>
+        <li>Neither we nor any third party provide any warranty or guarantee regarding the accuracy, timeliness, performance, completeness or suitability of the information and materials found or offered on this website for any particular purpose.</li>
+        <li>Your use of any information or materials on this website is entirely at your own risk, for which we shall not be liable. It is your responsibility to ensure that any products, services or information available through this website meet your specific requirements.</li>
+      </ul>
+
+      <h2>Copyright</h2>
+      <p>The design, layout, look, appearance and graphics of the website are protected by copyright laws. Reproduction is prohibited except in accordance with the applicable copyright notice.</p>
+
+      <h2>Trademarks</h2>
+      <p>The trademarks, logos and service marks displayed on the website are the property of LNS Trade or third parties. Users may not use these marks without the prior written consent of LNS Trade or the third party that owns them.</p>
+
+      <h2>Changes to these terms</h2>
+      <p>We reserve the right to change these terms at any time. Your continued use of the website after changes are published will be considered acceptance of those changes.</p>
+
+      <h2>Governing law</h2>
+      <p>These terms and conditions are governed by and construed in accordance with French law. You irrevocably submit to the exclusive jurisdiction of the French courts.</p>
+
+      <h2>Contact us</h2>
+      <p>If you have any questions about these terms and conditions, contact us at <a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a>.</p>
+    {% endif %}
+  </article>
+</main>
+{% endblock %}

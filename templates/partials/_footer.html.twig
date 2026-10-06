@@ -26,7 +26,7 @@
     </div>
     <div class="footer-bottom shell">
       <span>© <span data-year>2026</span> LNS Trade</span>
-      <div><a href="https://lnstrade.fr/terms-and-conditions/">{{ 'Mentions légales'|trans }}</a><a href="https://lnstrade.fr/privacy-policy/">{{ 'Confidentialité'|trans }}</a></div>
+      <div><a href="{{ site_url|trim('/') ~ path('app_terms.' ~ app.request.locale) }}">{{ 'Conditions générales'|trans }}</a><a href="{{ site_url|trim('/') ~ path('app_privacy.' ~ app.request.locale) }}">{{ 'Confidentialité'|trans }}</a></div>
       <div class="socials"><a href="https://www.instagram.com/ULTRAPOP_/" target="_blank" rel="noopener">Instagram</a><a href="https://www.tiktok.com/@ULTRAPOP_" target="_blank" rel="noopener">TikTok</a><a href="https://fr.linkedin.com/company/ULTRAPOPbylnstrade" target="_blank" rel="noopener">LinkedIn</a></div>
     </div>
   </footer>

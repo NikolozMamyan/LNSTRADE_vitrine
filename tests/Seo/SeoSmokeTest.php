@@ -20,19 +20,19 @@ final class SeoSmokeTest extends WebTestCase
 
         $xml = $client->getResponse()->getContent();
         self::assertIsString($xml);
-        self::assertSame(16, substr_count($xml, '<url>'));
+        self::assertSame(20, substr_count($xml, '<url>'));
         self::assertStringContainsString('<loc>https://lnstrade.fr/en/</loc>', $xml);
         self::assertStringContainsString('<loc>https://lnstrade.fr/fr/</loc>', $xml);
         self::assertStringNotContainsString('xml-stylesheet', $xml);
-        self::assertSame(16, substr_count($xml, '<priority>'));
-        self::assertSame(16, substr_count($xml, '<changefreq>'));
+        self::assertSame(20, substr_count($xml, '<priority>'));
+        self::assertSame(20, substr_count($xml, '<changefreq>'));
         self::assertStringNotContainsString('internal-proxy.local', $xml);
 
         $document = new \DOMDocument();
         self::assertTrue($document->loadXML($xml));
         $xpath = new \DOMXPath($document);
         $xpath->registerNamespace('sm', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-        self::assertSame(16, $xpath->query('/sm:urlset/sm:url')->length);
+        self::assertSame(20, $xpath->query('/sm:urlset/sm:url')->length);
     }
 
     public function testProductionRobotsAllowsCrawlersAndDeclaresSitemap(): void

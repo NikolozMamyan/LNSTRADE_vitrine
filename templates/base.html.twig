@@ -2,7 +2,7 @@
 {% set route_name = route_name|default('app_home') %}
 {% set body_class = body_class|default('') %}
 {% set is_article = is_article|default(false) %}
-{% set skeleton_variant = page_id in ['choosingWholesaler', 'merchandising', 'snackingTrends'] ? 'article' : page_id %}
+{% set skeleton_variant = page_id in ['choosingWholesaler', 'merchandising', 'snackingTrends', 'terms', 'privacy'] ? 'article' : page_id %}
 {% set site_origin = site_url|trim('/') %}
 {% set canonical_url = site_origin ~ path(route_name ~ '.' ~ app.request.locale) %}
 {% set english_url = site_origin ~ path(route_name ~ '.en') %}

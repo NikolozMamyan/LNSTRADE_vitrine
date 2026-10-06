@@ -26,6 +26,10 @@ final readonly class SeoCatalog
         ['route' => 'app_article_merchandising.fr', 'changefreq' => 'monthly', 'priority' => '0.7'],
         ['route' => 'app_article_trends.en', 'changefreq' => 'monthly', 'priority' => '0.7'],
         ['route' => 'app_article_trends.fr', 'changefreq' => 'monthly', 'priority' => '0.7'],
+        ['route' => 'app_terms.en', 'changefreq' => 'yearly', 'priority' => '0.3'],
+        ['route' => 'app_terms.fr', 'changefreq' => 'yearly', 'priority' => '0.3'],
+        ['route' => 'app_privacy.en', 'changefreq' => 'yearly', 'priority' => '0.3'],
+        ['route' => 'app_privacy.fr', 'changefreq' => 'yearly', 'priority' => '0.3'],
     ];
 
     public function __construct(

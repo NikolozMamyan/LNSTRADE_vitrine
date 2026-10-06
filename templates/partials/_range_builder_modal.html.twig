@@ -194,7 +194,7 @@
             <label>{{ 'builder.form.vat'|trans }} <span>{{ 'Facultatif'|trans }}</span><input type="text" name="vat" autocomplete="off" placeholder="FR 00 000000000"></label>
             <label>{{ 'builder.form.message'|trans }} <span>{{ 'Facultatif'|trans }}</span><textarea name="message" rows="3" placeholder="{{ 'builder.form.message_placeholder'|trans }}"></textarea></label>
             <button class="button button-primary range-builder-submit" type="submit">{{ 'builder.prepare_request'|trans }} <span>↗</span></button>
-            <p class="range-builder-form-note">{{ 'builder.demo_note'|trans }} <a href="https://lnstrade.fr/privacy-policy/" target="_blank" rel="noopener">{{ 'politique de confidentialité'|trans }}</a>.</p>
+            <p class="range-builder-form-note">{{ 'builder.demo_note'|trans }} <a href="{{ site_url|trim('/') ~ path('app_privacy.' ~ app.request.locale) }}" target="_blank" rel="noopener">{{ 'politique de confidentialité'|trans }}</a>.</p>
           </form>
         </div>
 

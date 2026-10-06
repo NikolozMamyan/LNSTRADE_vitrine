@@ -35,7 +35,7 @@
         <label>{{ 'Parlez-nous de votre projet'|trans }} <span class="optional">{{ 'Facultatif'|trans }}</span><textarea name="message" rows="3" placeholder="{{ 'Pays, type de produits, volumes estimés…'|trans }}"></textarea></label>
         <button class="button button-primary form-submit" type="submit">{{ 'Envoyer ma demande'|trans }} <span aria-hidden="true">↗</span></button>
         <p class="form-status" data-contact-status aria-live="polite" hidden></p>
-        <p class="form-note" aria-live="polite">{{ 'En envoyant ce formulaire, vous acceptez notre'|trans }} <a href="https://lnstrade.fr/privacy-policy/">{{ 'politique de confidentialité'|trans }}</a>.</p>
+        <p class="form-note" aria-live="polite">{{ 'En envoyant ce formulaire, vous acceptez notre'|trans }} <a href="{{ site_url|trim('/') ~ path('app_privacy.' ~ app.request.locale) }}">{{ 'politique de confidentialité'|trans }}</a>.</p>
       </form>
     </div>
   </dialog>
