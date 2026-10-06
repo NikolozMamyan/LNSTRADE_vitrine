@@ -5,38 +5,40 @@ const cacheName = 'lns-catalog-pages-v1';
 export const createCatalogRenderer = (workerUrl) => {
   pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
   const documents = new Map();
+  const loadingTasks = new Map();
   const renders = new Map();
   const cache = window.caches?.open(cacheName).catch(() => null);
   let destroyed = false;
 
   const renderPage = (source, pageNumber, targetWidth = 1400) => {
-    const width = targetWidth > 1400 ? 1800 : 1400;
+    const width = targetWidth <= 320 ? 320 : targetWidth <= 1000 ? 1000 : targetWidth <= 1400 ? 1400 : 1800;
     const key = new URL(source, window.location.href);
     key.searchParams.set('catalogPage', String(pageNumber));
     key.searchParams.set('catalogWidth', String(width));
     const cacheKey = key.href;
     if (renders.has(cacheKey)) return renders.get(cacheKey);
-    let documentPromise;
-
     const rendering = (async () => {
+      if (destroyed) throw new DOMException('Catalogue fermé', 'AbortError');
       const storage = await cache;
       const cached = await storage?.match(cacheKey).catch(() => null);
-      if (cached) return cached.json();
       if (destroyed) throw new DOMException('Catalogue fermé', 'AbortError');
+      if (cached) return cached.json();
 
       if (!documents.has(source)) {
-        documents.set(source, pdfjs.getDocument({
+        const task = pdfjs.getDocument({
           url: source,
           disableAutoFetch: true,
           disableStream: true,
-          httpHeaders: { 'Cache-Control': 'no-cache' },
-        }).promise.catch((error) => {
+        });
+        loadingTasks.set(source, task);
+        documents.set(source, task.promise.catch((error) => {
           documents.delete(source);
+          loadingTasks.delete(source);
+          task.destroy().catch(() => {});
           throw error;
         }));
       }
-      documentPromise = documents.get(source);
-      const document = await documentPromise;
+      const document = await documents.get(source);
       const page = await document.getPage(pageNumber);
       const viewport = page.getViewport({ scale: 1 });
       const renderViewport = page.getViewport({ scale: width / viewport.width });
@@ -45,18 +47,13 @@ export const createCatalogRenderer = (workerUrl) => {
       canvas.height = Math.floor(renderViewport.height);
       await page.render({ canvasContext: canvas.getContext('2d'), viewport: renderViewport }).promise;
       const preview = { src: canvas.toDataURL('image/jpeg', 0.9), width: canvas.width };
+      canvas.width = canvas.height = 0;
       page.cleanup();
-      await storage?.put(cacheKey, new Response(JSON.stringify(preview), {
+      storage?.put(cacheKey, new Response(JSON.stringify(preview), {
         headers: { 'Content-Type': 'application/json' },
       })).catch(() => {});
       return preview;
-    })().catch((error) => {
-      if (documentPromise && documents.get(source) === documentPromise) {
-        documents.delete(source);
-        documentPromise.then((document) => document.loadingTask.destroy()).catch(() => {});
-      }
-      throw error;
-    }).finally(() => renders.delete(cacheKey));
+    })().finally(() => renders.delete(cacheKey));
     renders.set(cacheKey, rendering);
     return rendering;
   };
@@ -65,7 +62,8 @@ export const createCatalogRenderer = (workerUrl) => {
     renderPage,
     destroy() {
       destroyed = true;
-      Promise.allSettled([...documents.values()].map((document) => document.then((value) => value.loadingTask.destroy())));
+      Promise.allSettled([...loadingTasks.values()].map((task) => task.destroy()));
+      loadingTasks.clear();
       documents.clear();
     },
   };
@@ -73,24 +71,30 @@ export const createCatalogRenderer = (workerUrl) => {
 
 export const preloadCatalog = async (url) => {
   if (!await window.caches?.open(cacheName).catch(() => null)) return;
-  const response = await fetch(url, { priority: 'low' });
-  if (!response.ok) return;
-  const document = new DOMParser().parseFromString(await response.text(), 'text/html');
-  const workerUrl = document.body.dataset.catalogWorkerUrlValue;
-  if (!workerUrl) return;
-  const renderer = createCatalogRenderer(new URL(workerUrl, response.url).href);
+  const controller = new AbortController();
+  let renderer;
+  const cancel = () => { controller.abort(); renderer?.destroy(); };
+  window.addEventListener('pagehide', cancel, { once: true });
   try {
-    for (const image of document.querySelectorAll('.catalog-book img')) {
+    const response = await fetch(url, { priority: 'low', signal: controller.signal });
+    if (!response.ok) return;
+    const document = new DOMParser().parseFromString(await response.text(), 'text/html');
+    const workerUrl = document.body.dataset.catalogWorkerUrlValue;
+    if (!workerUrl || controller.signal.aborted) return;
+    renderer = createCatalogRenderer(new URL(workerUrl, response.url).href);
+    for (const image of [...document.querySelectorAll('.catalog-book img')].slice(0, 3)) {
+      if (controller.signal.aborted || window.document.visibilityState === 'hidden') break;
       if (image.dataset.pdfSource) {
         const source = new URL(image.dataset.pdfSource, response.url).href;
         const page = Number(image.dataset.pdfPage || 1);
-        await renderer.renderPage(source, page).catch(() => renderer.renderPage(source, page)).catch(() => {});
+        await renderer.renderPage(source, page, 1000).catch(() => {});
       } else if (image.getAttribute('src')) {
-        await fetch(new URL(image.getAttribute('src'), response.url), { priority: 'low' }).catch(() => {});
+        await fetch(new URL(image.getAttribute('src'), response.url), { priority: 'low', signal: controller.signal }).catch(() => {});
       }
       await new Promise((resolve) => window.setTimeout(resolve, 0));
     }
   } finally {
-    renderer.destroy();
+    window.removeEventListener('pagehide', cancel);
+    renderer?.destroy();
   }
 };

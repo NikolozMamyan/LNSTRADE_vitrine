@@ -19,37 +19,37 @@ export default class extends Controller {
     this.bookElement = this.bookTarget;
     this.bookPages = this.pageTargets;
     this.zoomShellElement = this.zoomShellTarget;
-    this.currentIndex = 0;
+    const requestedPage = Number(new URL(window.location.href).searchParams.get('page'));
+    this.currentIndex = Number.isInteger(requestedPage) && requestedPage > 0 ? Math.min(requestedPage, this.bookPages.length) - 1 : 0;
     this.pdfRenders = new WeakMap();
     this.renderer?.destroy();
     this.renderer = createCatalogRenderer(this.workerUrlValue);
-    this.loadingRetryTarget.hidden = true;
-    this.loadingTarget.querySelector('strong').textContent = 'Préparation du catalogue';
-    this.loadingTarget.querySelector('small').textContent = 'Les premières pages arrivent…';
+    const renderer = this.renderer;
+    this.showLoading(true);
 
     try {
-      await this.preparePages(this.bookPages.slice(0, 1));
+      const initialPages = this.currentIndex === 0 ? this.bookPages.slice(0, 1) : this.bookPages.slice(Math.max(0, this.currentIndex - 1), this.currentIndex + 2);
+      await this.preparePages(initialPages, 1000);
+      if (!this.isConnected || this.renderer !== renderer) return;
+      this.initializeBook();
+      this.setupThumbnailRendering();
     } catch {
-      if (this.isConnected) this.loadingFailed();
-      return;
+      if (this.isConnected && this.renderer === renderer) this.loadingFailed();
     }
-    if (!this.isConnected) return;
-
-    this.initializeBook();
-    this.setupThumbnailRendering();
   }
 
   initializeBook() {
     this.pageFlip = new PageFlip(this.bookTarget, {
       width: 595,
       height: 842,
+      startPage: this.currentIndex,
       size: 'stretch',
       minWidth: 280,
       maxWidth: 510,
       minHeight: 396,
       maxHeight: 721,
       drawShadow: true,
-      flippingTime: 1050,
+      flippingTime: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 650,
       usePortrait: true,
       autoSize: true,
       maxShadowOpacity: 0.52,
@@ -62,11 +62,16 @@ export default class extends Controller {
       disableFlipByClick: true,
     });
     this.pageFlip.on('init', () => {
-      this.update(0, false);
-      this.loadingTarget.classList.add('is-hidden');
+      this.update(this.pageFlip.getCurrentPageIndex(), false);
+      this.stageTarget.classList.add('is-ready');
+      this.hideLoading();
     });
     this.pageFlip.on('flip', (event) => this.update(Number(event.data)));
-    this.pageFlip.on('changeState', (event) => this.stageTarget.classList.toggle('is-flipping', ['flipping', 'user_fold'].includes(event.data)));
+    this.pageFlip.on('changeState', (event) => {
+      this.stageTarget.classList.toggle('is-flipping', ['flipping', 'user_fold'].includes(event.data));
+      this.updateNavigation(event.data);
+    });
+    this.pageFlip.on('changeOrientation', () => this.updateNavigation());
     this.pageFlip.loadFromHTML(this.bookPages);
     this.prepareDrag = (event) => {
       if (event.target.closest('a, button')) return;
@@ -78,8 +83,18 @@ export default class extends Controller {
       if (!this.isNavigating && images.every((image) => image.complete && image.naturalWidth > 0 && (!image.dataset.pdfSource || image.dataset.rendered === 'true'))) return;
       event.preventDefault();
       event.stopPropagation();
-      this.preparePages(nearbyPages).catch(() => {
-        if (this.isConnected) this.announcementTarget.textContent = 'Les pages ne sont pas encore disponibles. Réessayez dans un instant.';
+      if (this.isNavigating) return;
+      this.isNavigating = true;
+      this.pendingIndex = this.currentIndex;
+      this.showLoading();
+      this.updateNavigation();
+      this.preparePages(nearbyPages).then(() => {
+        if (this.isConnected) this.hideLoading();
+      }).catch(() => {
+        if (this.isConnected) this.loadingFailed();
+      }).finally(() => {
+        this.isNavigating = false;
+        if (this.isConnected) this.updateNavigation();
       });
     };
     this.bookElement.addEventListener('mousedown', this.prepareDrag, { capture: true });
@@ -90,6 +105,9 @@ export default class extends Controller {
   disconnect() {
     this.isConnected = false;
     window.clearTimeout(this.zoomRefreshTimer);
+    window.clearTimeout(this.loadingTimer);
+    window.clearTimeout(this.prefetchTimer);
+    window.clearTimeout(this.backdropTimer);
     this.thumbnailObserver?.disconnect();
     this.bookElement?.removeEventListener('mousedown', this.prepareDrag, true);
     this.bookElement?.removeEventListener('touchstart', this.prepareDrag, true);
@@ -123,19 +141,24 @@ export default class extends Controller {
   last() { this.goToIndex(this.bookPages.length - 1); }
 
   returnToSite(event) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const referrer = document.referrer ? new URL(document.referrer) : null;
+    const returnUrl = referrer?.origin === window.location.origin && referrer.pathname !== window.location.pathname ? referrer.href : event.currentTarget.href;
     if (window.opener && !window.opener.closed) {
       event.preventDefault();
-      window.opener.focus();
-      window.close();
+      try {
+        window.opener.focus();
+        window.close();
+      } catch {}
+      window.setTimeout(() => window.location.replace(returnUrl), 150);
       return;
     }
 
-    if (document.referrer) {
-      const referrer = new URL(document.referrer);
-      if (referrer.origin === window.location.origin && referrer.pathname !== window.location.pathname) {
-        event.preventDefault();
-        window.history.back();
-      }
+    event.preventDefault();
+    if (returnUrl === referrer?.href && window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.replace(returnUrl);
     }
   }
 
@@ -147,28 +170,63 @@ export default class extends Controller {
   async goToIndex(index) {
     if (!this.pageFlip || this.isNavigating || this.pageFlip.getState() !== 'read') return;
     const safeIndex = Math.max(0, Math.min(index, this.bookPages.length - 1));
+    if (!Number.isInteger(safeIndex)) return;
     const pages = this.pageFlip.getPageCollection();
     const spread = pages.getSpread()[pages.getSpreadIndexByPage(safeIndex)];
     this.pendingIndex = safeIndex;
     this.isNavigating = true;
-    this.loadingRetryTarget.hidden = true;
-    this.loadingTarget.querySelector('strong').textContent = 'Chargement des pages';
-    this.loadingTarget.querySelector('small').textContent = 'Votre page arrive…';
-    this.loadingTarget.classList.remove('is-hidden');
+    this.showLoading();
+    this.updateNavigation();
     try {
       await this.preparePages(spread.map((pageIndex) => this.bookPages[pageIndex]));
       if (this.isConnected) {
-        this.loadingTarget.classList.add('is-hidden');
-        this.pageFlip.flip(safeIndex, 'top');
+        this.hideLoading();
+        const distance = pages.getSpreadIndexByPage(safeIndex) - pages.getCurrentSpreadIndex();
+        if (Math.abs(distance) !== 1) {
+          this.pageFlip.turnToPage(safeIndex);
+        } else {
+          // PageFlip applique aussi le blocage des clics aux flèches en mode portrait.
+          const settings = this.pageFlip.getSettings();
+          settings.disableFlipByClick = false;
+          try {
+            this.pageFlip.flip(safeIndex, 'top');
+          } finally {
+            settings.disableFlipByClick = true;
+          }
+        }
       }
     } catch {
       if (this.isConnected) this.loadingFailed();
     } finally {
       this.isNavigating = false;
+      if (this.isConnected) this.updateNavigation();
     }
   }
 
+  showLoading(initial = false) {
+    window.clearTimeout(this.loadingTimer);
+    this.loadingRetryTarget.hidden = true;
+    this.loadingTarget.classList.toggle('is-inline', !initial);
+    this.loadingTarget.querySelector('strong').textContent = initial ? 'Ouverture du catalogue' : 'Chargement des pages';
+    this.loadingTarget.querySelector('small').textContent = initial ? 'Les premières pages arrivent…' : 'Votre page arrive…';
+    this.stageTarget.setAttribute('aria-busy', 'true');
+    if (initial) this.loadingTarget.classList.remove('is-hidden');
+    else {
+      this.loadingTarget.classList.add('is-hidden');
+      this.loadingTimer = window.setTimeout(() => this.loadingTarget.classList.remove('is-hidden'), 200);
+    }
+  }
+
+  hideLoading() {
+    window.clearTimeout(this.loadingTimer);
+    this.loadingTarget.classList.add('is-hidden');
+    this.stageTarget.setAttribute('aria-busy', 'false');
+  }
+
   loadingFailed() {
+    window.clearTimeout(this.loadingTimer);
+    this.loadingTarget.classList.remove('is-hidden');
+    this.stageTarget.setAttribute('aria-busy', 'false');
     this.loadingTarget.querySelector('strong').textContent = 'Chargement interrompu';
     this.loadingTarget.querySelector('small').textContent = 'Réessayez sans recharger la page.';
     this.loadingRetryTarget.hidden = false;
@@ -186,27 +244,47 @@ export default class extends Controller {
     this.currentTitleTarget.textContent = page.dataset.title;
     this.progressTarget.style.width = `${count > 1 ? (this.currentIndex / (count - 1)) * 100 : 100}%`;
     this.pageNumberTarget.textContent = `${String(this.currentIndex + 1).padStart(2, '0')} / ${String(count).padStart(2, '0')}`;
-    [this.previousTarget, this.firstTarget, this.stagePreviousTarget].forEach((button) => { button.disabled = this.currentIndex === 0; });
-    [this.nextTarget, this.lastTarget, this.stageNextTarget].forEach((button) => { button.disabled = this.currentIndex === count - 1; });
+    this.updateNavigation();
     this.stageTarget.classList.toggle('is-cover', this.currentIndex === 0);
     this.stageTarget.classList.toggle('is-back', this.currentIndex === count - 1);
     this.stageTarget.classList.toggle('is-open', this.currentIndex > 0 && this.currentIndex < count - 1);
     this.hintTarget.classList.toggle('is-hidden', this.currentIndex > 1);
-    this.thumbnailTargets.forEach((thumbnail, thumbnailIndex) => thumbnail.classList.toggle('is-current', thumbnailIndex === this.currentIndex));
+    this.thumbnailTargets.forEach((thumbnail, thumbnailIndex) => {
+      thumbnail.classList.toggle('is-current', thumbnailIndex === this.currentIndex);
+      if (thumbnailIndex === this.currentIndex) thumbnail.setAttribute('aria-current', 'page');
+      else thumbnail.removeAttribute('aria-current');
+    });
+
+    const url = new URL(window.location.href);
+    if (this.currentIndex > 0) url.searchParams.set('page', String(this.currentIndex + 1));
+    else url.searchParams.delete('page');
+    if (url.href !== window.location.href) window.history.replaceState(window.history.state, '', url);
 
     const pdf = page.dataset.pdf;
     this.downloadTarget.hidden = !pdf;
     if (pdf) this.downloadTarget.href = pdf;
     else this.downloadTarget.removeAttribute('href');
-    this.preparePagesNear(this.currentIndex);
+    window.clearTimeout(this.prefetchTimer);
+    this.prefetchTimer = window.setTimeout(() => this.preparePagesNear(this.currentIndex), 120);
     if (announce) this.announcementTarget.textContent = `Page affichée : ${page.dataset.title}`;
+  }
+
+  updateNavigation(state = this.pageFlip?.getState()) {
+    if (!this.pageFlip) return;
+    const pages = this.pageFlip.getPageCollection();
+    const spreadIndex = pages.getCurrentSpreadIndex();
+    const busy = this.isNavigating || state !== 'read';
+    [this.previousTarget, this.firstTarget, this.stagePreviousTarget].forEach((button) => { button.disabled = busy || spreadIndex === 0; });
+    [this.nextTarget, this.lastTarget, this.stageNextTarget].forEach((button) => { button.disabled = busy || spreadIndex === pages.getSpread().length - 1; });
   }
 
   toggleMenu() { this.menuTarget.classList.contains('is-visible') ? this.closeMenu() : this.openMenu(); }
 
   openMenu() {
+    window.clearTimeout(this.backdropTimer);
     this.closeZoom();
     this.menuTarget.classList.add('is-visible');
+    this.menuTarget.inert = false;
     this.menuTarget.setAttribute('aria-hidden', 'false');
     this.menuButtonTarget.setAttribute('aria-expanded', 'true');
     this.backdropTarget.hidden = false;
@@ -219,10 +297,11 @@ export default class extends Controller {
 
   closeMenu() {
     this.menuTarget.classList.remove('is-visible');
+    this.menuTarget.inert = true;
     this.menuTarget.setAttribute('aria-hidden', 'true');
     this.menuButtonTarget.setAttribute('aria-expanded', 'false');
     this.backdropTarget.classList.remove('is-visible');
-    window.setTimeout(() => { this.backdropTarget.hidden = true; }, 220);
+    this.backdropTimer = window.setTimeout(() => { this.backdropTarget.hidden = true; }, 220);
   }
 
   toggleZoom() {
@@ -302,13 +381,14 @@ export default class extends Controller {
     if (event.key === 'Escape' && !this.zoomPanelTarget.hidden) { this.closeZoom(); this.zoomButtonTarget.focus(); return; }
     if (event.key === 'Escape' && this.menuTarget.classList.contains('is-visible')) { this.closeMenu(); this.menuButtonTarget.focus(); return; }
     if (/INPUT|TEXTAREA/.test(event.target.tagName) || this.menuTarget.classList.contains('is-visible')) return;
+    if (['ArrowRight', 'PageDown', 'ArrowLeft', 'PageUp', 'Home', 'End'].includes(event.key)) event.preventDefault();
     if (event.key === 'ArrowRight' || event.key === 'PageDown') this.next();
     if (event.key === 'ArrowLeft' || event.key === 'PageUp') this.previous();
     if (event.key === 'Home') this.first();
     if (event.key === 'End') this.last();
   }
 
-  async preparePages(pages) {
+  async preparePages(pages, width) {
     await Promise.all(pages.flatMap((page) => [...page.querySelectorAll('img')]).map((image) => {
       if (!image.dataset.pdfSource) {
         image.loading = 'eager';
@@ -316,7 +396,7 @@ export default class extends Controller {
       }
       const displayedWidth = this.pageFlip ? image.getBoundingClientRect().width || 595 : 595;
       const targetWidth = Math.max(1000, Math.min(1800, Math.ceil(displayedWidth * Math.min(window.devicePixelRatio || 1, 2) * 1.15)));
-      return this.renderPdfImage(image, targetWidth);
+      return this.renderPdfImage(image, width || targetWidth);
     }));
   }
 
@@ -349,7 +429,13 @@ export default class extends Controller {
   }
 
   preparePagesNear(index) {
-    return this.preparePages(this.bookPages.slice(Math.max(0, index - 2), Math.min(this.bookPages.length, index + 5))).catch(() => {});
+    if (!this.isConnected || !this.pageFlip) return;
+    const pages = this.pageFlip.getPageCollection();
+    const spreadIndex = pages.getSpreadIndexByPage(index);
+    const nearbyPages = [spreadIndex, spreadIndex + 1, spreadIndex - 1]
+      .flatMap((nearbyIndex) => pages.getSpread()[nearbyIndex] || [])
+      .map((pageIndex) => this.bookPages[pageIndex]);
+    return this.preparePages(nearbyPages).catch(() => {});
   }
 
   async renderPdfImage(image, targetWidth) {
@@ -370,9 +456,10 @@ export default class extends Controller {
   }
 
   async renderPdfImageContent(image, targetWidth) {
+    const renderer = this.renderer;
     try {
-      const preview = await this.renderer.renderPage(image.dataset.pdfSource, Number(image.dataset.pdfPage || 1), targetWidth);
-      if (!this.isConnected) return;
+      const preview = await renderer.renderPage(image.dataset.pdfSource, Number(image.dataset.pdfPage || 1), targetWidth);
+      if (!this.isConnected || this.renderer !== renderer) return;
       image.src = preview.src;
       await image.decode();
       image.dataset.renderedWidth = String(preview.width);
@@ -380,7 +467,7 @@ export default class extends Controller {
       image.classList.remove('has-error');
       image.classList.add('is-ready');
     } catch (error) {
-      image.classList.add('has-error');
+      if (this.isConnected && this.renderer === renderer) image.classList.add('has-error');
       throw error;
     }
   }

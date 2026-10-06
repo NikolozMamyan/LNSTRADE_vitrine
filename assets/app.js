@@ -11,15 +11,20 @@ let catalogPreloadPromise = null;
 
 const preloadCatalogue = () => {
   const url = document.body.dataset.catalogUrl;
-  if (!url || catalogPreloadPromise) return;
+  const connection = navigator.connection;
+  if (!url || catalogPreloadPromise || connection?.saveData || ['slow-2g', '2g'].includes(connection?.effectiveType)) return;
   const start = () => {
-    if (catalogPreloadPromise) return;
+    if (catalogPreloadPromise || document.visibilityState === 'hidden') return;
     catalogPreloadPromise = import('./catalog_media.js')
       .then(({ preloadCatalog }) => preloadCatalog(url))
       .catch(() => { catalogPreloadPromise = null; });
   };
-  if (document.readyState === 'complete') start();
-  else window.addEventListener('load', start, { once: true });
+  const schedule = () => {
+    if ('requestIdleCallback' in window) window.requestIdleCallback(start, { timeout: 2000 });
+    else window.setTimeout(start, 800);
+  };
+  if (document.readyState === 'complete') schedule();
+  else window.addEventListener('load', schedule, { once: true });
 };
 
 const playModalSkeleton = (modal, duration = 360) => {

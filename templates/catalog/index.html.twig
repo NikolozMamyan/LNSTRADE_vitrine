@@ -22,16 +22,15 @@
   </a>
 
   <main class="catalog-viewer{{ isPreview ? ' is-preview' : '' }}">
-    <div class="catalog-stage" data-catalog-target="stage">
+    <div class="catalog-stage" data-catalog-target="stage" aria-busy="true">
       <div class="catalog-stage-glow" aria-hidden="true"></div>
-      <button class="catalog-stage-nav catalog-stage-nav-previous" type="button" aria-label="Page précédente" data-catalog-target="stagePrevious" data-action="catalog#previous"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
-      <button class="catalog-stage-nav catalog-stage-nav-next" type="button" aria-label="Page suivante" data-catalog-target="stageNext" data-action="catalog#next"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      <button class="catalog-stage-nav catalog-stage-nav-previous" type="button" aria-label="Page précédente" data-catalog-target="stagePrevious" data-action="catalog#previous" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button class="catalog-stage-nav catalog-stage-nav-next" type="button" aria-label="Page suivante" data-catalog-target="stageNext" data-action="catalog#next" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
       <div class="catalog-drag-hint" data-catalog-target="hint" aria-hidden="true"><span><i></i></span><p><strong>Maintenez et glissez</strong>pour tourner la page</p></div>
       <div class="catalog-loading" data-catalog-target="loading" role="status" aria-live="polite">
         <div class="catalog-loading-card">
-          <img src="{{ asset('images/logo-lns-white.png') }}" alt="LNS Trade">
-          <span class="catalog-loading-spinner" aria-hidden="true"><i></i><b></b></span>
-          <strong>Préparation du catalogue</strong>
+          <div class="catalog-loading-preview" aria-hidden="true"><img src="{{ asset('images/logo-ultrapop-red.png') }}" alt=""><span></span><i></i><b></b></div>
+          <strong>Ouverture du catalogue</strong>
           <small>Les premières pages arrivent…</small>
           <button type="button" data-catalog-target="loadingRetry" data-action="catalog#retryLoading" hidden>Réessayer</button>
         </div>
@@ -60,13 +59,13 @@
       <button class="catalog-tool catalog-tool-menu" type="button" aria-label="Afficher les miniatures" title="Sommaire" aria-expanded="false" data-catalog-target="menuButton" data-action="catalog#toggleMenu"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></button>
       <span class="catalog-divider" aria-hidden="true"></span>
       <a class="catalog-tool" href="{{ path('app_locale') }}" aria-label="Fermer le catalogue et revenir au site" title="Retour au site" data-action="catalog#returnToSite"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6M9 12h11"/></svg></a>
-      <button class="catalog-tool" type="button" aria-label="Première page" title="Première page" data-catalog-target="first" data-action="catalog#first"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 5v14M18 6l-6 6 6 6"/></svg></button>
-      <button class="catalog-tool" type="button" aria-label="Page précédente" title="Page précédente" data-catalog-target="previous" data-action="catalog#previous"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button class="catalog-tool" type="button" aria-label="Première page" title="Première page" data-catalog-target="first" data-action="catalog#first" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 5v14M18 6l-6 6 6 6"/></svg></button>
+      <button class="catalog-tool" type="button" aria-label="Page précédente" title="Page précédente" data-catalog-target="previous" data-action="catalog#previous" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
       <div class="catalog-current-page"><small>ULTRAPOP</small><strong data-catalog-target="currentTitle">{{ (catalogPages|first).title }}</strong></div>
       <div class="catalog-progress" aria-hidden="true"><span data-catalog-target="progress"></span></div>
       <span class="catalog-page-number" data-catalog-target="pageNumber">01 / {{ catalogPages|length }}</span>
-      <button class="catalog-tool" type="button" aria-label="Page suivante" title="Page suivante" data-catalog-target="next" data-action="catalog#next"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
-      <button class="catalog-tool" type="button" aria-label="Dernière page" title="Dernière page" data-catalog-target="last" data-action="catalog#last"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M19 5v14M6 6l6 6-6 6"/></svg></button>
+      <button class="catalog-tool" type="button" aria-label="Page suivante" title="Page suivante" data-catalog-target="next" data-action="catalog#next" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      <button class="catalog-tool" type="button" aria-label="Dernière page" title="Dernière page" data-catalog-target="last" data-action="catalog#last" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M19 5v14M6 6l6 6-6 6"/></svg></button>
       <span class="catalog-divider" aria-hidden="true"></span>
       <button class="catalog-tool" type="button" aria-label="Partager le catalogue" title="Partager" data-action="catalog#share"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></svg></button>
       <a class="catalog-tool" href="#" target="_blank" rel="noopener" aria-label="Télécharger le PDF" title="Télécharger le PDF" data-catalog-target="download" hidden><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 18v3h14v-3"/></svg></a>
@@ -81,7 +80,7 @@
     </nav>
   </main>
 
-  <aside class="catalog-menu" aria-hidden="true" data-catalog-target="menu">
+  <aside class="catalog-menu" aria-hidden="true" data-catalog-target="menu" inert>
     <header><div><span>Sommaire</span><h2>{{ catalog.title }}</h2><p>{{ catalogPages|length }} pages</p></div><button type="button" aria-label="Fermer le sommaire" data-action="catalog#closeMenu"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
     <div class="catalog-thumbnails">
       {% for catalogPage in catalogPages %}
