@@ -87,7 +87,7 @@ final class ContactController extends AbstractController
             return $this->json(['ok' => false, 'error' => 'hubspot'], Response::HTTP_BAD_GATEWAY);
         }
 
-        return $this->json(['ok' => true]);
+        return $this->json(['ok' => true, 'submitted' => true]);
     }
 
     private function field(Request $request, string $name): string

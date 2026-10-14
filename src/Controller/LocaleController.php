@@ -19,7 +19,9 @@ final class LocaleController extends AbstractController
             ? $requestedLocale
             : ($request->getPreferredLanguage(['en', 'fr']) ?? 'en');
 
-        $response = $this->redirectToRoute('app_home.'.$locale);
+        $parameters = $request->query->all();
+        unset($parameters['lang'], $parameters['_locale']);
+        $response = $this->redirectToRoute('app_home.'.$locale, $parameters);
         $response->setVary('Accept-Language');
 
         return $response;

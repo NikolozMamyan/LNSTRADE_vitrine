@@ -128,6 +128,18 @@ const submitContactForm = async (form, copy, data = new FormData(form)) => {
       status.classList.add('is-success');
       status.textContent = copy.success;
     }
+    if (result.submitted === true) {
+      const eventData = {
+        form_id: form.id,
+        form_location: form.hasAttribute('data-builder-form') ? 'range_builder' : (form.closest('dialog') ? 'modal' : 'inline'),
+        page_type: document.body.dataset.route,
+      };
+      try {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'lns_form_success', ...eventData });
+        window.gtag?.('event', 'generate_lead', eventData);
+      } catch {}
+    }
     return true;
   } catch (error) {
     if (status) {

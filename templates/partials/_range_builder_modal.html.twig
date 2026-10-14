@@ -179,7 +179,7 @@
               <div><strong data-builder-contact-cases>0</strong><small>{{ 'builder.total_cases'|trans }}</small></div>
             </div>
           </div>
-          <form class="range-builder-form" data-builder-form action="{{ path('app_contact_submit') }}" method="post">
+          <form class="range-builder-form" id="range-builder-form" data-builder-form action="{{ path('app_contact_submit') }}" method="post">
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('contact') }}">
             <input type="hidden" name="locale" value="{{ app.request.locale }}">
             <input type="hidden" name="context" value="{{ 'builder.context'|trans }}">
