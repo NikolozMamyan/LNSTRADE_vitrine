@@ -42,6 +42,11 @@
           <span>Prospects</span>
         </a>
 
+        <a class="admin-nav-link{{ app.current_route starts with 'app_admin_visit' ? ' is-active' : '' }}" href="{{ path('app_admin_visitors') }}"{% if app.current_route starts with 'app_admin_visit' %} aria-current="page"{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+          <span>Visiteurs</span>
+        </a>
+
         <a class="admin-nav-link{{ app.current_route starts with 'admin_catalog' ? ' is-active' : '' }}" href="{{ path('admin_catalog') }}"{% if app.current_route starts with 'admin_catalog' %} aria-current="page"{% endif %}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17Zm0 0v17M8 6h8M8 10h8"/></svg>
           <span>Catalogue</span>

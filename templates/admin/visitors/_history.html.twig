@@ -1,0 +1,39 @@
+<div data-visitor-content>
+  <section class="admin-panel visitor-session-summary">
+    <dl>
+      <div><dt>Début</dt><dd>{{ session.startedAt|date('d/m/Y H:i:s', 'Europe/Paris') }}</dd></div>
+      <div><dt>Dernière visite</dt><dd>{{ session.lastSeenAt|date('d/m/Y H:i:s', 'Europe/Paris') }}</dd></div>
+      <div><dt>Pages consultées</dt><dd>{{ session.pageViewCount }}</dd></div>
+      <div><dt>Source</dt><dd>{{ session.source == 'direct' ? 'Accès direct' : session.source }}{% if session.medium %} / {{ session.medium }}{% endif %}</dd></div>
+      {% if session.campaign %}<div><dt>Campagne</dt><dd>{{ session.campaign }}</dd></div>{% endif %}
+      <div><dt>Page d’entrée</dt><dd>{{ session.entryPath }}</dd></div>
+      <div class="visitor-agent"><dt>Navigateur</dt><dd>{{ session.userAgent|default('Non renseigné', true) }}</dd></div>
+    </dl>
+  </section>
+
+  <section class="admin-panel activity-panel visitor-panel">
+    <header class="admin-panel-head"><div><p class="admin-eyebrow"><span></span> Chronologie</p><h2>Pages visitées</h2></div></header>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Ordre</th><th>Heure de visite</th><th>Page consultée</th></tr></thead>
+        <tbody>{% for visit in visits %}<tr><td>{{ (page - 1) * 50 + loop.index }}</td><td>{{ visit.visitedAt|date('d/m/Y H:i:s', 'Europe/Paris') }}</td><td><a class="visitor-path" href="{{ visit.path }}" target="_blank" rel="noopener noreferrer">{{ visit.path }}</a></td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+    {% if pageCount > 1 %}
+      <nav class="admin-pagination" aria-label="Pages du parcours">
+        {% if page > 1 %}<a class="admin-button admin-button-light" href="{{ path('app_admin_visitor_session', {id: session.id, page: page - 1}) }}">← Précédent</a>{% endif %}
+        <span>Page {{ page }} sur {{ pageCount }}</span>
+        {% if page < pageCount %}<a class="admin-button admin-button-light" href="{{ path('app_admin_visitor_session', {id: session.id, page: page + 1}) }}">Suivant →</a>{% endif %}
+      </nav>
+    {% endif %}
+  </section>
+
+  {% if otherSessions is not empty %}
+    <section class="admin-panel activity-panel visitor-panel">
+      <header class="admin-panel-head"><div><p class="admin-eyebrow"><span></span> Historique</p><h2>Autres sessions de ce visiteur estimé</h2><p class="visitor-panel-note">Les 10 plus récentes avec la même IP et le même navigateur.</p></div></header>
+      <div class="visitor-related-sessions">{% for other in otherSessions %}<a class="admin-button admin-button-light" href="{{ path('app_admin_visitor_session', {id: other.id}) }}">#{{ other.id }} · {{ other.startedAt|date('d/m/Y H:i', 'Europe/Paris') }} · {{ other.pageViewCount }} pages →</a>{% endfor %}</div>
+      <p class="visitor-footnote"><a href="{{ path('app_admin_visitors', {days: 0, ip: session.ipAddress}) }}">Voir tout l’historique de cette IP →</a></p>
+    </section>
+  {% endif %}
+  <p class="visitor-updated">Dernière actualisation : {{ updatedAt|date('H:i:s', 'Europe/Paris') }}</p>
+</div>

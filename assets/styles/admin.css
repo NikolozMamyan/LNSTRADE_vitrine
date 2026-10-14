@@ -169,6 +169,51 @@ svg { display: block; }
 .admin-prospects-panel .locale-badge, .admin-prospects-panel .status-badge { font-size: 12px; }
 .admin-prospects-panel .admin-button { font-size: 11px; }
 .admin-prospects-panel td > small { display: block; margin-top: 5px; font-size: 12px; }
+.visitor-filters { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+.visitor-filters label { display: grid; gap: 7px; font-size: 12px; font-weight: 700; }
+.visitor-filters input, .visitor-filters select { min-height: 44px; max-width: 100%; padding: 0 13px; border: 1px solid var(--admin-line); border-radius: 8px; background: var(--admin-white); font: inherit; }
+.visitor-filters input { width: 250px; }
+.visitor-filters .admin-button { min-height: 44px; font-size: 11px; }
+.visitor-live-status { display: flex; align-items: center; gap: 8px; color: var(--admin-green); font-size: 12px; line-height: 1.6; }
+.visitor-live-status::before { content: ''; width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: currentColor; }
+.visitor-live-status.is-error { color: #a82f1c; }
+.visitor-metrics { margin-top: 24px; }
+.visitor-metrics .metric-card { min-height: 150px; }
+.visitor-metrics .metric-note { font-size: 11px; line-height: 1.5; }
+.visitor-metrics .metric-label { font-size: 13px; }
+.visitor-panel { margin-top: 24px; }
+.visitor-panel .admin-table { font-size: 14px; }
+.visitor-panel .admin-table th { font-size: 11px; }
+.visitor-panel .admin-table td small { display: block; margin-top: 5px; font-size: 12px; }
+.visitor-panel .admin-table .admin-button { font-size: 11px; }
+.visitor-path { display: block; max-width: 320px; color: var(--admin-ink); white-space: normal; overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: 3px; }
+.visitor-ip { color: var(--admin-ink); }
+.visitor-active { color: var(--admin-green); font-weight: 800; }
+.visitor-campaign { max-width: 230px; white-space: normal; overflow-wrap: anywhere; }
+.visitor-panel-note { margin: 9px 0 0; font-size: 12px; color: var(--admin-muted); line-height: 1.5; }
+.visitor-chart { padding: 0 20px; overflow-x: auto; }
+.visitor-chart svg { width: 100%; min-width: 600px; }
+.visitor-chart-grid { stroke: var(--admin-line); stroke-width: 1; }
+.visitor-chart-label { fill: var(--admin-muted); font-size: 18px; }
+.visitor-chart-hint { display: none; padding: 0 27px; color: var(--admin-muted); font-size: 12px; }
+.visitor-chart-views { fill: var(--admin-orange); }
+.visitor-chart-sessions { fill: var(--admin-violet); }
+.visitor-chart-day:hover, .visitor-chart-day:focus { opacity: .7; }
+.visitor-chart-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; }
+.visitor-chart-legend span { display: flex; align-items: center; gap: 7px; }
+.visitor-chart-legend i { width: 10px; height: 10px; border-radius: 2px; background: var(--admin-orange); }
+.visitor-chart-legend span:last-child i { background: var(--admin-violet); }
+.visitor-footnote { padding: 0 27px 12px; margin: 12px 0 0; font-size: 12px; line-height: 1.7; color: var(--admin-muted); }
+.visitor-updated { margin-top: 18px; color: var(--admin-muted); font-size: 12px; text-align: right; }
+.visitor-session-summary { margin-top: 28px; padding: 24px 27px; }
+.visitor-session-summary dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 22px; margin: 0; }
+.visitor-session-summary dt { color: var(--admin-muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.visitor-session-summary dd { margin: 8px 0 0; font-size: 14px; overflow-wrap: anywhere; }
+.visitor-agent { grid-column: 1 / -1; }
+.visitor-agent dd { color: var(--admin-muted); font-size: 12px; }
+.visitor-related-sessions { display: flex; flex-wrap: wrap; gap: 12px; padding: 0 27px 15px; }
+.visitor-related-sessions .admin-button { font-size: 11px; }
+@media (max-width: 680px) { .visitor-panel .admin-panel-head { flex-direction: column; } .visitor-chart-hint { display: block; } }
 .admin-prospect-message { margin-top: 8px; }
 .admin-prospect-message summary { cursor: pointer; }
 .admin-prospect-message p { width: 280px; white-space: pre-wrap; overflow-wrap: anywhere; }

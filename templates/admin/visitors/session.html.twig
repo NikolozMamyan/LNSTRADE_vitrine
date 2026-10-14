@@ -1,0 +1,15 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Session #{{ session.id }}{% endblock %}
+{% block page_name %}Parcours d’un visiteur{% endblock %}
+
+{% block body %}
+  <section class="dashboard-hero">
+    <div><p class="admin-eyebrow"><span></span> Parcours du visiteur</p><h1>Session #{{ session.id }}</h1><p>Adresse IP : {{ session.ipAddress }}</p></div>
+    <a class="admin-button admin-button-light" href="{{ path('app_admin_visitors') }}">← Tous les visiteurs</a>
+  </section>
+  <p class="visitor-live-status" data-visitor-status role="status"><i></i> Actualisation toutes les 10 secondes</p>
+  <div data-visitor-refresh-url="{{ path('app_admin_visitor_session', {id: session.id, page: page}) }}">
+    {% include 'admin/visitors/_history.html.twig' %}
+  </div>
+{% endblock %}

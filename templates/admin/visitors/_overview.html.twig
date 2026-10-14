@@ -1,0 +1,95 @@
+<div data-visitor-content>
+  {% if invalidIp %}<p class="admin-flash admin-flash-error">Saisissez une adresse IPv4 ou IPv6 valide.</p>{% endif %}
+  <section class="dashboard-metrics visitor-metrics" aria-label="Statistiques de fréquentation">
+    <article class="metric-card metric-card-dark">
+      <span class="metric-value">{{ activeCount|number_format(0, ',', ' ') }}</span>
+      <span class="metric-label">Sessions actives</span>
+      <span class="metric-note">Une page chargée dans les 5 dernières minutes</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-value">{{ periodSessions|number_format(0, ',', ' ') }}</span>
+      <span class="metric-label">Sessions démarrées</span>
+      <span class="metric-note">Sur les {{ chartDays }} derniers jours</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-value">{{ periodViews|number_format(0, ',', ' ') }}</span>
+      <span class="metric-label">Pages consultées</span>
+      <span class="metric-note">Sur les {{ chartDays }} derniers jours</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-value">{{ todayViews|number_format(0, ',', ' ') }}</span>
+      <span class="metric-label">Pages consultées aujourd’hui</span>
+      <span class="metric-note">Heure de Paris</span>
+    </article>
+  </section>
+
+  <section class="admin-panel activity-panel visitor-panel">
+    <header class="admin-panel-head">
+      <div><p class="admin-eyebrow"><span></span> Parcours</p><h2>Historique des sessions</h2></div>
+      <span class="admin-panel-count">{{ sessionCount|number_format(0, ',', ' ') }} session{{ sessionCount != 1 ? 's' : '' }}</span>
+    </header>
+    {% if sessions is empty %}
+      <div class="admin-empty-state"><h3>Aucune session sur cette période</h3><p>Les prochaines visites du site apparaîtront ici. Essayez aussi une autre période ou une autre adresse IP.</p></div>
+    {% else %}
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Session / IP</th><th>Dernière page consultée</th><th>Source</th><th>Début / Dernière visite</th><th>Pages</th><th>Parcours</th></tr></thead>
+          <tbody>
+            {% for session in sessions %}
+              <tr>
+                <td><strong class="visitor-ip">{{ session.ipAddress }}</strong><small>Session #{{ session.id }} · {% if session.lastSeenAt >= activeSince %}<span class="visitor-active">Active</span>{% else %}Inactive{% endif %}</small></td>
+                <td><a class="visitor-path" href="{{ session.currentPath }}" target="_blank" rel="noopener noreferrer">{{ session.currentPath }}</a></td>
+                <td><strong>{{ session.source == 'direct' ? 'Accès direct' : session.source }}</strong>{% if session.medium %}<small>{{ session.medium }}</small>{% endif %}{% if session.campaign %}<small class="visitor-campaign">{{ session.campaign }}</small>{% endif %}</td>
+                <td>{{ session.startedAt|date('d/m/Y H:i:s', 'Europe/Paris') }}<small>Dernière : {{ session.lastSeenAt|date('d/m/Y H:i:s', 'Europe/Paris') }}</small></td>
+                <td>{{ session.pageViewCount }}</td>
+                <td><a class="admin-button admin-button-light" href="{{ path('app_admin_visitor_session', {id: session.id}) }}">Voir les pages →</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if pageCount > 1 %}
+        <nav class="admin-pagination" aria-label="Pages des sessions">
+          {% if page > 1 %}<a class="admin-button admin-button-light" href="{{ path('app_admin_visitors', {days: days, ip: ip, page: page - 1}) }}">← Précédent</a>{% endif %}
+          <span>Page {{ page }} sur {{ pageCount }}</span>
+          {% if page < pageCount %}<a class="admin-button admin-button-light" href="{{ path('app_admin_visitors', {days: days, ip: ip, page: page + 1}) }}">Suivant →</a>{% endif %}
+        </nav>
+      {% endif %}
+    {% endif %}
+  </section>
+
+  <section class="admin-panel activity-panel visitor-panel">
+    <header class="admin-panel-head">
+      <div><p class="admin-eyebrow"><span></span> Fréquentation</p><h2>Évolution des visites</h2><p class="visitor-panel-note">{{ chartDays }} derniers jours · Heure de Paris{{ ip ? ' · IP ' ~ ip : '' }}</p></div>
+      <div class="visitor-chart-legend"><span><i></i> Pages consultées</span><span><i></i> Sessions démarrées</span></div>
+    </header>
+    <div class="visitor-chart">
+      <svg viewBox="0 0 1100 280" role="img" aria-labelledby="visitor-chart-title visitor-chart-description">
+        <title id="visitor-chart-title">Visites sur les {{ chartDays }} derniers jours</title>
+        <desc id="visitor-chart-description">{{ periodViews }} pages consultées et {{ periodSessions }} sessions démarrées. Survolez les barres pour voir les chiffres par jour.</desc>
+        {% for tick in 0..4 %}
+          {% set y = 225 - tick * 50 %}
+          <line x1="50" y1="{{ y }}" x2="1080" y2="{{ y }}" class="visitor-chart-grid" />
+          <text x="40" y="{{ y + 4 }}" text-anchor="end" class="visitor-chart-label">{{ chartMax * tick / 4 }}</text>
+        {% endfor %}
+        {% set step = 1030 / chart|length %}
+        {% set labelStep = (chartDays / 7)|round(0, 'ceil') %}
+        {% for day in chart %}
+          {% set x = 50 + loop.index0 * step %}
+          <g class="visitor-chart-day" tabindex="0" aria-label="{{ day.date|date('d/m/Y') }} : {{ day.views }} pages, {{ day.sessions }} sessions">
+            <title>{{ day.date|date('d/m/Y') }} : {{ day.views }} pages consultées, {{ day.sessions }} sessions démarrées</title>
+            <rect x="{{ x }}" y="25" width="{{ step }}" height="200" fill="transparent" />
+            <rect x="{{ x + step * 0.12 }}" y="{{ 225 - day.views / chartMax * 200 }}" width="{{ step * 0.34 }}" height="{{ day.views / chartMax * 200 }}" class="visitor-chart-views" rx="2" />
+            <rect x="{{ x + step * 0.52 }}" y="{{ 225 - day.sessions / chartMax * 200 }}" width="{{ step * 0.34 }}" height="{{ day.sessions / chartMax * 200 }}" class="visitor-chart-sessions" rx="2" />
+          </g>
+          {% if loop.first or loop.last or loop.index0 % labelStep == 0 %}
+            <text x="{{ x + step / 2 }}" y="250" text-anchor="middle" class="visitor-chart-label">{{ day.date|date('d/m') }}</text>
+          {% endif %}
+        {% endfor %}
+      </svg>
+    </div>
+    <p class="visitor-chart-hint">Glissez horizontalement pour explorer les dates du graphique.</p>
+    <p class="visitor-footnote">Sessions estimées à partir de l’IP et du navigateur, sans nouveau cookie. Une nouvelle session commence après 30 minutes d’inactivité. Robots connus et préchargements exclus.</p>
+  </section>
+  <p class="visitor-updated">Dernière actualisation : {{ updatedAt|date('H:i:s', 'Europe/Paris') }}</p>
+</div>

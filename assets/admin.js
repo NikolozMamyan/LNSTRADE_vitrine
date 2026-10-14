@@ -1,6 +1,13 @@
 import './stimulus_bootstrap.js';
+import { setupVisitors } from './admin_visitors.js';
+
+document.addEventListener('turbo:load', setupVisitors);
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) setupVisitors();
+});
 
 const setupAdminUi = () => {
+  setupVisitors();
   const body = document.body;
   const openButton = document.querySelector('[data-admin-nav-open]');
   const closeButtons = document.querySelectorAll('[data-admin-nav-close]');

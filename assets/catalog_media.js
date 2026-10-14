@@ -76,7 +76,7 @@ export const preloadCatalog = async (url) => {
   const cancel = () => { controller.abort(); renderer?.destroy(); };
   window.addEventListener('pagehide', cancel, { once: true });
   try {
-    const response = await fetch(url, { priority: 'low', signal: controller.signal });
+    const response = await fetch(url, { priority: 'low', signal: controller.signal, headers: { 'X-LNS-Prefetch': '1' } });
     if (!response.ok) return;
     const document = new DOMParser().parseFromString(await response.text(), 'text/html');
     const workerUrl = document.body.dataset.catalogWorkerUrlValue;
