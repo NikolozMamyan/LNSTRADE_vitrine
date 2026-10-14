@@ -161,6 +161,18 @@ svg { display: block; }
 .admin-table tbody tr:last-child td { border-bottom: 0; }
 .admin-table tbody tr { transition: background .18s; }
 .admin-table tbody tr:hover { background: rgba(255,199,25,.055); }
+.admin-prospects-panel { margin-top: 32px; }
+.admin-prospects-panel .admin-table { font-size: 14px; }
+.admin-prospects-panel .admin-table th { font-size: 11px; }
+.admin-prospects-panel .contact-cell strong { font-size: 14px; }
+.admin-prospects-panel .contact-cell small { color: #66635d; font-size: 13px; }
+.admin-prospects-panel .locale-badge, .admin-prospects-panel .status-badge { font-size: 12px; }
+.admin-prospects-panel .admin-button { font-size: 11px; }
+.admin-prospects-panel td > small { display: block; margin-top: 5px; font-size: 12px; }
+.admin-prospect-message { margin-top: 8px; }
+.admin-prospect-message summary { cursor: pointer; }
+.admin-prospect-message p { width: 280px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.admin-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px; padding: 20px; font-size: 11px; }
 .contact-cell { display: flex; gap: 10px; align-items: center; }
 .contact-cell > span:last-child { display: flex; flex-direction: column; }
 .contact-cell strong { color: var(--admin-ink); font-size: 10px; }

@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\HubSpot\ContactSubmission;
-use App\HubSpot\HubSpotException;
-use App\HubSpot\HubSpotGateway;
 use App\Prospect\ProspectRecorder;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,9 +22,7 @@ final class ContactController extends AbstractController
         Request $request,
         CsrfTokenManagerInterface $csrfTokenManager,
         ValidatorInterface $validator,
-        HubSpotGateway $hubSpot,
         ProspectRecorder $prospectRecorder,
-        LoggerInterface $logger,
     ): JsonResponse {
         if (!$csrfTokenManager->isTokenValid(new CsrfToken('contact', $this->field($request, '_csrf_token')))) {
             return $this->json(['ok' => false, 'error' => 'invalid_csrf'], Response::HTTP_FORBIDDEN);
@@ -68,24 +63,7 @@ final class ContactController extends AbstractController
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $prospect = $prospectRecorder->record($submission);
-
-        try {
-            $hubSpot->submit($submission);
-            $prospectRecorder->markHubSpotSynced($prospect);
-        } catch (HubSpotException $exception) {
-            $logger->error('HubSpot contact submission failed.', ['exception' => $exception]);
-
-            if (null !== $exception->field) {
-                return $this->json([
-                    'ok' => false,
-                    'error' => 'validation',
-                    'fields' => [$exception->field],
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-
-            return $this->json(['ok' => false, 'error' => 'hubspot'], Response::HTTP_BAD_GATEWAY);
-        }
+        $prospectRecorder->record($submission);
 
         return $this->json(['ok' => true, 'submitted' => true]);
     }

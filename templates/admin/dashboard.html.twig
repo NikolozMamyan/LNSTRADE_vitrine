@@ -61,7 +61,7 @@
           <p class="admin-eyebrow"><span></span> Activité</p>
           <h2>Derniers contacts</h2>
         </div>
-        <span class="admin-panel-count">{{ dashboard.prospectCount }} au total</span>
+        <a class="admin-panel-count" href="{{ path('app_admin_prospects') }}">Voir les {{ dashboard.prospectCount }} prospects ↗</a>
       </header>
 
       {% if dashboard.recentProspects is empty %}

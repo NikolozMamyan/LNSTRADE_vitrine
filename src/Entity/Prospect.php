@@ -88,6 +88,26 @@ class Prospect
         $this->hubSpotSyncedAt = $syncedAt;
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function toContactSubmission(): ContactSubmission
+    {
+        return new ContactSubmission(
+            name: $this->name,
+            company: $this->company,
+            email: $this->email,
+            phone: $this->phone ?? '',
+            vat: $this->vat ?? '',
+            message: $this->message ?? '',
+            context: $this->context ?? '',
+            origin: $this->origin ?? '',
+            locale: $this->locale,
+        );
+    }
+
     public function getEmail(): string
     {
         return $this->email;

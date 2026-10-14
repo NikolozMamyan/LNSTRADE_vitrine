@@ -163,6 +163,8 @@ final readonly class HubSpotClient implements HubSpotGateway
     {
         $options['auth_bearer'] = $this->accessToken;
         $options['headers']['Accept'] = 'application/json';
+        $options['timeout'] = 5.0;
+        $options['max_duration'] = 10.0;
 
         try {
             return $this->httpClient->request($method, self::API_URL.$path, $options);

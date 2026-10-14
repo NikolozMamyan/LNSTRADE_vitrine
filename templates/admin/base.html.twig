@@ -37,6 +37,11 @@
           <span>Activité récente</span>
         </a>
 
+        <a class="admin-nav-link{{ app.current_route starts with 'app_admin_prospect' ? ' is-active' : '' }}" href="{{ path('app_admin_prospects') }}"{% if app.current_route starts with 'app_admin_prospect' %} aria-current="page"{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m7-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm13 10v-2a4 4 0 0 0-3-3.87"/></svg>
+          <span>Prospects</span>
+        </a>
+
         <a class="admin-nav-link{{ app.current_route starts with 'admin_catalog' ? ' is-active' : '' }}" href="{{ path('admin_catalog') }}"{% if app.current_route starts with 'admin_catalog' %} aria-current="page"{% endif %}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17Zm0 0v17M8 6h8M8 10h8"/></svg>
           <span>Catalogue</span>

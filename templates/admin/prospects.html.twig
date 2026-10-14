@@ -1,0 +1,76 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Prospects{% endblock %}
+{% block page_name %}Prospects{% endblock %}
+
+{% block body %}
+  <section class="dashboard-hero">
+    <div>
+      <p class="admin-eyebrow"><span></span> Module commercial</p>
+      <h1>Prospects</h1>
+      <p>Consultez les demandes reçues et envoyez les contacts à HubSpot.</p>
+    </div>
+    <span class="admin-panel-count">{{ prospectCount }} au total</span>
+  </section>
+
+  <section class="admin-panel activity-panel admin-prospects-panel">
+    {% if prospects is empty %}
+      <div class="admin-empty-state">
+        <h2>Aucun prospect pour le moment</h2>
+        <p>Les prochaines demandes envoyées depuis le site apparaîtront ici.</p>
+      </div>
+    {% else %}
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Contact</th><th>Entreprise</th><th>Demande</th><th>Dernière activité</th><th>HubSpot</th></tr>
+          </thead>
+          <tbody>
+            {% for prospect in prospects %}
+              <tr id="prospect-{{ prospect.id }}">
+                <td>
+                  <span class="contact-cell">
+                    <span class="contact-avatar">{{ prospect.name|first|upper }}</span>
+                    <span>
+                      <strong>{{ prospect.name }}</strong>
+                      <small>{{ prospect.email }}</small>
+                      {% if prospect.phone %}<small>{{ prospect.phone }}</small>{% endif %}
+                    </span>
+                  </span>
+                </td>
+                <td>{{ prospect.company }}</td>
+                <td>
+                  <span class="locale-badge">{{ prospect.locale|upper }}</span> · {{ prospect.submissionCount }} demande{{ prospect.submissionCount > 1 ? 's' : '' }}
+                  <details class="admin-prospect-message">
+                    <summary>Voir le message</summary>
+                    <p>{{ prospect.message|default('Aucun message renseigné.', true) }}</p>
+                  </details>
+                </td>
+                <td>{{ prospect.lastSubmittedAt|date('d/m/Y à H:i') }}</td>
+                <td>
+                  {% if prospect.hubSpotSyncedAt %}
+                    <span class="status-badge status-success"><i></i> Synchronisé</span>
+                    <small>{{ prospect.hubSpotSyncedAt|date('d/m/Y à H:i') }}</small>
+                  {% else %}
+                    <form method="post" action="{{ path('app_admin_prospect_hubspot', {id: prospect.id}) }}">
+                      <input type="hidden" name="_token" value="{{ csrf_token('prospect_hubspot_' ~ prospect.id) }}">
+                      <input type="hidden" name="page" value="{{ page }}">
+                      <button class="admin-button admin-button-primary" type="submit" data-turbo-submits-with="Envoi…">Envoyer à HubSpot ↗</button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if pageCount > 1 %}
+        <nav class="admin-pagination" aria-label="Pages des prospects">
+          {% if page > 1 %}<a class="admin-button admin-button-light" href="{{ path('app_admin_prospects', {page: page - 1}) }}">← Précédent</a>{% endif %}
+          <span>Page {{ page }} sur {{ pageCount }}</span>
+          {% if page < pageCount %}<a class="admin-button admin-button-light" href="{{ path('app_admin_prospects', {page: page + 1}) }}">Suivant →</a>{% endif %}
+        </nav>
+      {% endif %}
+    {% endif %}
+  </section>
+{% endblock %}
