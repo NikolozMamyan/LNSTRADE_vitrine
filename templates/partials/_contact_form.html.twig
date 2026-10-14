@@ -1,0 +1,24 @@
+<form class="contact-form {{ form_class|default('') }}" id="contact-form" action="{{ path('app_contact_submit') }}" method="post">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token('contact') }}">
+  <input type="hidden" name="locale" value="{{ app.request.locale }}">
+  <input type="hidden" name="origin" value="">
+  <input type="hidden" name="context" value="{{ contact_context|default('Demande générale')|trans }}">
+  <div class="form-honeypot" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+  <div class="contact-journey" data-contact-journey>
+    <span>{{ 'Parlons de votre projet'|trans }}</span>
+    <strong data-contact-journey-title>{{ contact_label|default('Projet sur mesure')|trans }}</strong>
+    <div data-contact-journey-tags><span>{{ 'Réponse humaine'|trans }}</span><span>{{ 'Sélection personnalisée'|trans }}</span><span>{{ 'Suivi B2B'|trans }}</span></div>
+  </div>
+  <div class="form-row">
+    <label>{{ 'Prénom et nom *'|trans }}<input type="text" name="name" autocomplete="name" required maxlength="200" placeholder="{{ 'Votre nom'|trans }}"></label>
+    <label>{{ 'Société *'|trans }}<input type="text" name="company" autocomplete="organization" required maxlength="200" placeholder="{{ 'Votre société'|trans }}"></label>
+  </div>
+  <div class="form-row">
+    <label>{{ 'E-mail professionnel *'|trans }}<input type="email" name="email" autocomplete="email" required maxlength="254" placeholder="{{ 'vous@societe.com'|trans }}"></label>
+    <label>{{ 'Téléphone'|trans }} <span class="optional">{{ 'Facultatif'|trans }}</span><input type="tel" name="phone" autocomplete="tel" maxlength="100" placeholder="+33 ..."></label>
+  </div>
+  <label>{{ 'Parlez-nous de votre projet'|trans }} <span class="optional">{{ 'Facultatif'|trans }}</span><textarea name="message" rows="2" maxlength="10000" placeholder="{{ 'Pays, type de produits, volumes estimés…'|trans }}"></textarea></label>
+  <button class="button button-primary form-submit" type="submit">{{ submit_label|default('Envoyer ma demande')|trans }} <span aria-hidden="true">↗</span></button>
+  <p class="form-status" data-contact-status aria-live="polite" hidden></p>
+  <p class="form-note">{{ 'En envoyant ce formulaire, vous acceptez notre'|trans }} <a href="{{ site_url|trim('/') ~ path('app_privacy.' ~ app.request.locale) }}">{{ 'politique de confidentialité'|trans }}</a>.</p>
+</form>

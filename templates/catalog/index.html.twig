@@ -21,6 +21,8 @@
     <img src="{{ asset('images/logo-ultrapop-red.png') }}" alt="ULTRAPOP">
   </a>
 
+  <a class="catalog-contact-cta" href="{{ path('app_wholesale.' ~ (app.request.getPreferredLanguage(['en', 'fr']) ?? 'en')) }}#contact">Request pricing <span aria-hidden="true">↗</span></a>
+
   <main class="catalog-viewer{{ isPreview ? ' is-preview' : '' }}">
     <div class="catalog-stage" data-catalog-target="stage" aria-busy="true">
       <div class="catalog-stage-glow" aria-hidden="true"></div>

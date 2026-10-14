@@ -22,8 +22,8 @@
     </div>
   </div>
 
-  <button class="header-cta" type="button" data-open-contact>
-    <span>{{ 'Parlons business'|trans }}</span><span aria-hidden="true">↗</span>
+  <button class="header-cta" type="button" data-open-contact{% if page_id in ['home', 'wholesale', 'ultrapop'] %} data-interest="{{ 'Tarifs professionnels'|trans }}"{% endif %}>
+    <span>{{ (page_id in ['home', 'wholesale', 'ultrapop'] ? 'Demander les tarifs' : 'Parlons business')|trans }}</span><span class="header-cta-mobile">{{ (page_id in ['home', 'wholesale', 'ultrapop'] ? 'Tarifs' : 'Contact')|trans }}</span><span aria-hidden="true">↗</span>
   </button>
   <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="{{ 'Ouvrir le menu'|trans }}">
     <span></span><span></span>

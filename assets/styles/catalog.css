@@ -33,3 +33,7 @@ button,input{font:inherit}button,a{color:inherit}button{cursor:pointer}.catalog-
 .catalog-loading.is-hidden{visibility:hidden;opacity:0;pointer-events:none}
 .catalog-loading.is-inline{inset:auto auto 18px 50%;width:max-content;max-width:calc(100% - 24px);padding:12px 20px;border:1px solid #11110f12;border-radius:14px;background:#fffdf8f2;box-shadow:0 8px 24px #11110f12;transform:translateX(-50%)}
 .catalog-loading.is-inline .catalog-loading-preview{display:none}.catalog-loading.is-inline strong{font-size:12px}.catalog-loading.is-inline small{font-size:10px}
+.catalog-contact-cta{position:fixed;z-index:55;top:18px;right:24px;display:flex;align-items:center;gap:16px;min-height:44px;padding:10px 18px;border-radius:8px;background:#ffc719;color:#11110f;text-decoration:none;font-size:12px;font-weight:800;box-shadow:0 4px 18px #11110f14}
+.catalog-contact-cta:hover{background:#f3efe6}.catalog-contact-cta:focus-visible{outline:2px solid #11110f;outline-offset:3px}
+.catalog-preview-banner~.catalog-contact-cta{top:43px}
+@media(max-width:650px){.catalog-contact-cta{top:11px;right:14px;min-height:32px;padding:7px 10px;font-size:10px;gap:8px}.catalog-preview-banner~.catalog-contact-cta{top:39px}}

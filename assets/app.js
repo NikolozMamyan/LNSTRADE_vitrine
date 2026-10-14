@@ -96,6 +96,50 @@ const parseUiCopy = () => {
   }
 };
 
+const submitContactForm = async (form, copy, data = new FormData(form)) => {
+  const submitButton = form.querySelector('[type="submit"]');
+  if (submitButton?.disabled || !form.reportValidity()) return false;
+  form.querySelectorAll('[aria-invalid="true"]').forEach((field) => field.removeAttribute('aria-invalid'));
+  const status = form.querySelector('[data-contact-status]');
+  data.set('origin', window.location.href);
+  if (submitButton) submitButton.disabled = true;
+  if (status) {
+    status.hidden = false;
+    status.className = 'form-status';
+    status.textContent = copy.sending;
+  }
+
+  try {
+    const response = await fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { Accept: 'application/json' },
+      credentials: 'same-origin',
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.ok) {
+      if ('validation' === result.error && Array.isArray(result.fields)) {
+        result.fields.forEach((name) => form.elements.namedItem(name)?.setAttribute('aria-invalid', 'true'));
+        form.querySelector('[aria-invalid="true"]')?.focus();
+      }
+      throw new Error(('validation' === result.error ? copy.invalid : copy.error) || 'Unable to send your request.');
+    }
+    if (status) {
+      status.classList.add('is-success');
+      status.textContent = copy.success;
+    }
+    return true;
+  } catch (error) {
+    if (status) {
+      status.classList.add('is-error');
+      status.textContent = error.message || copy.error;
+    }
+    return false;
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+  }
+};
+
 const setupRangeBuilder = ({ listen, modal, contactModal, catalogueModal, uiCopy }) => {
   if (!modal) return;
 
@@ -119,8 +163,6 @@ const setupRangeBuilder = ({ listen, modal, contactModal, catalogueModal, uiCopy
   const contactView = modal.querySelector('[data-builder-contact-view]');
   const successView = modal.querySelector('[data-builder-success]');
   const builderForm = modal.querySelector('[data-builder-form]');
-  const selectionInput = modal.querySelector('[data-builder-selection]');
-  const emailLink = modal.querySelector('[data-builder-email-link]');
   const mobileCart = modal.querySelector('.range-builder-mobile-cart');
   let state = { category: 'all', basket: {}, step: 1 };
 
@@ -251,15 +293,6 @@ const setupRangeBuilder = ({ listen, modal, contactModal, catalogueModal, uiCopy
       continueButton.setAttribute('aria-disabled', String(totals.references === 0));
     }
 
-    if (selectionInput) {
-      selectionInput.value = JSON.stringify(Object.entries(state.basket).map(([id, quantity]) => ({
-        id,
-        name: products.get(id).name,
-        license: products.get(id).license,
-        quantity,
-      })));
-    }
-
     updateMobileCart();
     saveState();
   };
@@ -383,13 +416,6 @@ const setupRangeBuilder = ({ listen, modal, contactModal, catalogueModal, uiCopy
       return;
     }
 
-    if (event.target.closest('[data-builder-edit]')) {
-      if (successView) successView.hidden = true;
-      contactView?.removeAttribute('hidden');
-      builderForm?.querySelector('input:not([type="hidden"])')?.focus();
-      return;
-    }
-
     if (event.target.closest('[data-builder-reset]')) {
       state = { category: 'all', basket: {}, step: 1 };
       try { localStorage.removeItem(storageKey); } catch { /* Storage can be unavailable. */ }
@@ -405,7 +431,7 @@ const setupRangeBuilder = ({ listen, modal, contactModal, catalogueModal, uiCopy
     if (!contactModal?.open && !catalogueModal?.open) document.body.classList.remove('modal-open');
   });
 
-  listen(builderForm, 'submit', (event) => {
+  listen(builderForm, 'submit', async (event) => {
     event.preventDefault();
     if (getTotals().references === 0) {
       goToStep(2);
@@ -413,30 +439,19 @@ const setupRangeBuilder = ({ listen, modal, contactModal, catalogueModal, uiCopy
     }
 
     const data = new FormData(builderForm);
-    const mail = uiCopy.mail || {};
     const selectionLines = Object.entries(state.basket).map(([id, quantity]) => {
       const product = products.get(id);
       const caseLabel = quantity === 1 ? modal.dataset.labelCase : modal.dataset.labelCases;
       return `- ${product.name} — ${product.license}: ${quantity} ${caseLabel}`;
     });
-    const subject = encodeURIComponent(`${modal.dataset.mailSubject} — ${data.get('company')}`);
-    const body = encodeURIComponent([
-      modal.dataset.mailSelection,
+    data.set('message', [
+      modal.dataset.selectionLabel,
       ...selectionLines,
       '',
-      modal.dataset.mailContact,
-      `${mail.name || 'Name'}: ${data.get('name')}`,
-      `${mail.company || 'Company'}: ${data.get('company')}`,
-      `${mail.email || 'Email'}: ${data.get('email')}`,
-      `${mail.phone || 'Phone'}: ${data.get('phone') || mail.empty || '-'}`,
-      `${mail.vat || 'VAT'}: ${data.get('vat') || mail.empty || '-'}`,
-      '',
-      data.get('message') || mail.noMessage || '',
-      '',
-      `${mail.origin || 'Source'}: ${window.location.href}`,
+      data.get('message') || '',
     ].join('\n'));
 
-    if (emailLink) emailLink.href = `mailto:info@lnstrade.fr?subject=${subject}&body=${body}`;
+    if (!await submitContactForm(builderForm, uiCopy.contact || {}, data)) return;
     contactView?.setAttribute('hidden', '');
     if (successView) successView.hidden = false;
     builderBody?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -589,7 +604,7 @@ const initializePage = () => {
   };
 
   const openContact = (journey = defaultJourney) => {
-    if (!contactModal) return;
+    if (!contactForm) return;
     if (catalogueModal?.open) catalogueModal.close();
     if (rangeBuilderModal?.open) rangeBuilderModal.close();
     const status = contactForm?.querySelector('[data-contact-status]');
@@ -599,6 +614,12 @@ const initializePage = () => {
       status.textContent = '';
     }
     updateContactJourney({ ...defaultJourney, ...journey });
+    if (!contactModal) {
+      document.body.classList.remove('modal-open');
+      contactForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      contactForm.querySelector('input[name="name"]')?.focus({ preventScroll: true });
+      return;
+    }
     playModalSkeleton(contactModal);
     if (!contactModal.open) contactModal.showModal();
     document.body.classList.add('modal-open');
@@ -682,51 +703,7 @@ const initializePage = () => {
 
   listen(contactForm, 'submit', async (event) => {
     event.preventDefault();
-    if (!contactForm.reportValidity()) return;
-
-    const copy = uiCopy.contact || {};
-    contactForm.querySelectorAll('[aria-invalid="true"]').forEach((field) => field.removeAttribute('aria-invalid'));
-    const submitButton = contactForm.querySelector('[type="submit"]');
-    const status = contactForm.querySelector('[data-contact-status]');
-    const origin = contactForm.elements.namedItem('origin');
-    if (origin) origin.value = window.location.href;
-    if (submitButton) submitButton.disabled = true;
-    if (status) {
-      status.hidden = false;
-      status.className = 'form-status';
-      status.textContent = copy.sending || 'Sending…';
-    }
-
-    try {
-      const response = await fetch(contactForm.action, {
-        method: 'POST',
-        body: new FormData(contactForm),
-        headers: { Accept: 'application/json' },
-        credentials: 'same-origin',
-      });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok || !result.ok) {
-        if ('validation' === result.error && Array.isArray(result.fields)) {
-          result.fields.forEach((name) => contactForm.elements.namedItem(name)?.setAttribute('aria-invalid', 'true'));
-          contactForm.querySelector('[aria-invalid="true"]')?.focus();
-        }
-        const message = 'validation' === result.error ? copy.invalid : copy.error;
-        throw new Error(message || 'Unable to send your request.');
-      }
-
-      contactForm.reset();
-      if (status) {
-        status.classList.add('is-success');
-        status.textContent = copy.success || 'Your request has been sent.';
-      }
-    } catch (error) {
-      if (status) {
-        status.classList.add('is-error');
-        status.textContent = error.message || copy.error || 'Unable to send your request.';
-      }
-    } finally {
-      if (submitButton) submitButton.disabled = false;
-    }
+    if (await submitContactForm(contactForm, uiCopy.contact || {})) contactForm.reset();
   });
 
   if ('IntersectionObserver' in window) {

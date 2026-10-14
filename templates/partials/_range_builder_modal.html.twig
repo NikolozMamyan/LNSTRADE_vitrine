@@ -29,15 +29,13 @@
   data-label-add="{{ 'builder.add'|trans }}"
   data-label-added="{{ 'builder.added'|trans }}"
   data-label-remove="{{ 'builder.remove'|trans }}"
-  data-mail-subject="{{ 'builder.mail_subject'|trans }}"
-  data-mail-selection="{{ 'builder.mail_selection'|trans }}"
-  data-mail-contact="{{ 'builder.mail_contact'|trans }}"
+  data-selection-label="{{ 'builder.mail_selection'|trans }}"
 >
   {% include 'partials/_modal_skeleton.html.twig' with {variant: 'builder'} only %}
   <div class="range-builder-window">
     <div class="range-builder-toolbar">
       <div class="catalogue-traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
-      <div class="range-builder-address"><span aria-hidden="true">◆</span> LNS Range Builder <b>{{ 'builder.prototype'|trans }}</b></div>
+      <div class="range-builder-address"><span aria-hidden="true">◆</span> LNS Range Builder</div>
       <div class="range-builder-toolbar-actions">
         <span class="range-builder-save-state" data-builder-save-state><i></i>{{ 'builder.saved'|trans }}</span>
         <button type="button" data-close-builder aria-label="{{ 'builder.close'|trans }}" title="{{ 'builder.close'|trans }}">×</button>
@@ -181,8 +179,11 @@
               <div><strong data-builder-contact-cases>0</strong><small>{{ 'builder.total_cases'|trans }}</small></div>
             </div>
           </div>
-          <form class="range-builder-form" data-builder-form>
-            <input type="hidden" name="selection" data-builder-selection>
+          <form class="range-builder-form" data-builder-form action="{{ path('app_contact_submit') }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('contact') }}">
+            <input type="hidden" name="locale" value="{{ app.request.locale }}">
+            <input type="hidden" name="context" value="{{ 'builder.context'|trans }}">
+            <div class="form-honeypot" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
             <div class="form-row">
               <label>{{ 'builder.form.name'|trans }} *<input type="text" name="name" autocomplete="name" required placeholder="{{ 'Votre nom'|trans }}"></label>
               <label>{{ 'builder.form.company'|trans }} *<input type="text" name="company" autocomplete="organization" required placeholder="{{ 'Votre société'|trans }}"></label>
@@ -191,19 +192,17 @@
               <label>{{ 'builder.form.email'|trans }} *<input type="email" name="email" autocomplete="email" required placeholder="{{ 'vous@societe.com'|trans }}"></label>
               <label>{{ 'builder.form.phone'|trans }} <span>{{ 'Facultatif'|trans }}</span><input type="tel" name="phone" autocomplete="tel" placeholder="+33 ..."></label>
             </div>
-            <label>{{ 'builder.form.vat'|trans }} <span>{{ 'Facultatif'|trans }}</span><input type="text" name="vat" autocomplete="off" placeholder="FR 00 000000000"></label>
             <label>{{ 'builder.form.message'|trans }} <span>{{ 'Facultatif'|trans }}</span><textarea name="message" rows="3" placeholder="{{ 'builder.form.message_placeholder'|trans }}"></textarea></label>
-            <button class="button button-primary range-builder-submit" type="submit">{{ 'builder.prepare_request'|trans }} <span>↗</span></button>
-            <p class="range-builder-form-note">{{ 'builder.demo_note'|trans }} <a href="{{ site_url|trim('/') ~ path('app_privacy.' ~ app.request.locale) }}" target="_blank" rel="noopener">{{ 'politique de confidentialité'|trans }}</a>.</p>
+            <button class="button button-primary range-builder-submit" type="submit">{{ 'Recevoir nos tarifs professionnels'|trans }} <span>↗</span></button>
+            <p class="form-status" data-contact-status aria-live="polite" hidden></p>
+            <p class="range-builder-form-note">{{ 'En envoyant ce formulaire, vous acceptez notre'|trans }} <a href="{{ site_url|trim('/') ~ path('app_privacy.' ~ app.request.locale) }}" target="_blank" rel="noopener">{{ 'politique de confidentialité'|trans }}</a>.</p>
           </form>
         </div>
 
         <div class="range-builder-success" data-builder-success hidden>
           <span class="range-builder-success-icon" aria-hidden="true">✓</span>
-          <p>{{ 'builder.prototype'|trans }}</p>
           <h3>{{ 'builder.success_title'|trans }}</h3>
           <p>{{ 'builder.success_intro'|trans }}</p>
-          <div><a class="button button-primary" href="mailto:info@lnstrade.fr" data-builder-email-link>{{ 'builder.send_email'|trans }} <span>↗</span></a><button class="button range-builder-outline" type="button" data-builder-edit>{{ 'builder.edit_request'|trans }}</button></div>
           <button class="range-builder-text-button" type="button" data-builder-reset>{{ 'builder.start_again'|trans }}</button>
         </div>
       </section>

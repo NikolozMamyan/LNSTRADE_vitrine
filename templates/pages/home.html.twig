@@ -16,13 +16,13 @@
 
       <div class="hero-content shell">
         <p class="eyebrow light"><span></span> {{ 'Depuis 2014 · Strasbourg · International'|trans }}</p>
-        <h1>{{ 'Le trade'|trans }}<br>{{ 'qui fait'|trans }} <em>{{ 'pop.'|trans }}</em></h1>
-        <p class="hero-lead">{{ 'Nous détectons les produits qui vont compter, nous les amenons jusqu’à vos rayons — et nous créons ceux que les fans vont s’arracher.'|trans }}</p>
+        <h1>{{ 'Grossiste'|trans }}<br>{{ 'snacks &'|trans }}<br><em>{{ 'boissons.'|trans }}</em></h1>
+        <p class="hero-lead">{{ 'Des boissons et snacks pour les commerces, distributeurs et e-shops. Découvrez nos gammes et recevez les tarifs professionnels adaptés à votre activité.'|trans }}</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="{{ path('app_catalog') }}" target="_blank" rel="opener">
+          <button class="button button-primary" type="button" data-open-contact data-interest="{{ 'Tarifs professionnels'|trans }}">{{ 'Recevoir nos tarifs professionnels'|trans }} <span aria-hidden="true">↗</span></button>
+          <a class="button button-ghost" href="{{ path('app_catalog') }}" target="_blank" rel="opener">
             {{ 'Voir le catalogue'|trans }} <span aria-hidden="true">↗</span>
           </a>
-          <button class="button button-ghost" type="button" data-open-builder>{{ 'Découvrir LNSTRADE'|trans }} <span aria-hidden="true">↗</span></button>
         </div>
         <p class="hero-direct">{{ 'Une question ?'|trans }} <a href="tel:+33388840380">+33 3 88 84 03 80</a><span>·</span><a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a></p>
         <div class="hero-proof" aria-label="{{ 'Chiffres clés'|trans }}">
