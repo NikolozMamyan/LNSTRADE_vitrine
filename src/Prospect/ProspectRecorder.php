@@ -47,6 +47,16 @@ final readonly class ProspectRecorder
         $this->entityManager->flush();
     }
 
+    public function setHubSpotRejected(Prospect $prospect, bool $rejected): void
+    {
+        if (null !== $prospect->getHubSpotSyncedAt()) {
+            return;
+        }
+
+        $prospect->setHubSpotRejected($rejected, new \DateTimeImmutable());
+        $this->entityManager->flush();
+    }
+
     public function enrichCountry(Prospect $prospect): void
     {
         if (null === $prospect->getIpAddress() || null !== $prospect->getCountryCode()) {

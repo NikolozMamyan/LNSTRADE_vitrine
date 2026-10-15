@@ -98,6 +98,8 @@
                   <td>
                     {% if prospect.hubSpotSyncedAt %}
                       <span class="status-badge status-success"><i></i> Synchronisé</span>
+                    {% elseif prospect.hubSpotRejectedAt %}
+                      <span class="status-badge status-pending"><i></i> Synchronisation refusée</span>
                     {% else %}
                       <span class="status-badge status-pending"><i></i> En attente</span>
                     {% endif %}

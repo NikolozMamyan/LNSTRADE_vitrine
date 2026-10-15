@@ -23,7 +23,7 @@
       <div class="admin-table-wrap">
         <table class="admin-table">
           <thead>
-            <tr><th>Contact</th><th>Entreprise</th><th>Demande</th><th>Dernière activité</th><th>HubSpot</th></tr>
+            <tr><th>Contact</th><th>Entreprise</th><th>Demande</th><th>Dernière activité</th><th>Actions</th></tr>
           </thead>
           <tbody>
             {% for prospect in prospects %}
@@ -73,12 +73,31 @@ Téléphone : {{ prospect.phone|default('Non renseigné', true) }}
                   {% if prospect.hubSpotSyncedAt %}
                     <span class="status-badge status-success"><i></i> Synchronisé</span>
                     <small>{{ prospect.hubSpotSyncedAt|date('d/m/Y à H:i') }}</small>
+                  {% elseif prospect.hubSpotRejectedAt %}
+                    <span class="status-badge status-pending"><i></i> Synchronisation refusée</span>
+                    <small>{{ prospect.hubSpotRejectedAt|date('d/m/Y à H:i') }}</small>
+                    <div class="admin-prospect-actions">
+                      <form method="post" action="{{ path('app_admin_prospect_hubspot_decision', {id: prospect.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('prospect_hubspot_decision_' ~ prospect.id) }}">
+                        <input type="hidden" name="decision" value="allow">
+                        <input type="hidden" name="page" value="{{ page }}">
+                        <button class="admin-button admin-button-light" type="submit" data-turbo-submits-with="Enregistrement…">Réautoriser</button>
+                      </form>
+                    </div>
                   {% else %}
-                    <form method="post" action="{{ path('app_admin_prospect_hubspot', {id: prospect.id}) }}">
-                      <input type="hidden" name="_token" value="{{ csrf_token('prospect_hubspot_' ~ prospect.id) }}">
-                      <input type="hidden" name="page" value="{{ page }}">
-                      <button class="admin-button admin-button-primary" type="submit" data-turbo-submits-with="Envoi…">Envoyer à HubSpot ↗</button>
-                    </form>
+                    <div class="admin-prospect-actions">
+                      <form method="post" action="{{ path('app_admin_prospect_hubspot', {id: prospect.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('prospect_hubspot_' ~ prospect.id) }}">
+                        <input type="hidden" name="page" value="{{ page }}">
+                        <button class="admin-button admin-button-primary" type="submit" data-turbo-submits-with="Envoi…">Envoyer à HubSpot ↗</button>
+                      </form>
+                      <form method="post" action="{{ path('app_admin_prospect_hubspot_decision', {id: prospect.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('prospect_hubspot_decision_' ~ prospect.id) }}">
+                        <input type="hidden" name="decision" value="reject">
+                        <input type="hidden" name="page" value="{{ page }}">
+                        <button class="admin-button admin-button-light" type="submit" data-turbo-submits-with="Enregistrement…" aria-label="Refuser la synchronisation de {{ prospect.name }}" title="Conserver le prospect et refuser son envoi à HubSpot">Refuser</button>
+                      </form>
+                    </div>
                   {% endif %}
                 </td>
               </tr>

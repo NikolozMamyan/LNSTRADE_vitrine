@@ -17,7 +17,7 @@ final readonly class ProspectHubSpotSender
 
     public function send(Prospect $prospect): void
     {
-        if (null !== $prospect->getHubSpotSyncedAt()) {
+        if (null !== $prospect->getHubSpotSyncedAt() || null !== $prospect->getHubSpotRejectedAt()) {
             return;
         }
 

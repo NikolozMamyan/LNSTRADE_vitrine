@@ -67,6 +67,9 @@ class Prospect
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $hubSpotSyncedAt = null;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $hubSpotRejectedAt = null;
+
     public function __construct(ContactSubmission $submission, \DateTimeImmutable $submittedAt, ?string $ipAddress = null)
     {
         $this->email = $submission->email;
@@ -189,6 +192,17 @@ class Prospect
     public function getHubSpotSyncedAt(): ?\DateTimeImmutable
     {
         return $this->hubSpotSyncedAt;
+    }
+
+    public function getHubSpotRejectedAt(): ?\DateTimeImmutable
+    {
+        return $this->hubSpotRejectedAt;
+    }
+
+    public function setHubSpotRejected(bool $rejected, \DateTimeImmutable $changedAt): void
+    {
+        $this->hubSpotRejectedAt = $rejected ? $changedAt : null;
+        $this->updatedAt = $changedAt;
     }
 
     private function replaceWhenFilled(string $property, string $value): void

@@ -45,6 +45,20 @@ final class ProspectTest extends TestCase
         self::assertSame('', $prospect->toContactSubmission()->countryCode);
     }
 
+    public function testANewSubmissionKeepsTheSynchronizationRefusal(): void
+    {
+        $prospect = new Prospect($this->submission(), new \DateTimeImmutable('2026-10-15 10:00:00'));
+        $rejectedAt = new \DateTimeImmutable('2026-10-15 10:30:00');
+        $prospect->setHubSpotRejected(true, $rejectedAt);
+
+        $prospect->record($this->submission(message: 'Nouvelle demande'), new \DateTimeImmutable('2026-10-15 11:00:00'));
+
+        self::assertSame($rejectedAt, $prospect->getHubSpotRejectedAt());
+        self::assertSame('Nouvelle demande', $prospect->getMessage());
+        self::assertSame(2, $prospect->getSubmissionCount());
+        self::assertNull($prospect->getHubSpotSyncedAt());
+    }
+
     private function submission(
         string $name = 'Alice Martin',
         string $phone = '',

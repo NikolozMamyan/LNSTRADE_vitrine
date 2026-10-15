@@ -38,8 +38,8 @@ final readonly class HubSpotClient implements HubSpotGateway
         $contactId = $this->upsertContact($submission);
 
         $this->associateContactWithCompany($contactId, $companyId);
-        $this->createNote($contactId, $companyId, $submission);
-        $this->createDeal($contactId, $companyId, $submission);
+        $noteId = $this->createNote($contactId, $companyId, $submission);
+        $this->createDeal($contactId, $companyId, $noteId, $submission);
     }
 
     private function findOrCreateCompany(ContactSubmission $submission): string
@@ -132,7 +132,7 @@ final readonly class HubSpotClient implements HubSpotGateway
         );
     }
 
-    private function createNote(string $contactId, string $companyId, ContactSubmission $submission): void
+    private function createNote(string $contactId, string $companyId, ContactSubmission $submission): string
     {
         $escape = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $message = '' !== $submission->message ? nl2br($escape($submission->message)) : '—';
@@ -150,7 +150,7 @@ final readonly class HubSpotClient implements HubSpotGateway
             $message,
         );
 
-        $this->request('POST', '/crm/objects/2026-03/notes', [
+        $note = $this->request('POST', '/crm/objects/2026-03/notes', [
             'json' => [
                 'properties' => [
                     'hs_timestamp' => gmdate('c'),
@@ -174,9 +174,11 @@ final readonly class HubSpotClient implements HubSpotGateway
                 ],
             ],
         ], [201]);
+
+        return $this->requireId($note, 'note');
     }
 
-    private function createDeal(string $contactId, string $companyId, ContactSubmission $submission): void
+    private function createDeal(string $contactId, string $companyId, string $noteId, ContactSubmission $submission): void
     {
         $deal = $this->request('POST', '/crm/objects/2026-03/deals', [
             'json' => [
@@ -200,6 +202,13 @@ final readonly class HubSpotClient implements HubSpotGateway
                         'types' => [[
                             'associationCategory' => 'HUBSPOT_DEFINED',
                             'associationTypeId' => 5,
+                        ]],
+                    ],
+                    [
+                        'to' => ['id' => $noteId],
+                        'types' => [[
+                            'associationCategory' => 'HUBSPOT_DEFINED',
+                            'associationTypeId' => 213,
                         ]],
                     ],
                 ],

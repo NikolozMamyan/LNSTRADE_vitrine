@@ -48,7 +48,7 @@ final readonly class DashboardProvider
             'prospectCount' => $repository->count([]),
             'recentProspectCount' => $recentProspectCount,
             'submissionCount' => $submissionCount,
-            'pendingSyncCount' => $repository->count(['hubSpotSyncedAt' => null]),
+            'pendingSyncCount' => $repository->count(['hubSpotSyncedAt' => null, 'hubSpotRejectedAt' => null]),
             'activeSessionCount' => count($this->sessionManager->activeSessions($user)),
             'recentProspects' => $repository->findBy([], ['lastSubmittedAt' => 'DESC'], 6),
         ];

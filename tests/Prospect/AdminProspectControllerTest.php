@@ -10,6 +10,7 @@ use App\Entity\Prospect;
 use App\HubSpot\ContactSubmission;
 use App\HubSpot\HubSpotException;
 use App\HubSpot\HubSpotGateway;
+use App\Prospect\ProspectHubSpotSender;
 use App\Security\SessionManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -144,6 +145,72 @@ final class AdminProspectControllerTest extends WebTestCase
         self::assertNull($this->entityManager->find(Prospect::class, $id)->getHubSpotSyncedAt());
     }
 
+    public function testItCanRefuseSynchronizationKeepTheProspectAndAllowItAgain(): void
+    {
+        $hubSpot = $this->createMock(HubSpotGateway::class);
+        $hubSpot->expects(self::never())->method('submit');
+        static::getContainer()->set(HubSpotGateway::class, $hubSpot);
+        $sendToken = $this->token();
+        $decisionToken = $this->token('hubspot/decision');
+        $id = $this->prospect->getId();
+        $decisionUrl = 'https://localhost/admin/prospects/'.$id.'/hubspot/decision';
+
+        $this->client->request('POST', $decisionUrl, ['_token' => $decisionToken, 'decision' => 'reject', 'page' => 1]);
+        self::assertResponseRedirects('/admin/prospects?page=1', 303);
+        $this->entityManager->clear();
+        $saved = $this->entityManager->find(Prospect::class, $id);
+        self::assertNotNull($saved);
+        self::assertNotNull($saved->getHubSpotRejectedAt());
+        self::assertNull($saved->getHubSpotSyncedAt());
+        self::assertEquals($this->submission, $saved->toContactSubmission());
+        self::assertSame(1, $this->entityManager->getRepository(Prospect::class)->count([]));
+        static::getContainer()->get(ProspectHubSpotSender::class)->send($saved);
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('#prospect-'.$id, 'Synchronisation refusée');
+        self::assertSelectorNotExists('#prospect-'.$id.' form[action="/admin/prospects/'.$id.'/hubspot"]');
+        self::assertSelectorExists('#prospect-'.$id.' input[name="decision"][value="allow"]');
+
+        $this->client->request('POST', 'https://localhost/admin/prospects/'.$id.'/hubspot', ['_token' => $sendToken]);
+        self::assertResponseRedirects('/admin/prospects?page=1', 303);
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.admin-flash-error', 'La synchronisation est refusée');
+
+        $this->client->request('POST', $decisionUrl, ['_token' => $decisionToken, 'decision' => 'allow']);
+        self::assertResponseRedirects('/admin/prospects?page=1', 303);
+        $this->entityManager->clear();
+        self::assertNull($this->entityManager->find(Prospect::class, $id)->getHubSpotRejectedAt());
+        $this->client->followRedirect();
+        self::assertSelectorExists('#prospect-'.$id.' form[action="/admin/prospects/'.$id.'/hubspot"]');
+        self::assertSelectorExists('#prospect-'.$id.' input[name="decision"][value="reject"]');
+    }
+
+    public function testTheSynchronizationDecisionRequiresAnAdminCsrfAndAnUnsynchronizedProspect(): void
+    {
+        $hubSpot = $this->createMock(HubSpotGateway::class);
+        $hubSpot->expects(self::never())->method('submit');
+        static::getContainer()->set(HubSpotGateway::class, $hubSpot);
+        $token = $this->token('hubspot/decision');
+        $url = 'https://localhost/admin/prospects/'.$this->prospect->getId().'/hubspot/decision';
+
+        $this->client->request('POST', $url, ['_token' => 'invalid', 'decision' => 'reject']);
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request('POST', $url, ['_token' => $token, 'decision' => 'invalid']);
+        self::assertResponseStatusCodeSame(400);
+        $this->client->request('GET', $url);
+        self::assertResponseStatusCodeSame(405);
+
+        $prospect = $this->entityManager->find(Prospect::class, $this->prospect->getId());
+        $prospect->markHubSpotSynced(new \DateTimeImmutable());
+        $this->entityManager->flush();
+        $this->client->request('POST', $url, ['_token' => $token, 'decision' => 'reject']);
+        self::assertResponseStatusCodeSame(409);
+        self::assertNull($prospect->getHubSpotRejectedAt());
+
+        $this->client->getCookieJar()->clear();
+        $this->client->request('POST', $url, ['_token' => $token, 'decision' => 'reject']);
+        self::assertResponseRedirects('/admin/login');
+    }
+
     public function testOlderProspectsRemainAccessibleAndMessagesAreEscaped(): void
     {
         for ($number = 0; $number < 26; ++$number) {
@@ -173,11 +240,11 @@ final class AdminProspectControllerTest extends WebTestCase
         self::assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;', (string) $this->client->getResponse()->getContent());
     }
 
-    private function token(): string
+    private function token(string $action = 'hubspot'): string
     {
         $crawler = $this->client->request('GET', 'https://localhost/admin/prospects');
         self::assertResponseIsSuccessful();
 
-        return $crawler->filter('#prospect-'.$this->prospect->getId().' input[name="_token"]')->attr('value');
+        return $crawler->filter('#prospect-'.$this->prospect->getId().' form[action="/admin/prospects/'.$this->prospect->getId().'/'.$action.'"] input[name="_token"]')->attr('value');
     }
 }

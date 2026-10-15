@@ -90,6 +90,13 @@ final class HubSpotClientTest extends TestCase
                     'associationTypeId' => 5,
                 ]],
             ],
+            [
+                'to' => ['id' => 'note-1'],
+                'types' => [[
+                    'associationCategory' => 'HUBSPOT_DEFINED',
+                    'associationTypeId' => 213,
+                ]],
+            ],
         ], $deal['associations']);
     }
 

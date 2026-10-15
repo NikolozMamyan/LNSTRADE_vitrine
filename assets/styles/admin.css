@@ -169,6 +169,7 @@ svg { display: block; }
 .admin-prospects-panel .locale-badge, .admin-prospects-panel .status-badge { font-size: 12px; }
 .admin-prospects-panel .admin-button { font-size: 11px; }
 .admin-prospects-panel td > small { display: block; margin-top: 5px; font-size: 12px; }
+.admin-prospect-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
 .admin-prospect-copy { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: 6px; background: var(--admin-white); color: var(--admin-ink); font-size: 11px; font-weight: 700; cursor: pointer; }
 .admin-prospect-copy svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .admin-prospect-copy:hover, .admin-prospect-copy:focus-visible { border-color: var(--admin-orange); color: var(--admin-orange); }
