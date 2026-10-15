@@ -37,6 +37,22 @@
                       {% if prospect.phone %}<small>{{ prospect.phone }}</small>{% endif %}
                     </span>
                   </span>
+                  <button class="admin-prospect-copy" type="button" data-prospect-copy="prospect-copy-{{ prospect.id }}" aria-label="Copier la fiche de {{ prospect.name }}" title="Copier le contact, l’entreprise et le message">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h11v12H9zM15 9V3H3v12h6"/></svg>
+                    <span data-copy-label aria-live="polite">Copier</span>
+                  </button>
+                  <div id="prospect-copy-{{ prospect.id }}" hidden><strong>FICHE PROSPECT — LNS TRADE</strong>
+
+<strong>CONTACT</strong>
+Nom : {{ prospect.name }}
+E-mail : {{ prospect.email }}
+Téléphone : {{ prospect.phone|default('Non renseigné', true) }}
+
+<strong>ENTREPRISE</strong>
+{{ prospect.company }}
+
+<strong>MESSAGE</strong>
+{{ prospect.message|default('Aucun message renseigné.', true) }}</div>
                 </td>
                 <td>{{ prospect.company }}</td>
                 <td>

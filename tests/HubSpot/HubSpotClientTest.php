@@ -13,7 +13,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 final class HubSpotClientTest extends TestCase
 {
-    public function testItCreatesAndAssociatesACompanyAndContactWithANote(): void
+    public function testItCreatesAndAssociatesACompanyAndContactWithANoteAndDeal(): void
     {
         $requests = [];
         $responses = [
@@ -23,6 +23,7 @@ final class HubSpotClientTest extends TestCase
             new MockResponse('{"id":"contact-1"}', ['http_code' => 201]),
             new MockResponse('{}', ['http_code' => 201]),
             new MockResponse('{"id":"note-1"}', ['http_code' => 201]),
+            new MockResponse('{"id":"deal-1"}', ['http_code' => 201]),
         ];
         $httpClient = new MockHttpClient(static function (string $method, string $url, array $options) use (&$requests, &$responses): MockResponse {
             $requests[] = [$method, $url, $options];
@@ -30,9 +31,9 @@ final class HubSpotClientTest extends TestCase
             return array_shift($responses);
         });
 
-        (new HubSpotClient($httpClient, 'secret-token', '1351597969'))->submit($this->submission());
+        (new HubSpotClient($httpClient, 'secret-token', '1351597969', 'default', 'appointmentscheduled'))->submit($this->submission());
 
-        self::assertCount(6, $requests);
+        self::assertCount(7, $requests);
         foreach ($requests as $request) {
             self::assertSame(5.0, $request[2]['timeout']);
             self::assertSame(10.0, $request[2]['max_duration']);
@@ -41,8 +42,10 @@ final class HubSpotClientTest extends TestCase
         self::assertSame('https://api.hubapi.com/crm/objects/2026-03/companies', $requests[1][1]);
         self::assertStringContainsString('/contacts/alice%40example.com', $requests[2][1]);
         self::assertSame('https://api.hubapi.com/crm/objects/2026-03/contacts', $requests[3][1]);
+        $createdCompany = json_decode($requests[1][2]['body'], true, flags: JSON_THROW_ON_ERROR);
         $updatedContact = json_decode($requests[2][2]['body'], true, flags: JSON_THROW_ON_ERROR);
         $createdContact = json_decode($requests[3][2]['body'], true, flags: JSON_THROW_ON_ERROR);
+        self::assertSame('1351597969', $createdCompany['properties']['hubspot_owner_id']);
         self::assertSame('1351597969', $updatedContact['properties']['hubspot_owner_id']);
         self::assertSame('1351597969', $createdContact['properties']['hubspot_owner_id']);
         self::assertStringContainsString('/contacts/contact-1/associations/companies/company-1', $requests[4][1]);
@@ -52,6 +55,32 @@ final class HubSpotClientTest extends TestCase
         self::assertSame(202, $note['associations'][0]['types'][0]['associationTypeId']);
         self::assertStringContainsString('Demande de catalogue', $note['properties']['hs_note_body']);
         self::assertStringContainsString('FR123456', $note['properties']['hs_note_body']);
+
+        self::assertSame('POST', $requests[6][0]);
+        self::assertSame('https://api.hubapi.com/crm/objects/2026-03/deals', $requests[6][1]);
+        $deal = json_decode($requests[6][2]['body'], true, flags: JSON_THROW_ON_ERROR);
+        self::assertSame([
+            'dealname' => 'LNSTRADE - Example SAS',
+            'pipeline' => 'default',
+            'dealstage' => 'appointmentscheduled',
+            'hubspot_owner_id' => '1351597969',
+        ], $deal['properties']);
+        self::assertSame([
+            [
+                'to' => ['id' => 'contact-1'],
+                'types' => [[
+                    'associationCategory' => 'HUBSPOT_DEFINED',
+                    'associationTypeId' => 3,
+                ]],
+            ],
+            [
+                'to' => ['id' => 'company-1'],
+                'types' => [[
+                    'associationCategory' => 'HUBSPOT_DEFINED',
+                    'associationTypeId' => 5,
+                ]],
+            ],
+        ], $deal['associations']);
     }
 
     public function testItIdentifiesAnEmailRejectedByHubSpot(): void
@@ -66,7 +95,7 @@ final class HubSpotClientTest extends TestCase
         });
 
         try {
-            (new HubSpotClient($httpClient, 'secret-token', '1351597969'))->submit($this->submission());
+            (new HubSpotClient($httpClient, 'secret-token', '1351597969', 'default', 'appointmentscheduled'))->submit($this->submission());
             self::fail('A HubSpotException should have been thrown.');
         } catch (HubSpotException $exception) {
             self::assertSame(400, $exception->statusCode, $exception->getMessage());
@@ -83,7 +112,7 @@ final class HubSpotClientTest extends TestCase
 
         $this->expectException(HubSpotException::class);
         $this->expectExceptionMessage('HubSpot is currently unreachable.');
-        (new HubSpotClient($httpClient, 'secret-token', '1351597969'))->submit($this->submission());
+        (new HubSpotClient($httpClient, 'secret-token', '1351597969', 'default', 'appointmentscheduled'))->submit($this->submission());
     }
 
     private function submission(): ContactSubmission

@@ -20,6 +20,10 @@ final readonly class HubSpotClient implements HubSpotGateway
         private string $accessToken,
         #[Autowire('%env(HUBSPOT_OWNER_ID)%')]
         private string $ownerId,
+        #[Autowire('%env(HUBSPOT_DEAL_PIPELINE_ID)%')]
+        private string $dealPipelineId,
+        #[Autowire('%env(HUBSPOT_DEAL_STAGE_ID)%')]
+        private string $dealStageId,
     ) {
     }
 
@@ -34,6 +38,7 @@ final readonly class HubSpotClient implements HubSpotGateway
 
         $this->associateContactWithCompany($contactId, $companyId);
         $this->createContactNote($contactId, $submission);
+        $this->createDeal($contactId, $companyId, $submission);
     }
 
     private function findOrCreateCompany(string $name): string
@@ -59,7 +64,10 @@ final readonly class HubSpotClient implements HubSpotGateway
 
         $company = $this->request('POST', '/crm/objects/2026-03/companies', [
             'json' => [
-                'properties' => ['name' => $name],
+                'properties' => array_filter([
+                    'name' => $name,
+                    'hubspot_owner_id' => $this->ownerId,
+                ], static fn (string $value): bool => '' !== $value),
                 'associations' => [],
             ],
         ], [201]);
@@ -145,6 +153,38 @@ final readonly class HubSpotClient implements HubSpotGateway
                 ]],
             ],
         ], [201]);
+    }
+
+    private function createDeal(string $contactId, string $companyId, ContactSubmission $submission): void
+    {
+        $deal = $this->request('POST', '/crm/objects/2026-03/deals', [
+            'json' => [
+                'properties' => array_filter([
+                    'dealname' => 'LNSTRADE - '.$submission->company,
+                    'pipeline' => $this->dealPipelineId,
+                    'dealstage' => $this->dealStageId,
+                    'hubspot_owner_id' => $this->ownerId,
+                ], static fn (string $value): bool => '' !== $value),
+                'associations' => [
+                    [
+                        'to' => ['id' => $contactId],
+                        'types' => [[
+                            'associationCategory' => 'HUBSPOT_DEFINED',
+                            'associationTypeId' => 3,
+                        ]],
+                    ],
+                    [
+                        'to' => ['id' => $companyId],
+                        'types' => [[
+                            'associationCategory' => 'HUBSPOT_DEFINED',
+                            'associationTypeId' => 5,
+                        ]],
+                    ],
+                ],
+            ],
+        ], [201]);
+
+        $this->requireId($deal, 'deal');
     }
 
     /**
