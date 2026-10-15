@@ -7,6 +7,13 @@
       <div><dt>Source</dt><dd>{{ session.source == 'direct' ? 'Accès direct' : session.source }}{% if session.medium %} / {{ session.medium }}{% endif %}</dd></div>
       {% if session.campaign %}<div><dt>Campagne</dt><dd>{{ session.campaign }}</dd></div>{% endif %}
       <div><dt>Page d’entrée</dt><dd>{{ session.entryPath }}</dd></div>
+      {% if ipLocation %}
+        {% for key, label in {country: 'Pays (localisation IP)', countryCode: 'Code pays', regionName: 'Région', region: 'Code région', city: 'Ville', zip: 'Code postal', timezone: 'Fuseau horaire', isp: 'Fournisseur Internet', org: 'Organisation', as: 'Réseau AS', lat: 'Latitude approximative', lon: 'Longitude approximative'} %}
+          {% if ipLocation[key] is defined and ipLocation[key] is not same as('') %}<div><dt>{{ label }}</dt><dd>{{ ipLocation[key] }}</dd></div>{% endif %}
+        {% endfor %}
+      {% else %}
+        <div><dt>Localisation IP</dt><dd>Indisponible pour cette adresse.</dd></div>
+      {% endif %}
       <div class="visitor-agent"><dt>Navigateur</dt><dd>{{ session.userAgent|default('Non renseigné', true) }}</dd></div>
     </dl>
   </section>

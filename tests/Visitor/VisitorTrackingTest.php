@@ -11,12 +11,18 @@ use App\Entity\VisitorSession;
 use App\Security\SessionManager;
 use App\Visitor\VisitorRecorder;
 use App\Visitor\VisitorReportProvider;
+use App\Visitor\IpGeolocation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\Storage\InMemoryStorage;
 
 final class VisitorTrackingTest extends WebTestCase
 {
@@ -171,6 +177,31 @@ final class VisitorTrackingTest extends WebTestCase
         self::assertSame(2, $history['page']);
         self::assertCount(1, $history['visits']);
         self::assertSame('/fr/blog', $history['visits'][0]->getPath());
+    }
+
+    public function testIpLocationAppearsInTheListAndSessionDetails(): void
+    {
+        $http = new MockHttpClient(new MockResponse(json_encode([
+            'status' => 'success', 'query' => '212.32.69.206', 'country' => 'États-Unis',
+            'countryCode' => 'US', 'city' => 'Dallas', 'lat' => 0, 'lon' => 0,
+            'isp' => '<script>untrusted</script>',
+        ], JSON_THROW_ON_ERROR)));
+        static::getContainer()->set(IpGeolocation::class, new IpGeolocation($http, new ArrayAdapter(), new RateLimiterFactory([
+            'id' => 'geolocation', 'policy' => 'fixed_window', 'limit' => 40, 'interval' => '1 minute',
+        ], new InMemoryStorage()), null));
+        $this->client->setServerParameter('REMOTE_ADDR', '212.32.69.206');
+        $this->client->request('GET', '/fr/');
+        $this->login();
+        $this->client->request('GET', 'https://localhost/admin/visiteurs');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.visitor-panel tbody tr td:nth-child(2)', 'États-Unis (US)');
+        self::assertSelectorTextContains('.visitor-panel tbody tr td:nth-child(2)', 'Dallas');
+        $id = $this->entityManager->getRepository(VisitorSession::class)->findOneBy([])->getId();
+        $this->client->request('GET', 'https://localhost/admin/visiteurs/'.$id);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.visitor-session-summary', 'Latitude approximative');
+        self::assertStringContainsString('&lt;script&gt;untrusted&lt;/script&gt;', (string) $this->client->getResponse()->getContent());
+        self::assertSame(1, $http->getRequestsCount());
     }
 
     private function login(): void

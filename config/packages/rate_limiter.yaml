@@ -1,0 +1,6 @@
+framework:
+    rate_limiter:
+        ip_geolocation:
+            policy: fixed_window
+            limit: 40
+            interval: '1 minute'

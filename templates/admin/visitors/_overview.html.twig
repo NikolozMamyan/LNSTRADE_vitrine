@@ -33,11 +33,20 @@
     {% else %}
       <div class="admin-table-wrap">
         <table class="admin-table">
-          <thead><tr><th>Session / IP</th><th>Dernière page consultée</th><th>Source</th><th>Début / Dernière visite</th><th>Pages</th><th>Parcours</th></tr></thead>
+          <thead><tr><th>Session / IP</th><th>Pays / Ville</th><th>Dernière page consultée</th><th>Source</th><th>Début / Dernière visite</th><th>Pages</th><th>Parcours</th></tr></thead>
           <tbody>
             {% for session in sessions %}
               <tr>
                 <td><strong class="visitor-ip">{{ session.ipAddress }}</strong><small>Session #{{ session.id }} · {% if session.lastSeenAt >= activeSince %}<span class="visitor-active">Active</span>{% else %}Inactive{% endif %}</small></td>
+                <td>
+                  {% set location = ipLocations[session.ipAddress] %}
+                  {% if location %}
+                    <strong>{{ location.country|default('Pays inconnu', true) }}{% if location.countryCode|default('') %} ({{ location.countryCode }}){% endif %}</strong>
+                    {% if location.city|default('') %}<small>{{ location.city }}</small>{% endif %}
+                  {% else %}
+                    <small>Localisation indisponible</small>
+                  {% endif %}
+                </td>
                 <td><a class="visitor-path" href="{{ session.currentPath }}" target="_blank" rel="noopener noreferrer">{{ session.currentPath }}</a></td>
                 <td><strong>{{ session.source == 'direct' ? 'Accès direct' : session.source }}</strong>{% if session.medium %}<small>{{ session.medium }}</small>{% endif %}{% if session.campaign %}<small class="visitor-campaign">{{ session.campaign }}</small>{% endif %}</td>
                 <td>{{ session.startedAt|date('d/m/Y H:i:s', 'Europe/Paris') }}<small>Dernière : {{ session.lastSeenAt|date('d/m/Y H:i:s', 'Europe/Paris') }}</small></td>

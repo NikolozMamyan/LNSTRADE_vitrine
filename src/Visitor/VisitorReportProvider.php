@@ -12,8 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 final readonly class VisitorReportProvider
 {
-    public function __construct(private Connection $connection, private EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private Connection $connection,
+        private EntityManagerInterface $entityManager,
+        private IpGeolocation $geolocation,
+    ) {
     }
 
     public function overview(Request $request): array
@@ -75,6 +78,7 @@ final readonly class VisitorReportProvider
 
         return [
             'sessions' => $sessions, 'sessionCount' => $count, 'page' => $page, 'pageCount' => $pageCount,
+            'ipLocations' => $this->geolocation->lookupMany(array_map(static fn (VisitorSession $session): string => $session->getIpAddress(), $sessions)),
             'days' => $days, 'chartDays' => $chartDays, 'ip' => $ip, 'invalidIp' => $invalidIp,
             'activeSince' => $now->modify('-5 minutes'), 'activeCount' => $activeCount,
             'periodSessions' => array_sum(array_column($chart, 'sessions')),
@@ -92,6 +96,7 @@ final readonly class VisitorReportProvider
 
         return [
             'session' => $session,
+            'ipLocation' => $this->geolocation->lookup($session->getIpAddress()),
             'visits' => $repository->findBy(['session' => $session], ['visitedAt' => 'ASC', 'id' => 'ASC'], 50, ($page - 1) * 50),
             'page' => $page, 'pageCount' => $pageCount,
             'otherSessions' => $this->entityManager->createQueryBuilder()->select('session')->from(VisitorSession::class, 'session')
