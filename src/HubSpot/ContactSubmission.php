@@ -31,6 +31,7 @@ final readonly class ContactSubmission
         public string $origin,
         #[Assert\Choice(choices: ['en', 'fr'])]
         public string $locale,
+        public string $countryCode = '',
     ) {
     }
 }

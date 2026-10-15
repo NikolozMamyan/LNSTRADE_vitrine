@@ -21,6 +21,7 @@ final readonly class ProspectHubSpotSender
             return;
         }
 
+        $this->recorder->enrichCountry($prospect);
         $this->hubSpot->submit($prospect->toContactSubmission());
         $this->recorder->markHubSpotSynced($prospect);
     }

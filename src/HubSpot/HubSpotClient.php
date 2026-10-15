@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\HubSpot;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Intl\Countries;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -33,16 +34,18 @@ final readonly class HubSpotClient implements HubSpotGateway
             throw new HubSpotException('The HubSpot access token is not configured.');
         }
 
-        $companyId = $this->findOrCreateCompany($submission->company);
+        $companyId = $this->findOrCreateCompany($submission);
         $contactId = $this->upsertContact($submission);
 
         $this->associateContactWithCompany($contactId, $companyId);
-        $this->createContactNote($contactId, $submission);
+        $this->createNote($contactId, $companyId, $submission);
         $this->createDeal($contactId, $companyId, $submission);
     }
 
-    private function findOrCreateCompany(string $name): string
+    private function findOrCreateCompany(ContactSubmission $submission): string
     {
+        $name = $submission->company;
+        $country = $this->countryName($submission->countryCode);
         $search = $this->request('POST', '/crm/objects/2026-03/companies/search', [
             'json' => [
                 'filterGroups' => [[
@@ -59,6 +62,12 @@ final readonly class HubSpotClient implements HubSpotGateway
 
         $companyId = $search['results'][0]['id'] ?? null;
         if (is_string($companyId) && '' !== $companyId) {
+            if ('' !== $country) {
+                $this->request('PATCH', '/crm/objects/2026-03/companies/'.rawurlencode($companyId), [
+                    'json' => ['properties' => ['company_country_en' => $country]],
+                ]);
+            }
+
             return $companyId;
         }
 
@@ -67,6 +76,7 @@ final readonly class HubSpotClient implements HubSpotGateway
                 'properties' => array_filter([
                     'name' => $name,
                     'hubspot_owner_id' => $this->ownerId,
+                    'company_country_en' => $country,
                 ], static fn (string $value): bool => '' !== $value),
                 'associations' => [],
             ],
@@ -85,6 +95,7 @@ final readonly class HubSpotClient implements HubSpotGateway
             'phone' => $submission->phone,
             'company' => $submission->company,
             'hubspot_owner_id' => $this->ownerId,
+            'nom_pays_en' => $this->countryName($submission->countryCode),
         ], static fn (string $value): bool => '' !== $value);
 
         $response = $this->send('PATCH', '/crm/objects/2026-03/contacts/'.rawurlencode($submission->email), [
@@ -121,18 +132,19 @@ final readonly class HubSpotClient implements HubSpotGateway
         );
     }
 
-    private function createContactNote(string $contactId, ContactSubmission $submission): void
+    private function createNote(string $contactId, string $companyId, ContactSubmission $submission): void
     {
         $escape = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $message = '' !== $submission->message ? nl2br($escape($submission->message)) : '—';
         $body = sprintf(
-            '<strong>Nouvelle demande depuis lnstrade.fr</strong><br><br><strong>Contexte :</strong> %s<br><strong>Entreprise :</strong> %s<br><strong>Contact :</strong> %s<br><strong>E-mail :</strong> %s<br><strong>Téléphone :</strong> %s<br><strong>N° de TVA :</strong> %s<br><strong>Langue :</strong> %s<br><strong>Page d’origine :</strong> %s<br><br><strong>Message :</strong><br>%s',
+            '<strong>Nouvelle demande depuis lnstrade.fr</strong><br><br><strong>Contexte :</strong> %s<br><strong>Entreprise :</strong> %s<br><strong>Contact :</strong> %s<br><strong>E-mail :</strong> %s<br><strong>Téléphone :</strong> %s<br><strong>N° de TVA :</strong> %s<br><strong>Pays estimé :</strong> %s<br><strong>Langue :</strong> %s<br><strong>Page d’origine :</strong> %s<br><br><strong>Message :</strong><br>%s',
             $escape($submission->context ?: 'Demande générale'),
             $escape($submission->company),
             $escape($submission->name),
             $escape($submission->email),
             $escape($submission->phone ?: '—'),
             $escape($submission->vat ?: '—'),
+            $escape($this->countryName($submission->countryCode) ?: '—'),
             strtoupper($escape($submission->locale)),
             $escape($submission->origin),
             $message,
@@ -144,13 +156,22 @@ final readonly class HubSpotClient implements HubSpotGateway
                     'hs_timestamp' => gmdate('c'),
                     'hs_note_body' => $body,
                 ],
-                'associations' => [[
-                    'to' => ['id' => $contactId],
-                    'types' => [[
-                        'associationCategory' => 'HUBSPOT_DEFINED',
-                        'associationTypeId' => 202,
-                    ]],
-                ]],
+                'associations' => [
+                    [
+                        'to' => ['id' => $contactId],
+                        'types' => [[
+                            'associationCategory' => 'HUBSPOT_DEFINED',
+                            'associationTypeId' => 202,
+                        ]],
+                    ],
+                    [
+                        'to' => ['id' => $companyId],
+                        'types' => [[
+                            'associationCategory' => 'HUBSPOT_DEFINED',
+                            'associationTypeId' => 190,
+                        ]],
+                    ],
+                ],
             ],
         ], [201]);
     }
@@ -186,6 +207,44 @@ final readonly class HubSpotClient implements HubSpotGateway
         ], [201]);
 
         $this->requireId($deal, 'deal');
+    }
+
+    private function countryName(string $countryCode): string
+    {
+        return match ($countryCode) {
+            'AG' => 'Antigua and Barbuda',
+            'BA' => 'Bosnia and Herzegovina',
+            'CG' => 'Congo',
+            'CD' => 'Democratic Republic of the Congo',
+            'CI' => "Cote d'Ivoire",
+            'CZ' => 'Czech Republic',
+            'SZ' => 'Swaziland',
+            'TF' => 'French Southern and Antarctic Lands',
+            'HM' => 'Heard Island and McDonald Islands',
+            'HK' => 'Hong Kong',
+            'MO' => 'Macau',
+            'MK' => 'Macedonia (FYROM)',
+            'PS' => 'Palestine',
+            'ST' => 'Sao Tome and Principe',
+            'SX' => '',
+            'GS' => 'South Georgia and the South Sandwich Islands',
+            'BL' => 'Saint Barthélemy',
+            'SH' => 'Saint Helena',
+            'KN' => 'Saint Kitts and Nevis',
+            'LC' => 'Saint Lucia',
+            'MF' => 'Saint Martin',
+            'PM' => 'Saint Pierre and Miquelon',
+            'VC' => 'Saint Vincent and the Grenadines',
+            'SJ' => 'Svalbard and Jan Mayen',
+            'TL' => 'East Timor',
+            'TT' => 'Trinidad and Tobago',
+            'TR' => 'Turkey',
+            'TC' => 'Turks and Caicos Islands',
+            'UM' => 'United States Minor Outlying Islands',
+            'WF' => 'Wallis and Futuna',
+            'XK' => 'Kosovo',
+            default => Countries::exists($countryCode) ? Countries::getName($countryCode, 'en') : '',
+        };
     }
 
     /**

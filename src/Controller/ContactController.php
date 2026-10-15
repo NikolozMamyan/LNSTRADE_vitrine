@@ -63,7 +63,7 @@ final class ContactController extends AbstractController
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $prospectRecorder->record($submission);
+        $prospectRecorder->record($submission, $request->getClientIp());
 
         return $this->json(['ok' => true, 'submitted' => true]);
     }

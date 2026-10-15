@@ -54,7 +54,13 @@ Téléphone : {{ prospect.phone|default('Non renseigné', true) }}
 <strong>MESSAGE</strong>
 {{ prospect.message|default('Aucun message renseigné.', true) }}</div>
                 </td>
-                <td>{{ prospect.company }}</td>
+                <td>
+                  {{ prospect.company }}
+                  {% if prospect.ipAddress %}
+                    <small>Pays estimé : {{ prospect.countryName|default('Indisponible', true) }}</small>
+                    <small>IP : {{ prospect.ipAddress }}</small>
+                  {% endif %}
+                </td>
                 <td>
                   <span class="locale-badge">{{ prospect.locale|upper }}</span> · {{ prospect.submissionCount }} demande{{ prospect.submissionCount > 1 ? 's' : '' }}
                   <details class="admin-prospect-message">

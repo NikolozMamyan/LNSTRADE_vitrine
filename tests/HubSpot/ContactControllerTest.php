@@ -6,10 +6,16 @@ namespace App\Tests\HubSpot;
 
 use App\Entity\Prospect;
 use App\HubSpot\HubSpotGateway;
+use App\Visitor\IpGeolocation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\Storage\InMemoryStorage;
 
 final class ContactControllerTest extends WebTestCase
 {
@@ -25,6 +31,17 @@ final class ContactControllerTest extends WebTestCase
         $hubSpot = $this->createMock(HubSpotGateway::class);
         $hubSpot->expects(self::never())->method('submit');
         $container->set(HubSpotGateway::class, $hubSpot);
+        $httpClient = new MockHttpClient(static function (string $method, string $url): MockResponse {
+            self::assertStringStartsWith('http://ip-api.com/json/212.32.69.206?', $url);
+
+            return new MockResponse('{"status":"success","query":"212.32.69.206","countryCode":"US","country":"États-Unis"}');
+        });
+        $container->set(IpGeolocation::class, new IpGeolocation(
+            $httpClient,
+            new ArrayAdapter(),
+            new RateLimiterFactory(['id' => 'prospect-geolocation', 'policy' => 'fixed_window', 'limit' => 40, 'interval' => '1 minute'], new InMemoryStorage()),
+            null,
+        ));
 
         $crawler = $client->request('GET', '/fr/');
         $client->request('POST', '/contact', [
@@ -33,7 +50,9 @@ final class ContactControllerTest extends WebTestCase
             'company' => 'Example SAS',
             'email' => 'alice@example.com',
             'locale' => 'fr',
-        ], server: ['HTTP_ACCEPT' => 'application/json']);
+            'ipAddress' => '8.8.8.8',
+            'countryCode' => 'FR',
+        ], server: ['HTTP_ACCEPT' => 'application/json', 'REMOTE_ADDR' => '212.32.69.206']);
 
         self::assertResponseIsSuccessful();
         self::assertJsonStringEqualsJsonString(
@@ -45,6 +64,13 @@ final class ContactControllerTest extends WebTestCase
         self::assertNull($prospect->getHubSpotSyncedAt());
         self::assertSame('Alice Martin', $prospect->getName());
         self::assertSame(1, $prospect->getSubmissionCount());
+        $id = $prospect->getId();
+        $entityManager->clear();
+        $prospect = $entityManager->find(Prospect::class, $id);
+        self::assertSame('212.32.69.206', $prospect->getIpAddress());
+        self::assertSame('US', $prospect->getCountryCode());
+        self::assertSame('United States', $prospect->getCountryName());
+        self::assertSame('US', $prospect->toContactSubmission()->countryCode);
     }
 
     public function testItRejectsInvalidContactDataBeforeCallingHubSpot(): void

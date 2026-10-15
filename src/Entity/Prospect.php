@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\HubSpot\ContactSubmission;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Intl\Countries;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'prospect')]
@@ -45,6 +46,12 @@ class Prospect
     #[ORM\Column(length: 2)]
     private string $locale;
 
+    #[ORM\Column(length: 45, nullable: true)]
+    private ?string $ipAddress = null;
+
+    #[ORM\Column(length: 2, nullable: true)]
+    private ?string $countryCode = null;
+
     #[ORM\Column]
     private int $submissionCount = 0;
 
@@ -60,18 +67,22 @@ class Prospect
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $hubSpotSyncedAt = null;
 
-    public function __construct(ContactSubmission $submission, \DateTimeImmutable $submittedAt)
+    public function __construct(ContactSubmission $submission, \DateTimeImmutable $submittedAt, ?string $ipAddress = null)
     {
         $this->email = $submission->email;
         $this->createdAt = $submittedAt;
-        $this->record($submission, $submittedAt);
+        $this->record($submission, $submittedAt, $ipAddress);
     }
 
-    public function record(ContactSubmission $submission, \DateTimeImmutable $submittedAt): void
+    public function record(ContactSubmission $submission, \DateTimeImmutable $submittedAt, ?string $ipAddress = null): void
     {
         $this->name = $submission->name;
         $this->company = $submission->company;
         $this->locale = $submission->locale;
+        if ($ipAddress !== $this->ipAddress) {
+            $this->ipAddress = $ipAddress;
+            $this->countryCode = null;
+        }
         $this->replaceWhenFilled('phone', $submission->phone);
         $this->replaceWhenFilled('vat', $submission->vat);
         $this->replaceWhenFilled('message', $submission->message);
@@ -105,6 +116,7 @@ class Prospect
             context: $this->context ?? '',
             origin: $this->origin ?? '',
             locale: $this->locale,
+            countryCode: $this->countryCode ?? '',
         );
     }
 
@@ -136,6 +148,32 @@ class Prospect
     public function getSubmissionCount(): int
     {
         return $this->submissionCount;
+    }
+
+    public function getIpAddress(): ?string
+    {
+        return $this->ipAddress;
+    }
+
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(string $countryCode): void
+    {
+        $this->countryCode = $countryCode;
+    }
+
+    public function getCountryName(): ?string
+    {
+        if ('XK' === $this->countryCode) {
+            return 'Kosovo';
+        }
+
+        return null !== $this->countryCode && Countries::exists($this->countryCode)
+            ? Countries::getName($this->countryCode, 'en')
+            : null;
     }
 
     public function getLocale(): string

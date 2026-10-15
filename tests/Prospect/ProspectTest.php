@@ -31,6 +31,20 @@ final class ProspectTest extends TestCase
         self::assertNull($prospect->getHubSpotSyncedAt());
     }
 
+    public function testItResetsTheCountryWhenTheSubmissionIpChanges(): void
+    {
+        $prospect = new Prospect($this->submission(), new \DateTimeImmutable('2026-10-15 10:00:00'), '212.32.69.206');
+        $prospect->setCountryCode('US');
+
+        $prospect->record($this->submission(), new \DateTimeImmutable('2026-10-15 10:30:00'), '212.32.69.206');
+        self::assertSame('US', $prospect->getCountryCode());
+
+        $prospect->record($this->submission(), new \DateTimeImmutable('2026-10-15 11:00:00'), '2001:4860:4860::8888');
+        self::assertSame('2001:4860:4860::8888', $prospect->getIpAddress());
+        self::assertNull($prospect->getCountryCode());
+        self::assertSame('', $prospect->toContactSubmission()->countryCode);
+    }
+
     private function submission(
         string $name = 'Alice Martin',
         string $phone = '',
