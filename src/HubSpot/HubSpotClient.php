@@ -161,6 +161,7 @@ final readonly class HubSpotClient implements HubSpotGateway
             'json' => [
                 'properties' => array_filter([
                     'dealname' => 'LNSTRADE - '.$submission->company,
+                    'description' => $submission->message,
                     'pipeline' => $this->dealPipelineId,
                     'dealstage' => $this->dealStageId,
                     'hubspot_owner_id' => $this->ownerId,

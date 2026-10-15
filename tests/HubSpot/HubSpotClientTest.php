@@ -61,6 +61,7 @@ final class HubSpotClientTest extends TestCase
         $deal = json_decode($requests[6][2]['body'], true, flags: JSON_THROW_ON_ERROR);
         self::assertSame([
             'dealname' => 'LNSTRADE - Example SAS',
+            'description' => 'Bonjour, je souhaite recevoir votre catalogue.',
             'pipeline' => 'default',
             'dealstage' => 'appointmentscheduled',
             'hubspot_owner_id' => '1351597969',
