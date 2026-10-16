@@ -17,10 +17,11 @@ final readonly class ProspectRecorder
         private EntityManagerInterface $entityManager,
         private IpGeolocation $geolocation,
         private LoggerInterface $logger,
+        private ProspectAttribution $attribution,
     ) {
     }
 
-    public function record(ContactSubmission $submission, ?string $ipAddress = null): Prospect
+    public function record(ContactSubmission $submission, ?string $ipAddress = null, string $userAgent = ''): Prospect
     {
         $ipAddress = null !== $ipAddress && false !== filter_var($ipAddress, FILTER_VALIDATE_IP) ? $ipAddress : null;
         $prospect = $this->entityManager->getRepository(Prospect::class)->findOneBy([
@@ -35,6 +36,8 @@ final readonly class ProspectRecorder
             $this->entityManager->persist($prospect);
         }
 
+        $source = $this->attribution->resolve($submission->origin, $ipAddress, $userAgent);
+        $prospect->setAttribution($source['source'], $source['medium'], $source['campaign']);
         $this->enrichCountry($prospect);
         $this->entityManager->flush();
 

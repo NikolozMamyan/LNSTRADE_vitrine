@@ -52,6 +52,15 @@ class Prospect
     #[ORM\Column(length: 2, nullable: true)]
     private ?string $countryCode = null;
 
+    #[ORM\Column(length: 200, nullable: true)]
+    private ?string $source = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $medium = null;
+
+    #[ORM\Column(length: 200, nullable: true)]
+    private ?string $campaign = null;
+
     #[ORM\Column]
     private int $submissionCount = 0;
 
@@ -182,6 +191,28 @@ class Prospect
     public function getLocale(): string
     {
         return $this->locale;
+    }
+
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    public function getMedium(): ?string
+    {
+        return $this->medium;
+    }
+
+    public function getCampaign(): ?string
+    {
+        return $this->campaign;
+    }
+
+    public function setAttribution(?string $source, ?string $medium, ?string $campaign): void
+    {
+        $this->source = null !== $source && '' !== trim($source) ? mb_substr(trim($source), 0, 200) : null;
+        $this->medium = null !== $medium && '' !== trim($medium) ? mb_substr(trim($medium), 0, 100) : null;
+        $this->campaign = null !== $campaign && '' !== trim($campaign) ? mb_substr(trim($campaign), 0, 200) : null;
     }
 
     public function getLastSubmittedAt(): \DateTimeImmutable

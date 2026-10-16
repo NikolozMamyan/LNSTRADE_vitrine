@@ -23,7 +23,7 @@
       <div class="admin-table-wrap">
         <table class="admin-table">
           <thead>
-            <tr><th>Contact</th><th>Entreprise</th><th>Demande</th><th>Dernière activité</th><th>Actions</th></tr>
+            <tr><th>Contact</th><th>Entreprise</th><th>Demande</th><th>Source</th><th>Dernière activité</th><th>Actions</th></tr>
           </thead>
           <tbody>
             {% for prospect in prospects %}
@@ -67,6 +67,12 @@ Téléphone : {{ prospect.phone|default('Non renseigné', true) }}
                     <summary>Voir le message</summary>
                     <p>{{ prospect.message|default('Aucun message renseigné.', true) }}</p>
                   </details>
+                </td>
+                <td class="admin-prospect-source">
+                  <strong>{{ prospect.source == 'direct' ? 'Accès direct' : prospect.source|default('Non identifiée', true) }}</strong>
+                  {% if prospect.medium %}<small>{{ prospect.medium }}</small>{% endif %}
+                  {% if prospect.campaign %}<small>{{ prospect.campaign }}</small>{% endif %}
+                  <small class="admin-source-note">Dernière demande</small>
                 </td>
                 <td>{{ prospect.lastSubmittedAt|date('d/m/Y à H:i') }}</td>
                 <td>

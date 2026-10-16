@@ -240,6 +240,20 @@ final class AdminProspectControllerTest extends WebTestCase
         self::assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;', (string) $this->client->getResponse()->getContent());
     }
 
+    public function testItDisplaysTheSourceMediumAndCampaignWithoutRenderingTheirHtml(): void
+    {
+        $this->prospect->setAttribution('google', 'cpc', 'lnstrade_europe <script>alert(1)</script>');
+        $this->entityManager->flush();
+        $this->client->request('GET', 'https://localhost/admin/prospects');
+        self::assertResponseIsSuccessful();
+        $selector = '#prospect-'.$this->prospect->getId().' .admin-prospect-source';
+        self::assertSelectorTextContains($selector, 'google');
+        self::assertSelectorTextContains($selector, 'cpc');
+        self::assertSelectorTextContains($selector, 'lnstrade_europe');
+        self::assertSelectorNotExists($selector.' script');
+        self::assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;', $this->client->getResponse()->getContent());
+    }
+
     private function token(string $action = 'hubspot'): string
     {
         $crawler = $this->client->request('GET', 'https://localhost/admin/prospects');
