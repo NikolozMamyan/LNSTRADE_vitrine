@@ -579,5 +579,22 @@
     "Des boissons et snacks pour les commerces, distributeurs et e-shops. Découvrez nos gammes et recevez les tarifs professionnels adaptés à votre activité.": "Des boissons et snacks pour les commerces, distributeurs et e-shops. Découvrez nos gammes et recevez les tarifs professionnels adaptés à votre activité.",
     "Boissons, snacks et confiseries manga sous licences officielles pour commerces, distributeurs et e-shops. Recevez les tarifs et les conditions adaptés à votre activité.": "Boissons, snacks et confiseries manga sous licences officielles pour commerces, distributeurs et e-shops. Recevez les tarifs et les conditions adaptés à votre activité.",
     "builder.context": "Demande de tarifs · Assortiment ULTRAPOP",
-    "Développé par": "Développé par"
+    "Développé par": "Développé par",
+    "newsletter.region": "Nouveautés professionnelles LNSTRADE",
+    "newsletter.teaser": "Nouveautés & offres pro",
+    "newsletter.close": "Fermer l’invitation à la newsletter",
+    "newsletter.eyebrow": "Le rendez-vous des pros",
+    "newsletter.title": "Du nouveau",
+    "newsletter.title_accent": "pour vos rayons.",
+    "newsletter.intro": "Nouveaux produits, arrivages et offres professionnelles : gardez une longueur d’avance avec LNSTRADE.",
+    "newsletter.email": "Votre e-mail professionnel",
+    "newsletter.consent": "J’accepte de recevoir les nouveautés et offres professionnelles de LNSTRADE par e-mail.",
+    "newsletter.submit": "Recevoir les nouveautés",
+    "newsletter.sending": "Inscription en cours…",
+    "newsletter.error": "L’inscription n’a pas abouti. Merci de réessayer dans un instant.",
+    "newsletter.invalid": "Vérifiez votre e-mail et votre accord pour recevoir nos actualités.",
+    "newsletter.rate_limit": "Trop de tentatives. Merci de réessayer un peu plus tard.",
+    "newsletter.success_title": "Vous êtes sur la liste !",
+    "newsletter.success": "Votre inscription est enregistrée. Vous recevrez nos prochaines nouveautés et offres professionnelles.",
+    "newsletter.done": "C’est noté, merci !"
 }

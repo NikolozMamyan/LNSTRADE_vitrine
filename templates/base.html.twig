@@ -134,10 +134,17 @@
   {% include 'partials/_header.html.twig' %}
   {% block body %}{% endblock %}
   {% include 'partials/_footer.html.twig' %}
+  {% if page_id in ['home', 'blog', 'choosingWholesaler', 'merchandising', 'snackingTrends'] %}{% include 'partials/_newsletter.html.twig' %}{% endif %}
   {% if page_id != 'wholesale' %}{% include 'partials/_contact_modal.html.twig' %}{% endif %}
   {% include 'partials/_range_builder_modal.html.twig' %}
   <script id="lns-ui-copy" type="application/json">{{ {
     locale: app.request.locale,
+    newsletter: {
+      sending: 'newsletter.sending'|trans,
+      error: 'newsletter.error'|trans,
+      invalid: 'newsletter.invalid'|trans,
+      rateLimit: 'newsletter.rate_limit'|trans
+    },
     contact: {
       sending: 'form.contact.sending'|trans,
       success: 'form.contact.success'|trans,

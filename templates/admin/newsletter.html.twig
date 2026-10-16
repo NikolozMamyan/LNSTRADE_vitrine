@@ -1,0 +1,23 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Newsletter{% endblock %}
+{% block page_name %}Newsletter{% endblock %}
+{% block body %}
+  <section class="dashboard-hero"><div><p class="admin-eyebrow"><span></span> Nouveautés & offres professionnelles</p><h1>Newsletter</h1><p>Les abonnés sont conservés séparément des demandes de tarifs.</p></div></section>
+  <section class="dashboard-metrics" aria-label="Inscriptions newsletter">
+    <article class="metric-card metric-card-dark"><span class="metric-value">{{ subscriberCount }}</span><span class="metric-label">Abonnés au total</span><span class="metric-note">Une seule inscription par adresse e-mail</span></article>
+    <article class="metric-card"><span class="metric-value">{{ todayCount }}</span><span class="metric-label">Inscriptions aujourd’hui</span><span class="metric-note">Heure de Paris</span></article>
+    <article class="metric-card"><span class="metric-value">{{ weekCount }}</span><span class="metric-label">Sur les 7 derniers jours</span><span class="metric-note">Aujourd’hui inclus</span></article>
+  </section>
+  <p class="visitor-attribution-note">L’encart est testé sur 50 % des visites de l’accueil et des pages de contenu. Les demandes commerciales restent disponibles dans Prospects.</p>
+  <section class="admin-panel activity-panel visitor-panel">
+    <header class="admin-panel-head"><div><p class="admin-eyebrow"><span></span> Inscriptions</p><h2>Les derniers abonnés</h2></div><span class="admin-panel-count">{{ subscriberCount }} au total</span></header>
+    {% if subscribers is empty %}
+      <div class="admin-empty-state"><h3>Aucun abonné pour le moment</h3><p>Les prochaines inscriptions apparaîtront ici.</p></div>
+    {% else %}
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>E-mail</th><th>Inscription</th><th>Langue</th><th>Page d’origine</th><th>Consentement</th></tr></thead><tbody>
+        {% for subscriber in subscribers %}<tr><td><strong><a href="mailto:{{ subscriber.email }}">{{ subscriber.email }}</a></strong></td><td>{{ subscriber.subscribedAt|date('d/m/Y H:i', 'Europe/Paris') }}</td><td><span class="locale-badge">{{ subscriber.locale|upper }}</span></td><td>{{ subscriber.originPath }}</td><td><span class="status-badge status-success"><i></i> Accepté</span><small>Version {{ subscriber.consentVersion }}</small></td></tr>{% endfor %}
+      </tbody></table></div>
+      {% if pageCount > 1 %}<nav class="admin-pagination" aria-label="Pages des abonnés">{% if page > 1 %}<a class="admin-button admin-button-light" href="{{ path('app_admin_newsletter', {page: page - 1}) }}">← Précédent</a>{% endif %}<span>Page {{ page }} sur {{ pageCount }}</span>{% if page < pageCount %}<a class="admin-button admin-button-light" href="{{ path('app_admin_newsletter', {page: page + 1}) }}">Suivant →</a>{% endif %}</nav>{% endif %}
+    {% endif %}
+  </section>
+{% endblock %}

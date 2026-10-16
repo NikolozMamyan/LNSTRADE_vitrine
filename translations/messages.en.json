@@ -579,5 +579,22 @@
     "Des boissons et snacks pour les commerces, distributeurs et e-shops. Découvrez nos gammes et recevez les tarifs professionnels adaptés à votre activité.": "Drinks and snacks for retailers, distributors and online stores. Explore our ranges and get wholesale prices tailored to your business.",
     "Boissons, snacks et confiseries manga sous licences officielles pour commerces, distributeurs et e-shops. Recevez les tarifs et les conditions adaptés à votre activité.": "Officially licensed manga drinks, snacks and confectionery for retailers, distributors and online stores. Get prices and terms tailored to your business.",
     "builder.context": "Wholesale pricing · ULTRAPOP range",
-    "Développé par": "Developed by"
+    "Développé par": "Developed by",
+    "newsletter.region": "LNSTRADE wholesale news",
+    "newsletter.teaser": "New arrivals & trade offers",
+    "newsletter.close": "Close the newsletter invitation",
+    "newsletter.eyebrow": "For trade professionals",
+    "newsletter.title": "Something new",
+    "newsletter.title_accent": "for your shelves.",
+    "newsletter.intro": "New products, fresh arrivals and trade offers: stay one step ahead with LNSTRADE.",
+    "newsletter.email": "Your business email",
+    "newsletter.consent": "I agree to receive LNSTRADE product news and trade offers by email.",
+    "newsletter.submit": "Send me the latest news",
+    "newsletter.sending": "Signing you up…",
+    "newsletter.error": "We couldn’t save your subscription. Please try again in a moment.",
+    "newsletter.invalid": "Check your email and your agreement to receive our news.",
+    "newsletter.rate_limit": "Too many attempts. Please try again later.",
+    "newsletter.success_title": "You’re on the list!",
+    "newsletter.success": "Your subscription is saved. You’ll receive our next product updates and trade offers.",
+    "newsletter.done": "Great, thank you!"
 }

@@ -52,6 +52,11 @@
           <span>Catalogue</span>
         </a>
 
+        <a class="admin-nav-link{{ app.current_route == 'app_admin_newsletter' ? ' is-active' : '' }}" href="{{ path('app_admin_newsletter') }}"{% if app.current_route == 'app_admin_newsletter' %} aria-current="page"{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 5l9 7 9-7"/></svg>
+          <span>Newsletter</span>
+        </a>
+
         <p class="admin-nav-label admin-nav-label-secondary">Site</p>
         <a class="admin-nav-link" href="{{ path('app_home.fr') }}" target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7m0-7-9 9M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg>

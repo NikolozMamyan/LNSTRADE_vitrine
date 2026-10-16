@@ -1,0 +1,35 @@
+<aside class="newsletter-invite" data-newsletter hidden aria-label="{{ 'newsletter.region'|trans }}">
+  <div class="newsletter-teaser">
+    <button type="button" class="newsletter-teaser-open" data-newsletter-open aria-controls="newsletter-card" aria-expanded="false">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m12 2 2.6 6.4L21 11l-6.4 2.6L12 20l-2.6-6.4L3 11l6.4-2.6Z"/></svg>
+      <span>{{ 'newsletter.teaser'|trans }}</span><span aria-hidden="true">↗</span>
+    </button>
+    <button type="button" class="newsletter-close" data-newsletter-close aria-label="{{ 'newsletter.close'|trans }}">×</button>
+  </div>
+  <section class="newsletter-card" id="newsletter-card" aria-labelledby="newsletter-title">
+    <button type="button" class="newsletter-close" data-newsletter-close aria-label="{{ 'newsletter.close'|trans }}">×</button>
+    <div class="newsletter-copy" data-newsletter-copy>
+      <p class="newsletter-eyebrow"><span></span> {{ 'newsletter.eyebrow'|trans }}</p>
+      <h2 id="newsletter-title">{{ 'newsletter.title'|trans }}<br><em>{{ 'newsletter.title_accent'|trans }}</em></h2>
+      <p class="newsletter-intro">{{ 'newsletter.intro'|trans }}</p>
+      <form id="newsletter-form" action="{{ path('app_newsletter_subscribe') }}" method="post" data-newsletter-form data-turbo="false">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('newsletter') }}">
+        <input type="hidden" name="locale" value="{{ app.request.locale }}">
+        <input type="hidden" name="origin" value="{{ app.request.pathInfo }}">
+        <div class="form-honeypot" aria-hidden="true"><label for="newsletter-website">Website</label><input id="newsletter-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+        <label class="sr-only" for="newsletter-email">{{ 'newsletter.email'|trans }}</label>
+        <input class="newsletter-email" id="newsletter-email" name="email" type="email" maxlength="254" required autocomplete="email" placeholder="{{ 'newsletter.email'|trans }}">
+        <label class="newsletter-consent"><input name="consent" type="checkbox" value="1" required><span>{{ 'newsletter.consent'|trans }}</span></label>
+        <button class="newsletter-submit" type="submit"><span>{{ 'newsletter.submit'|trans }}</span><span aria-hidden="true">↗</span></button>
+        <p class="newsletter-status" data-newsletter-status role="status" aria-live="polite" hidden></p>
+      </form>
+      <a class="newsletter-privacy" href="{{ path('app_privacy.' ~ app.request.locale) }}">{{ 'Confidentialité'|trans }}</a>
+    </div>
+    <div class="newsletter-success" data-newsletter-success hidden role="status">
+      <span class="newsletter-success-icon" aria-hidden="true">✓</span>
+      <h2>{{ 'newsletter.success_title'|trans }}</h2>
+      <p>{{ 'newsletter.success'|trans }}</p>
+      <button class="newsletter-submit" type="button" data-newsletter-close>{{ 'newsletter.done'|trans }} <span aria-hidden="true">↗</span></button>
+    </div>
+  </section>
+</aside>

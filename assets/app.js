@@ -1,5 +1,7 @@
 import './stimulus_bootstrap.js';
 import './styles/app.css';
+import './styles/newsletter.css';
+import { setupNewsletter, newsletterExperimentData, recordNewsletterLead } from './newsletter.js';
 
 let initializedBody = null;
 let pageController = null;
@@ -133,12 +135,14 @@ const submitContactForm = async (form, copy, data = new FormData(form)) => {
         form_id: form.id,
         form_location: form.hasAttribute('data-builder-form') ? 'range_builder' : (form.closest('dialog') ? 'modal' : 'inline'),
         page_type: document.body.dataset.route,
+        ...newsletterExperimentData(),
       };
       try {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: 'lns_form_success', ...eventData });
         window.gtag?.('event', 'generate_lead', eventData);
       } catch {}
+      recordNewsletterLead();
     }
     return true;
   } catch (error) {
@@ -533,6 +537,7 @@ const initializePage = () => {
   const catalogueFrame = catalogueModal?.querySelector('[data-catalogue-frame]');
   const catalogueLoader = catalogueModal?.querySelector('[data-catalogue-loader]');
   const uiCopy = parseUiCopy();
+  setupNewsletter({ signal, copy: uiCopy.newsletter || {} });
 
   document.querySelector('.scroll-progress')?.remove();
   const scrollProgress = document.createElement('div');

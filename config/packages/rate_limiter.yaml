@@ -1,5 +1,9 @@
 framework:
     rate_limiter:
+        newsletter:
+            policy: fixed_window
+            limit: 5
+            interval: '15 minutes'
         ip_geolocation:
             policy: fixed_window
             limit: 40
