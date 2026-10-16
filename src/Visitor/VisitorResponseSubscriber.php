@@ -27,7 +27,7 @@ final readonly class VisitorResponseSubscriber
         $route = preg_replace('/\.(en|fr)$/', '', (string) $request->attributes->get('_route'));
         if (!$this->enabled || !$event->isMainRequest() || !$request->isMethod('GET') || 200 !== $response->getStatusCode()
             || !str_contains($response->headers->get('Content-Type', ''), 'text/html')
-            || !in_array($route, ['app_home', 'app_wholesale', 'app_trading', 'app_ultrapop', 'app_blog', 'app_article_wholesaler', 'app_article_merchandising', 'app_article_trends', 'app_terms', 'app_privacy', 'app_catalog'], true)
+            || !in_array($route, ['app_home', 'app_wholesale', 'app_trading', 'app_ultrapop', 'app_blog', 'app_article_wholesaler', 'app_article_merchandising', 'app_article_trends', 'app_terms', 'app_privacy', 'app_legal', 'app_contact', 'app_catalog', 'app_products'], true)
             || $request->headers->has('Turbo-Frame') || $request->headers->has('X-LNS-Prefetch')
             || str_contains($request->headers->get('Sec-Purpose', '').$request->headers->get('X-Sec-Purpose', '').$request->headers->get('Purpose', ''), 'prefetch')
             || preg_match('/bot|spider|crawler|slurp|headless|lighthouse|curl|wget/i', $request->headers->get('User-Agent', ''))

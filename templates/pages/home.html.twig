@@ -2,21 +2,28 @@
 {% set page_id = 'home' %}
 {% set route_name = 'app_home' %}
 {% set body_class = 'home' %}
-{% set og_image = asset('images/ULTRAPOP-collection.jpg') %}
+{% set faq_items = [
+  {question: 'Quels types de produits distribuez-vous ?', answer: 'seo.faq.home.products'},
+  {question: 'Travaillez-vous uniquement avec les grandes enseignes ?', answer: 'seo.faq.home.customers'},
+  {question: 'Pouvez-vous livrer à l’international ?', answer: 'seo.faq.home.delivery'},
+  {question: 'Comment recevoir votre catalogue professionnel ?', answer: 'seo.faq.home.catalogue'},
+  {question: 'Développez-vous des produits sur mesure ?', answer: 'seo.faq.home.custom'}
+] %}
+{% set og_image = asset('images/ULTRAPOP-collection.webp') %}
 
 {% block body %}
 <main id="main">
     <section class="hero">
       <div class="hero-noise" aria-hidden="true"></div>
       <div class="hero-media" aria-hidden="true">
-        <img class="hero-slide" src="{{ asset('images/ULTRAPOP-collection.jpg') }}" alt="" width="1800" height="1200" fetchpriority="high">
-        <img class="hero-slide" src="{{ asset('images/trade-wholesale-hero.jpg') }}" alt="" width="1672" height="941" decoding="async">
+        <img class="hero-slide" src="{{ asset('images/ULTRAPOP-collection.webp') }}" alt="" fetchpriority="high" width="1600" height="1067" srcset="{{ asset('images/ULTRAPOP-collection-640.webp') }} 640w, {{ asset('images/ULTRAPOP-collection.webp') }} 1600w" sizes="100vw">
+        <img class="hero-slide" src="{{ asset('images/trade-wholesale-hero.webp') }}" alt="" decoding="async" width="1600" height="900" srcset="{{ asset('images/trade-wholesale-hero-640.webp') }} 640w, {{ asset('images/trade-wholesale-hero.webp') }} 1600w" sizes="100vw">
       </div>
       <div class="hero-gradient" aria-hidden="true"></div>
 
       <div class="hero-content shell">
         <p class="eyebrow light"><span></span> {{ 'Depuis 2014 · Strasbourg · International'|trans }}</p>
-        <h1>{{ 'Grossiste'|trans }}<br>{{ 'snacks &'|trans }}<br><em>{{ 'boissons.'|trans }}</em></h1>
+        <h1>{{ 'seo.home.h1a'|trans }} <br>{{ 'seo.home.h1b'|trans }} <br><em>{{ 'seo.home.h1c'|trans }}</em></h1>
         <p class="hero-lead">{{ 'Des boissons et snacks pour les commerces, distributeurs et e-shops. Découvrez nos gammes et recevez les tarifs professionnels adaptés à votre activité.'|trans }}</p>
         <div class="hero-actions">
           <button class="button button-primary" type="button" data-open-contact data-interest="{{ 'Tarifs professionnels'|trans }}">{{ 'Recevoir nos tarifs professionnels'|trans }} <span aria-hidden="true">↗</span></button>
@@ -49,26 +56,26 @@
       <div class="client-ticker-viewport">
         <div class="ticker-track client-ticker-track">
           <div class="client-ticker-group">
-            <span class="client-logo-card"><img src="{{ asset('clients/u.png') }}" alt="Client LNS Trade — Système U" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/interpole.png') }}" alt="Client LNS Trade — Interpole" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/leclerc.png') }}" alt="Client LNS Trade — E.Leclerc" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/intermarche.png') }}" alt="Client LNS Trade — Intermarché" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/cote-sushi.png') }}" alt="Client LNS Trade — Côté Sushi" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/carrefour.png') }}" alt="Client LNS Trade — Carrefour" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/coop.png') }}" alt="Client LNS Trade — Coop" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/tang.png') }}" alt="Client LNS Trade — Tang Frères" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/tt-foods.png') }}" alt="Client LNS Trade — TT Foods" width="378" height="148" loading="lazy" decoding="async"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/u.webp') }}" alt="Client LNS Trade — Système U" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/interpole.webp') }}" alt="Client LNS Trade — Interpole" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/leclerc.webp') }}" alt="Client LNS Trade — E.Leclerc" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/intermarche.webp') }}" alt="Client LNS Trade — Intermarché" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/cote-sushi.webp') }}" alt="Client LNS Trade — Côté Sushi" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/carrefour.webp') }}" alt="Client LNS Trade — Carrefour" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/coop.webp') }}" alt="Client LNS Trade — Coop" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/tang.webp') }}" alt="Client LNS Trade — Tang Frères" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/tt-foods.webp') }}" alt="Client LNS Trade — TT Foods" loading="lazy" decoding="async" width="378" height="148"></span>
           </div>
           <div class="client-ticker-group" aria-hidden="true">
-            <span class="client-logo-card"><img src="{{ asset('clients/u.png') }}" alt="" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/interpole.png') }}" alt="" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/leclerc.png') }}" alt="" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/intermarche.png') }}" alt="" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/cote-sushi.png') }}" alt="" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/carrefour.png') }}" alt="" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/coop.png') }}" alt="" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/tang.png') }}" alt="" width="378" height="148" loading="lazy" decoding="async"></span>
-            <span class="client-logo-card"><img src="{{ asset('clients/tt-foods.png') }}" alt="" width="378" height="148" loading="lazy" decoding="async"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/u.webp') }}" alt="" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/interpole.webp') }}" alt="" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/leclerc.webp') }}" alt="" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/intermarche.webp') }}" alt="" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/cote-sushi.webp') }}" alt="" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/carrefour.webp') }}" alt="" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/coop.webp') }}" alt="" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/tang.webp') }}" alt="" loading="lazy" decoding="async" width="378" height="148"></span>
+            <span class="client-logo-card"><img src="{{ asset('clients/tt-foods.webp') }}" alt="" loading="lazy" decoding="async" width="378" height="148"></span>
           </div>
         </div>
       </div>
@@ -78,7 +85,7 @@
       <div class="section-index">01 — LNS TRADE</div>
       <div class="manifesto-copy">
         <p class="eyebrow dark"><span></span> {{ 'Un partenaire, deux moteurs de croissance'|trans }}</p>
-        <h2>{{ 'On ne déplace pas'|trans }}<br>{{ 'que des cartons.'|trans }}<br><em>{{ 'On crée l’envie.'|trans }}</em></h2>
+        <h2>{{ 'On ne déplace pas'|trans }} <br>{{ 'que des cartons.'|trans }} <br><em>{{ 'On crée l’envie.'|trans }}</em></h2>
       </div>
       <div class="manifesto-note">
         <p>{{ 'LNS Trade accompagne distributeurs, enseignes, commerces indépendants et e-commerçants avec une approche à 360°.'|trans }}</p>
@@ -92,7 +99,7 @@
         <div class="section-heading reveal">
           <div>
             <div class="section-index light">{{ '02 — NOTRE SAVOIR-FAIRE'|trans }}</div>
-            <h2>{{ 'Du bon produit.'|trans }}<br>{{ 'Au bon endroit.'|trans }}<br><em>{{ 'Au bon moment.'|trans }}</em></h2>
+            <h2>{{ 'Du bon produit.'|trans }} <br>{{ 'Au bon endroit.'|trans }} <br><em>{{ 'Au bon moment.'|trans }}</em></h2>
           </div>
           <p>{{ 'Une chaîne de valeur intégrée pour vous faire gagner en vitesse, en fiabilité et en impact commercial.'|trans }}</p>
         </div>
@@ -134,10 +141,10 @@
       <div class="ULTRAPOP-top shell reveal">
         <div class="up-logo-wrap">
           <p class="eyebrow light"><span></span> {{ 'Notre marque propriétaire'|trans }}</p>
-          <img src="{{ asset('images/logo-ULTRAPOP-white.png') }}" alt="ULTRAPOP" width="2690" height="592" loading="lazy">
+          <img src="{{ asset('images/logo-ULTRAPOP-white.webp') }}" alt="ULTRAPOP" loading="lazy" width="1600" height="352" srcset="{{ asset('images/logo-ULTRAPOP-white-640.webp') }} 640w, {{ asset('images/logo-ULTRAPOP-white.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw">
         </div>
         <div class="up-intro">
-          <h2>{{ 'La pop culture'|trans }}<br><em>{{ 'se déguste.'|trans }}</em></h2>
+          <h2>{{ 'La pop culture'|trans }} <br><em>{{ 'se déguste.'|trans }}</em></h2>
           <p>{{ 'Boissons, snacks, confiseries et nouilles instantanées : des produits conçus pour capter le regard, créer le désir et dynamiser chaque rayon.'|trans }}</p>
           <a class="button button-light" href="{{ path('app_ultrapop.' ~ app.request.locale) }}">{{ 'Entrer dans l’univers'|trans }} <span aria-hidden="true">↗</span></a>
         </div>
@@ -145,31 +152,31 @@
 
       <div class="product-gallery shell">
         <a class="product-card product-card-link card-wide reveal" href="https://ultrapop.com/boutique?category={{ 'Boissons'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les boissons ULTRAPOP'|trans }}">
-          <img src="{{ asset('images/ULTRAPOP-boissons.jpg') }}" alt="{{ 'Boissons ULTRAPOP sous licences manga'|trans }}" width="2000" height="800" loading="lazy">
+          <img src="{{ asset('images/ULTRAPOP-boissons.webp') }}" alt="{{ 'Boissons ULTRAPOP sous licences manga'|trans }}" loading="lazy" width="1600" height="640" srcset="{{ asset('images/ULTRAPOP-boissons-640.webp') }} 640w, {{ asset('images/ULTRAPOP-boissons.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw">
           <div class="product-card-copy"><span>{{ 'Boissons'|trans }}</span><strong>{{ 'Fraîches. Iconiques.'|trans }}</strong></div>
           <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
         </a>
         <a class="product-card product-card-link reveal" href="https://ultrapop.com/boutique?category={{ 'Épicerie salée'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les snacks salés ULTRAPOP'|trans }}">
-          <img src="{{ asset('images/chipsan-lifestyle.jpg') }}" alt="{{ 'Chipsan Dragon Ball Z par ULTRAPOP'|trans }}" width="1083" height="1083" loading="lazy">
+          <img src="{{ asset('images/chipsan-lifestyle.webp') }}" alt="{{ 'Chipsan Dragon Ball Z par ULTRAPOP'|trans }}" loading="lazy" width="1083" height="1083" srcset="{{ asset('images/chipsan-lifestyle-640.webp') }} 640w, {{ asset('images/chipsan-lifestyle.webp') }} 1083w" sizes="(max-width: 700px) 100vw, 50vw">
           <div class="product-card-copy"><span>{{ 'Salé'|trans }}</span><strong>{{ 'Le snack passe au niveau supérieur.'|trans }}</strong></div>
           <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
         </a>
         <a class="product-card product-card-link reveal" href="https://ultrapop.com/boutique?category={{ 'Négisan - Nouilles instantanées'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les nouilles instantanées ULTRAPOP'|trans }}">
-          <img src="{{ asset('images/negisan-lifestyle.jpg') }}" alt="{{ 'Negisan Dragon Ball Super par ULTRAPOP'|trans }}" width="1083" height="1083" loading="lazy">
+          <img src="{{ asset('images/negisan-lifestyle.webp') }}" alt="{{ 'Negisan Dragon Ball Super par ULTRAPOP'|trans }}" loading="lazy" width="1083" height="1083" srcset="{{ asset('images/negisan-lifestyle-640.webp') }} 640w, {{ asset('images/negisan-lifestyle.webp') }} 1083w" sizes="(max-width: 700px) 100vw, 50vw">
           <div class="product-card-copy"><span>{{ 'Instant food'|trans }}</span><strong>{{ 'Une pause qui ne ressemble à aucune autre.'|trans }}</strong></div>
           <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
         </a>
       </div>
 
       {% set licenses = [
-        {image: 'licences/MENU_LICENCE-01.png', name: 'One Piece', alt: 'Licence One Piece'|trans},
-        {image: 'licences/MENU_LICENCE-02.png', name: 'Naruto', alt: 'Licence Naruto Shippuden'|trans},
-        {image: 'licences/MENU_LICENCE-03.png', name: 'Dragon Ball Z', alt: 'Licence Dragon Ball Z'|trans},
-        {image: 'licences/MENU_LICENCE-04.png', name: 'Dragon Ball Super', alt: 'Licence Dragon Ball Super'|trans},
-        {image: 'licences/MENU_LICENCE-05.png', name: 'League Of Legends', alt: 'Licence Arcane League of Legends'|trans},
-        {image: 'licences/MENU_LICENCE-06.png', name: 'Demon Slayer', alt: 'Licence Demon Slayer'|trans},
-        {image: 'licences/MENU_LICENCE-07.png', name: 'Jujutsu Kaisen', alt: 'Licence Jujutsu Kaisen'|trans},
-        {image: 'licences/licenses-league-of-legends-c0558db7973198d0.jpg', name: 'League Of Legends', alt: 'Licence League of Legends'|trans}
+        {image: 'licences/MENU_LICENCE-01.webp', name: 'One Piece', alt: 'Licence One Piece'|trans},
+        {image: 'licences/MENU_LICENCE-02.webp', name: 'Naruto', alt: 'Licence Naruto Shippuden'|trans},
+        {image: 'licences/MENU_LICENCE-03.webp', name: 'Dragon Ball Z', alt: 'Licence Dragon Ball Z'|trans},
+        {image: 'licences/MENU_LICENCE-04.webp', name: 'Dragon Ball Super', alt: 'Licence Dragon Ball Super'|trans},
+        {image: 'licences/MENU_LICENCE-05.webp', name: 'League Of Legends', alt: 'Licence Arcane League of Legends'|trans},
+        {image: 'licences/MENU_LICENCE-06.webp', name: 'Demon Slayer', alt: 'Licence Demon Slayer'|trans},
+        {image: 'licences/MENU_LICENCE-07.webp', name: 'Jujutsu Kaisen', alt: 'Licence Jujutsu Kaisen'|trans},
+        {image: 'licences/licenses-league-of-legends-c0558db7973198d0.webp', name: 'League Of Legends', alt: 'Licence League of Legends'|trans}
       ] %}
       <div class="license-strip shell reveal" aria-labelledby="license-carousel-title">
         <div class="license-carousel-heading">
@@ -211,23 +218,23 @@
       <div class="section-heading dark reveal">
         <div>
           <div class="section-index">{{ '03 — POUR QUI ?'|trans }}</div>
-          <h2>{{ 'Votre business.'|trans }}<br><em>{{ 'Notre terrain de jeu.'|trans }}</em></h2>
+          <h2>{{ 'Votre business.'|trans }} <br><em>{{ 'Notre terrain de jeu.'|trans }}</em></h2>
         </div>
         <p>{{ 'Des assortiments et un accompagnement adaptés à votre canal, votre clientèle et votre rythme.'|trans }}</p>
       </div>
 
       <div class="audience-list reveal">
         <article tabindex="0" role="button" data-contact-card data-contact-context="{{ 'Distribution / grossiste'|trans }}" data-contact-label="{{ 'Distributeurs & grossistes'|trans }}" data-contact-benefits="{{ 'Volumes adaptés'|trans }}|{{ 'Disponibilité'|trans }}|{{ 'Logistique coordonnée'|trans }}" aria-label="{{ 'Nous contacter pour la distribution et le négoce de gros'|trans }}">
-          <span>01</span><h3>{{ 'Distributeurs'|trans }}<br>{{ '& grossistes'|trans }}</h3><p>{{ 'Une gamme différenciante, disponible et structurée pour vos réseaux.'|trans }}</p><span class="audience-action" aria-hidden="true"><span>{{ 'Démarrer'|trans }}</span><b>↗</b></span>
+          <span>01</span><h3>{{ 'Distributeurs'|trans }} <br>{{ '& grossistes'|trans }}</h3><p>{{ 'Une gamme différenciante, disponible et structurée pour vos réseaux.'|trans }}</p><span class="audience-action" aria-hidden="true"><span>{{ 'Démarrer'|trans }}</span><b>↗</b></span>
         </article>
         <article tabindex="0" role="button" data-contact-card data-contact-context="{{ 'Grande enseigne'|trans }}" data-contact-label="{{ 'Grandes enseignes'|trans }}" data-contact-benefits="{{ 'Assortiment'|trans }}|{{ 'Activation rayon'|trans }}|{{ 'Rotation'|trans }}" aria-label="{{ 'Nous contacter pour une grande enseigne'|trans }}">
-          <span>02</span><h3>{{ 'Grandes'|trans }}<br>{{ 'enseignes'|trans }}</h3><p>{{ 'Des produits à forte visibilité et des activations pensées pour le rayon.'|trans }}</p><span class="audience-action" aria-hidden="true"><span>{{ 'Démarrer'|trans }}</span><b>↗</b></span>
+          <span>02</span><h3>{{ 'Grandes'|trans }} <br>{{ 'enseignes'|trans }}</h3><p>{{ 'Des produits à forte visibilité et des activations pensées pour le rayon.'|trans }}</p><span class="audience-action" aria-hidden="true"><span>{{ 'Démarrer'|trans }}</span><b>↗</b></span>
         </article>
         <article tabindex="0" role="button" data-contact-card data-contact-context="{{ 'Commerce / e-shop'|trans }}" data-contact-label="{{ 'Commerces & e-shops'|trans }}" data-contact-benefits="{{ 'Sélection personnalisée'|trans }}|{{ 'Nouveautés'|trans }}|{{ 'Potentiel de marge'|trans }}" aria-label="{{ 'Nous contacter pour un commerce ou un e-shop'|trans }}">
-          <span>03</span><h3>{{ 'Commerces'|trans }}<br>{{ '& e-shops'|trans }}</h3><p>{{ 'Des références désirables pour générer trafic, partage et réachat.'|trans }}</p><span class="audience-action" aria-hidden="true"><span>{{ 'Démarrer'|trans }}</span><b>↗</b></span>
+          <span>03</span><h3>{{ 'Commerces'|trans }} <br>{{ '& e-shops'|trans }}</h3><p>{{ 'Des références désirables pour générer trafic, partage et réachat.'|trans }}</p><span class="audience-action" aria-hidden="true"><span>{{ 'Démarrer'|trans }}</span><b>↗</b></span>
         </article>
         <article tabindex="0" role="button" data-contact-card data-contact-context="{{ 'CHR / lieu de loisirs'|trans }}" data-contact-label="{{ 'CHR & lieux de loisirs'|trans }}" data-contact-benefits="{{ 'Formats adaptés'|trans }}|{{ 'Service'|trans }}|{{ 'Expérience client'|trans }}" aria-label="{{ 'Nous contacter pour le CHR ou un lieu de loisirs'|trans }}">
-          <span>04</span><h3>{{ 'CHR & lieux'|trans }}<br>{{ 'de loisirs'|trans }}</h3><p>{{ 'Une offre pop et pratique qui enrichit l’expérience de vos visiteurs.'|trans }}</p><span class="audience-action" aria-hidden="true"><span>{{ 'Démarrer'|trans }}</span><b>↗</b></span>
+          <span>04</span><h3>{{ 'CHR & lieux'|trans }} <br>{{ 'de loisirs'|trans }}</h3><p>{{ 'Une offre pop et pratique qui enrichit l’expérience de vos visiteurs.'|trans }}</p><span class="audience-action" aria-hidden="true"><span>{{ 'Démarrer'|trans }}</span><b>↗</b></span>
         </article>
       </div>
     </section>
@@ -235,12 +242,12 @@
     <section class="process section">
       <div class="shell process-grid">
         <div class="process-media reveal">
-          <img src="{{ asset('images/ULTRAPOP-yasuo.jpg') }}" alt="{{ 'Boisson ULTRAPOP League of Legends'|trans }}" width="1083" height="1083" loading="lazy">
+          <img src="{{ asset('images/ULTRAPOP-yasuo.webp') }}" alt="{{ 'Boisson ULTRAPOP League of Legends'|trans }}" loading="lazy" width="1083" height="1083" srcset="{{ asset('images/ULTRAPOP-yasuo-640.webp') }} 640w, {{ asset('images/ULTRAPOP-yasuo.webp') }} 1083w" sizes="(max-width: 700px) 100vw, 50vw">
           <div class="image-sticker">Europe<br>+ Middle East</div>
         </div>
         <div class="process-copy reveal">
           <div class="section-index light">{{ '04 — SIMPLE & EFFICACE'|trans }}</div>
-          <h2>{{ 'Votre prochain'|trans }}<br>{{ 'best-seller en'|trans }}<br><em>{{ '4 étapes.'|trans }}</em></h2>
+          <h2>{{ 'Votre prochain'|trans }} <br>{{ 'best-seller en'|trans }} <br><em>{{ '4 étapes.'|trans }}</em></h2>
           <ol>
             <li><span>01</span><div><strong>{{ 'On écoute'|trans }}</strong><p>{{ 'Votre canal, votre cible, vos contraintes.'|trans }}</p></div></li>
             <li><span>02</span><div><strong>{{ 'On sélectionne'|trans }}</strong><p>{{ 'Les références les plus pertinentes pour vous.'|trans }}</p></div></li>
@@ -255,13 +262,13 @@
     <section class="numbers section shell reveal">
       <div class="numbers-title">
         <div class="section-index">{{ '05 — POURQUOI LNS'|trans }}</div>
-        <h2>{{ 'Des idées pop.'|trans }}<br><em>{{ 'Une exécution solide.'|trans }}</em></h2>
+        <h2>{{ 'Des idées pop.'|trans }} <br><em>{{ 'Une exécution solide.'|trans }}</em></h2>
       </div>
       <div class="numbers-grid">
-        <article><strong>12</strong><span>{{ 'ans d’expérience'|trans }}<br>{{ 'dans le trade'|trans }}</span></article>
-        <article><strong>700+</strong><span>{{ 'clients accompagnés'|trans }}<br>{{ 'à travers le monde'|trans }}</span></article>
-        <article><strong>100+</strong><span>{{ 'références sous'|trans }}<br>{{ 'licences officielles'|trans }}</span></article>
-        <article><strong>30</strong><span>{{ 'experts engagés'|trans }}<br>{{ 'pour vos projets'|trans }}</span></article>
+        <article><strong>12</strong><span>{{ 'ans d’expérience'|trans }} <br>{{ 'dans le trade'|trans }}</span></article>
+        <article><strong>700+</strong><span>{{ 'clients accompagnés'|trans }} <br>{{ 'à travers le monde'|trans }}</span></article>
+        <article><strong>100+</strong><span>{{ 'références sous'|trans }} <br>{{ 'licences officielles'|trans }}</span></article>
+        <article><strong>30</strong><span>{{ 'experts engagés'|trans }} <br>{{ 'pour vos projets'|trans }}</span></article>
       </div>
       <p class="numbers-source">{{ 'LNS Trade, données entreprise.'|trans }}</p>
     </section>
@@ -269,29 +276,10 @@
     <section class="faq section shell" id="faq">
       <div class="faq-title reveal">
         <div class="section-index">{{ '06 — QUESTIONS FRÉQUENTES'|trans }}</div>
-        <h2>{{ 'Vous vous'|trans }}<br>{{ 'demandez'|trans }} <em>{{ 'peut-être…'|trans }}</em></h2>
+        <h2>{{ 'Vous vous'|trans }} <br>{{ 'demandez'|trans }} <em>{{ 'peut-être…'|trans }}</em></h2>
       </div>
       <div class="faq-list reveal">
-        <details>
-          <summary>{{ 'Quels types de produits distribuez-vous ?'|trans }}<span>+</span></summary>
-          <p>{{ 'Nous distribuons des boissons, snacks salés, confiseries, bubble teas et nouilles instantanées. Notre offre associe produits tendance sourcés et créations exclusives ULTRAPOP sous licences officielles.'|trans }}</p>
-        </details>
-        <details>
-          <summary>{{ 'Travaillez-vous uniquement avec les grandes enseignes ?'|trans }}<span>+</span></summary>
-          <p>{{ 'Non. Nos équipes accompagnent aussi les grossistes, commerces indépendants, e-commerçants, hôtels, restaurants, cafés et lieux de loisirs.'|trans }}</p>
-        </details>
-        <details>
-          <summary>{{ 'Pouvez-vous livrer à l’international ?'|trans }}<span>+</span></summary>
-          <p>{{ 'Oui. LNS Trade opère en France et à l’international, notamment en Europe et au Moyen-Orient, avec une équipe dédiée aux enjeux d’import et de logistique.'|trans }}</p>
-        </details>
-        <details>
-          <summary>{{ 'Comment recevoir votre catalogue professionnel ?'|trans }}<span>+</span></summary>
-          <p>{{ 'Notre catalogue professionnel ULTRAPOP est accessible immédiatement depuis le bouton “Voir le catalogue”. Pour une sélection adaptée à votre activité, contactez ensuite notre équipe commerciale.'|trans }}</p>
-        </details>
-        <details>
-          <summary>{{ 'Développez-vous des produits sur mesure ?'|trans }}<span>+</span></summary>
-          <p>{{ 'Oui. Selon votre projet, nous pouvons vous accompagner de la création du concept à sa mise sur le marché, en passant par le développement produit et la logistique.'|trans }}</p>
-        </details>
+        {% include 'partials/_faq_list.html.twig' %}
       </div>
     </section>
 
@@ -300,21 +288,21 @@
         <div class="mag-heading reveal">
           <div>
             <div class="section-index light">{{ '07 — LE MAG'|trans }}</div>
-            <h2>{{ 'Décrypter ce qui'|trans }}<br>{{ 'fera vendre'|trans }} <em>{{ 'demain.'|trans }}</em></h2>
+            <h2>{{ 'Décrypter ce qui'|trans }} <br>{{ 'fera vendre'|trans }} <em>{{ 'demain.'|trans }}</em></h2>
           </div>
           <a class="text-link light" href="{{ path('app_blog.' ~ app.request.locale) }}">{{ 'Tous les articles'|trans }} <span>↗</span></a>
         </div>
         <div class="article-grid">
           <a class="article-card featured reveal" href="{{ path('app_article_trends.' ~ app.request.locale) }}">
-            <div class="article-image"><img src="{{ asset('images/ultra-ice-tea-luffy.jpg') }}" alt="{{ 'Canette Ultra Ice Tea One Piece'|trans }}" width="1083" height="1083" loading="lazy"><span>{{ 'Décryptage'|trans }}</span></div>
+            <div class="article-image"><img src="{{ asset('images/ultra-ice-tea-luffy.webp') }}" alt="{{ 'Canette Ultra Ice Tea One Piece'|trans }}" loading="lazy" width="1083" height="1083" srcset="{{ asset('images/ultra-ice-tea-luffy-640.webp') }} 640w, {{ asset('images/ultra-ice-tea-luffy.webp') }} 1083w" sizes="(max-width: 700px) 100vw, 50vw"><span>{{ 'Décryptage'|trans }}</span></div>
             <div class="article-copy"><small>{{ '6 min · Tendances'|trans }}</small><h3>{{ 'Pourquoi la pop culture transforme le rayon snacking'|trans }}</h3><span class="arrow">↗</span></div>
           </a>
           <a class="article-card reveal" href="{{ path('app_article_wholesaler.' ~ app.request.locale) }}">
-            <div class="article-image"><img src="{{ asset('images/ultra-ice-tea-naruto.jpg') }}" alt="{{ 'Canette Ultra Ice Tea Naruto'|trans }}" width="1083" height="1083" loading="lazy"><span>{{ 'Conseils'|trans }}</span></div>
+            <div class="article-image"><img src="{{ asset('images/ultra-ice-tea-naruto.webp') }}" alt="{{ 'Canette Ultra Ice Tea Naruto'|trans }}" loading="lazy" width="1083" height="1083" srcset="{{ asset('images/ultra-ice-tea-naruto-640.webp') }} 640w, {{ asset('images/ultra-ice-tea-naruto.webp') }} 1083w" sizes="(max-width: 700px) 100vw, 50vw"><span>{{ 'Conseils'|trans }}</span></div>
             <div class="article-copy"><small>{{ '5 min · Distribution'|trans }}</small><h3>{{ 'Comment choisir son grossiste en boissons manga ?'|trans }}</h3><span class="arrow">↗</span></div>
           </a>
           <a class="article-card reveal" href="{{ path('app_article_merchandising.' ~ app.request.locale) }}">
-            <div class="article-image"><img src="{{ asset('images/ULTRAPOP-sale.jpg') }}" alt="{{ 'Assortiment de snacks ULTRAPOP'|trans }}" width="1201" height="801" loading="lazy"><span>{{ 'Retail'|trans }}</span></div>
+            <div class="article-image"><img src="{{ asset('images/ULTRAPOP-sale.webp') }}" alt="{{ 'Assortiment de snacks ULTRAPOP'|trans }}" loading="lazy" width="1201" height="801" srcset="{{ asset('images/ULTRAPOP-sale-640.webp') }} 640w, {{ asset('images/ULTRAPOP-sale.webp') }} 1201w" sizes="(max-width: 700px) 100vw, 50vw"><span>{{ 'Retail'|trans }}</span></div>
             <div class="article-copy"><small>{{ '7 min · Merchandising'|trans }}</small><h3>{{ '5 leviers pour rendre vos produits sous licence irrésistibles'|trans }}</h3><span class="arrow">↗</span></div>
           </a>
         </div>
@@ -323,7 +311,7 @@
 
     <section class="direct-contact-band">
       <div class="shell reveal">
-        <div><p class="eyebrow dark"><span></span> {{ 'Contact direct'|trans }}</p><h2>{{ 'Vous préférez'|trans }}<br><em>{{ 'nous parler ?'|trans }}</em></h2></div>
+        <div><p class="eyebrow dark"><span></span> {{ 'Contact direct'|trans }}</p><h2>{{ 'Vous préférez'|trans }} <br><em>{{ 'nous parler ?'|trans }}</em></h2></div>
         <div class="direct-contact-links">
           <a href="tel:+33388840380"><small>{{ 'Appelez-nous'|trans }}</small><strong>+33 3 88 84 03 80</strong><span aria-hidden="true">↗</span></a>
           <a href="mailto:info@lnstrade.fr"><small>{{ 'Écrivez-nous'|trans }}</small><strong>info@lnstrade.fr</strong><span aria-hidden="true">↗</span></a>
@@ -332,11 +320,11 @@
     </section>
 
     <section class="final-cta">
-      <div class="final-media" aria-hidden="true"><img src="{{ asset('images/ULTRAPOP-collection.jpg') }}" alt="" width="1800" height="1200" loading="lazy"></div>
+      <div class="final-media" aria-hidden="true"><img src="{{ asset('images/ULTRAPOP-collection.webp') }}" alt="" loading="lazy" width="1600" height="1067" srcset="{{ asset('images/ULTRAPOP-collection-640.webp') }} 640w, {{ asset('images/ULTRAPOP-collection.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw"></div>
       <div class="final-overlay" aria-hidden="true"></div>
       <div class="final-content shell reveal">
         <p class="eyebrow light"><span></span> {{ 'Prêt à dynamiser votre offre ?'|trans }}</p>
-        <h2>{{ 'Faisons entrer'|trans }}<br>{{ 'la pop culture'|trans }}<br><em>{{ 'dans vos rayons.'|trans }}</em></h2>
+        <h2>{{ 'Faisons entrer'|trans }} <br>{{ 'la pop culture'|trans }} <br><em>{{ 'dans vos rayons.'|trans }}</em></h2>
         <button class="button button-primary large" type="button" data-open-contact>{{ 'Parler à un expert'|trans }} <span aria-hidden="true">↗</span></button>
       </div>
     </section>

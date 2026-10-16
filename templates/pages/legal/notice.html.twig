@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% set page_id = 'legal' %}
+{% set route_name = 'app_legal' %}
+{% set body_class = 'inner-page' %}
+
+{% block body %}
+<main id="main">
+  <header class="page-hero legal-hero"><div class="shell">
+    <div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> / {{ 'Mentions légales'|trans }}</div>
+    <p class="eyebrow light"><span></span> LNS Trade</p>
+    <h1>{{ 'Mentions légales'|trans }}</h1>
+  </div></header>
+  <article class="legal-document shell">
+    <p class="legal-updated">{{ 'seo.updated'|trans }} <time datetime="2026-10-16">16/10/2026</time></p>
+    {% if app.request.locale == 'fr' %}
+      <h2>Éditeur du site</h2>
+      <p><strong>LNS TRADE</strong>, société à responsabilité limitée (SARL) au capital de 25 000 €.</p>
+      <address>Siège social : 13 Quai Kléber, 67000 Strasbourg, France.</address>
+      <ul><li>SIREN : 803 854 447</li><li>SIRET du siège : 803 854 447 00031</li><li>RCS : 803 854 447 RCS Strasbourg</li><li>TVA intracommunautaire : FR84803854447</li></ul>
+      <p>Directeur de la publication : Éric Uzan.</p>
+      <p>Téléphone : <a href="tel:+33388840380">+33 3 88 84 03 80</a><br>E-mail : <a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a></p>
+      <h2>Hébergement</h2>
+      <p>o2switch, Chemin des Pardiaux, 63000 Clermont-Ferrand, France.<br>Téléphone : <a href="tel:+33444446040">+33 4 44 44 60 40</a> · <a href="https://www.o2switch.fr/" target="_blank" rel="noopener noreferrer">www.o2switch.fr</a></p>
+      <h2>Conception et développement</h2>
+      <p><a href="https://optiwebsolutions.fr/" target="_blank" rel="noopener noreferrer">OptiWebSolutions</a>.</p>
+      <h2>Propriété intellectuelle</h2>
+      <p>Les textes, visuels et éléments graphiques du site sont protégés par les droits applicables. Les marques et univers sous licence présentés restent la propriété de leurs titulaires respectifs. Leur présentation sur ce site ne confère aucun droit de reproduction ou d’exploitation.</p>
+      <h2>Informations commerciales</h2>
+      <p>Ce site présente une offre destinée aux professionnels. Les disponibilités, quantités, prix et conditions de livraison sont précisés par l’équipe commerciale selon les produits, le projet et la destination. L’envoi du formulaire constitue une demande de contact, sans commande ni engagement d’achat.</p>
+      <h2>Données personnelles</h2>
+      <p>Les modalités de traitement des données et les moyens d’exercer vos droits sont décrits dans notre <a href="{{ path('app_privacy.fr') }}">politique de confidentialité</a>. Consultez également nos <a href="{{ path('app_terms.fr') }}">conditions générales d’utilisation</a>.</p>
+    {% else %}
+      <h2>Website publisher</h2>
+      <p><strong>LNS TRADE</strong>, a French limited liability company (SARL) with share capital of €25,000.</p>
+      <address>Registered office: 13 Quai Kléber, 67000 Strasbourg, France.</address>
+      <ul><li>SIREN: 803 854 447</li><li>Registered office SIRET: 803 854 447 00031</li><li>Company registration: 803 854 447 RCS Strasbourg</li><li>EU VAT number: FR84803854447</li></ul>
+      <p>Publication director: Éric Uzan.</p>
+      <p>Phone: <a href="tel:+33388840380">+33 3 88 84 03 80</a><br>Email: <a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a></p>
+      <h2>Hosting</h2>
+      <p>o2switch, Chemin des Pardiaux, 63000 Clermont-Ferrand, France.<br>Phone: <a href="tel:+33444446040">+33 4 44 44 60 40</a> · <a href="https://www.o2switch.fr/" target="_blank" rel="noopener noreferrer">www.o2switch.fr</a></p>
+      <h2>Design and development</h2>
+      <p><a href="https://optiwebsolutions.fr/" target="_blank" rel="noopener noreferrer">OptiWebSolutions</a>.</p>
+      <h2>Intellectual property</h2>
+      <p>Website text, images and graphics are protected by applicable rights. The brands and licensed universes shown remain the property of their respective owners. Their presentation does not grant any right of reproduction or commercial use.</p>
+      <h2>Trade information</h2>
+      <p>This website presents an offer for professionals. Availability, quantities, pricing and delivery terms are specified by the sales team according to the products, project and destination. Submitting the form requests a conversation and does not place an order or commit you to a purchase.</p>
+      <h2>Personal data</h2>
+      <p>Our <a href="{{ path('app_privacy.en') }}">privacy policy</a> explains how we process personal data and how to exercise your rights. See also our <a href="{{ path('app_terms.en') }}">website terms of use</a>.</p>
+    {% endif %}
+  </article>
+</main>
+{% endblock %}

@@ -1,0 +1,16 @@
+<section class="content-section shell trade-conditions">
+  <h2>{{ 'seo.conditions.title'|trans }}</h2>
+  <p>{{ 'seo.conditions.intro'|trans }}</p>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="{{ 'seo.conditions.title'|trans }}">
+    <table class="trade-table">
+      <caption>{{ 'seo.conditions.title'|trans }}</caption>
+      <thead><tr><th scope="col">{{ 'seo.conditions.item'|trans }}</th><th scope="col">{{ 'seo.conditions.answer'|trans }}</th></tr></thead>
+      <tbody>
+        {% for item in ['quantities', 'delivery', 'products', 'pricing'] %}
+          <tr><th scope="row">{{ ('seo.conditions.' ~ item)|trans }}</th><td>{{ ('seo.conditions.' ~ item ~ '.text')|trans }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p><a class="text-link" href="{{ path('app_contact.' ~ app.request.locale) }}">{{ 'Nous contacter'|trans }} <span aria-hidden="true">↗</span></a></p>
+</section>

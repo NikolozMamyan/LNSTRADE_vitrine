@@ -12,6 +12,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CatalogController extends AbstractController
 {
+    #[Route(path: ['en' => '/en/product-range', 'fr' => '/fr/catalogue-produits'], name: 'app_products', methods: ['GET'])]
+    public function products(): Response
+    {
+        return $this->render('pages/products.html.twig');
+    }
+
     #[Route('/catalogue', name: 'app_catalog', methods: ['GET'])]
     public function __invoke(CatalogRepository $catalogs, CatalogPageRepository $pages): Response
     {

@@ -501,7 +501,6 @@ const closePageUi = () => {
   const languageTrigger = document.querySelector('.language-switcher-trigger');
   menuToggle?.setAttribute('aria-expanded', 'false');
   languageTrigger?.setAttribute('aria-expanded', 'false');
-  document.querySelector('script[data-generated-breadcrumb]')?.remove();
 };
 
 const cleanupPage = () => {
@@ -515,6 +514,9 @@ const cleanupPage = () => {
 
 const initializePage = () => {
   if (initializedBody === document.body) return;
+
+  const pageSchemas = document.querySelectorAll('script[data-page-schema]');
+  [...pageSchemas].slice(0, -1).forEach((schema) => schema.remove());
 
   pageController?.abort();
   revealObserver?.disconnect();
@@ -744,33 +746,6 @@ const initializePage = () => {
   document.querySelectorAll('[data-year]').forEach((element) => {
     element.textContent = new Date().getFullYear();
   });
-
-  document.querySelector('script[data-generated-breadcrumb]')?.remove();
-  const breadcrumb = document.querySelector('.breadcrumb');
-  const canonical = document.querySelector('link[rel="canonical"]')?.href;
-  if (breadcrumb && canonical) {
-    const items = [...breadcrumb.querySelectorAll('a')].map((link, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: link.textContent.trim(),
-      item: new URL(link.href, canonical).href,
-    }));
-    items.push({
-      '@type': 'ListItem',
-      position: items.length + 1,
-      name: document.querySelector('h1')?.textContent.trim() || document.title,
-      item: canonical,
-    });
-    const structuredData = document.createElement('script');
-    structuredData.type = 'application/ld+json';
-    structuredData.dataset.generatedBreadcrumb = '';
-    structuredData.textContent = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: items,
-    });
-    document.head.append(structuredData);
-  }
 
   hidePageSkeleton();
   preloadCatalogue();

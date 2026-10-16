@@ -1,0 +1,3 @@
+{% for faq in faq_items %}
+  <details><summary>{{ faq.question|trans }}<span aria-hidden="true">+</span></summary><p>{{ faq.answer|trans }}</p></details>
+{% endfor %}

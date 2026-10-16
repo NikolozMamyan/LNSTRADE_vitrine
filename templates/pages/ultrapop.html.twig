@@ -2,23 +2,23 @@
 {% set page_id = 'ultrapop' %}
 {% set route_name = 'app_ultrapop' %}
 {% set body_class = 'inner-page' %}
-{% set og_image = asset('images/ULTRAPOP-collection.jpg') %}
+{% set og_image = asset('images/ULTRAPOP-collection.webp') %}
 
 {% block body %}
 <main id="main">
   <section class="page-hero" style="background:#ff5535">
-    <div class="page-hero-media"><img src="{{ asset('images/chipsan-lifestyle.jpg') }}" alt="{{ 'Chipsan Dragon Ball Z, produit ULTRAPOP'|trans }}" width="1083" height="1083"></div>
+    <div class="page-hero-media"><img src="{{ asset('images/chipsan-lifestyle.webp') }}" alt="{{ 'Chipsan Dragon Ball Z, produit ULTRAPOP'|trans }}" width="1083" height="1083" srcset="{{ asset('images/chipsan-lifestyle-640.webp') }} 640w, {{ asset('images/chipsan-lifestyle.webp') }} 1083w" sizes="(max-width: 700px) 100vw, 50vw"></div>
     <div class="shell">
       <div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> {{ '/ ULTRAPOP'|trans }}</div>
-      <img class="page-ULTRAPOP-logo" src="{{ asset('images/logo-ULTRAPOP-white.png') }}" alt="ULTRAPOP" width="2690" height="592">
-      <h1>{{ 'La pop culture'|trans }}<br><em>{{ 'se déguste.'|trans }}</em></h1>
+      <img class="page-ULTRAPOP-logo" src="{{ asset('images/logo-ULTRAPOP-white.webp') }}" alt="ULTRAPOP" width="1600" height="352" srcset="{{ asset('images/logo-ULTRAPOP-white-640.webp') }} 640w, {{ asset('images/logo-ULTRAPOP-white.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw">
+      <h1>{{ 'La pop culture'|trans }} <br><em>{{ 'se déguste.'|trans }}</em></h1>
       <p>{{ 'Une marque food conçue pour les fans, pensée pour les rayons et développée sous licences officielles.'|trans }}</p>
     </div>
   </section>
 
   <section class="content-section">
     <div class="shell content-grid reveal">
-      <div><div class="section-index">{{ 'UNE MARQUE LNS TRADE'|trans }}</div><h2>{{ 'Plus qu’un pack.'|trans }}<br><em>{{ 'Une expérience.'|trans }}</em></h2></div>
+      <div><div class="section-index">{{ 'UNE MARQUE LNS TRADE'|trans }}</div><h2>{{ 'Plus qu’un pack.'|trans }} <br><em>{{ 'Une expérience.'|trans }}</em></h2></div>
       <div class="prose">
         <p>{{ 'Lancée en 2021 par LNS Trade, ULTRAPOP imagine des boissons et des produits alimentaires qui rendent la culture pop tangible, gourmande et collectionnable.'|trans }}</p>
         <p>{{ 'Chaque création part d’une question simple : comment traduire l’énergie d’une licence dans une expérience que l’on peut voir, partager et goûter ? Nos équipes travaillent le concept, le format, la recette et le packaging comme un ensemble cohérent.'|trans }}</p>
@@ -33,22 +33,22 @@
   <section class="ULTRAPOP section">
     <div class="shell">
       <div class="section-heading reveal">
-        <div><div class="section-index light">{{ 'LES UNIVERS'|trans }}</div><h2>{{ 'À chacun'|trans }}<br><em>{{ 'son power-up.'|trans }}</em></h2></div>
+        <div><div class="section-index light">{{ 'LES UNIVERS'|trans }}</div><h2>{{ 'À chacun'|trans }} <br><em>{{ 'son power-up.'|trans }}</em></h2></div>
         <p>{{ 'Une gamme multiformat pour multiplier les occasions de consommation et les points de contact avec les fans.'|trans }}</p>
       </div>
       <div class="product-gallery">
         <a class="product-card product-card-link card-wide reveal" href="https://ultrapop.com/boutique?category={{ 'Boissons'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les boissons ULTRAPOP'|trans }}">
-          <img src="{{ asset('images/ULTRAPOP-boissons.jpg') }}" alt="{{ 'Gamme de boissons manga ULTRAPOP'|trans }}" width="2000" height="800">
+          <img src="{{ asset('images/ULTRAPOP-boissons.webp') }}" alt="{{ 'Gamme de boissons manga ULTRAPOP'|trans }}" width="1600" height="640" srcset="{{ asset('images/ULTRAPOP-boissons-640.webp') }} 640w, {{ asset('images/ULTRAPOP-boissons.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw">
           <div class="product-card-copy"><span>Bubble tea · Ice tea · Juice</span><strong>{{ 'Boissons'|trans }}</strong></div>
           <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
         </a>
         <a class="product-card product-card-link reveal" href="https://ultrapop.com/boutique?category={{ 'Épicerie sucrée'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les produits sucrés ULTRAPOP'|trans }}">
-          <img src="{{ asset('images/ULTRAPOP-sucre.jpg') }}" alt="{{ 'Gamme de confiseries ULTRAPOP'|trans }}" width="5208" height="3125">
+          <img src="{{ asset('images/ULTRAPOP-sucre.webp') }}" alt="{{ 'Gamme de confiseries ULTRAPOP'|trans }}" width="1600" height="960" srcset="{{ asset('images/ULTRAPOP-sucre-640.webp') }} 640w, {{ asset('images/ULTRAPOP-sucre.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw">
           <div class="product-card-copy"><span>Gumis · Candy</span><strong>{{ 'Sucré'|trans }}</strong></div>
           <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
         </a>
         <a class="product-card product-card-link reveal" href="https://ultrapop.com/boutique?category={{ 'Épicerie salée'|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Découvrir les snacks salés ULTRAPOP'|trans }}">
-          <img src="{{ asset('images/ULTRAPOP-sale.jpg') }}" alt="{{ 'Gamme de snacks salés ULTRAPOP'|trans }}" width="1201" height="801">
+          <img src="{{ asset('images/ULTRAPOP-sale.webp') }}" alt="{{ 'Gamme de snacks salés ULTRAPOP'|trans }}" width="1201" height="801" srcset="{{ asset('images/ULTRAPOP-sale-640.webp') }} 640w, {{ asset('images/ULTRAPOP-sale.webp') }} 1201w" sizes="(max-width: 700px) 100vw, 50vw">
           <div class="product-card-copy"><span>Chips · Rice chips · Noodles</span><strong>{{ 'Salé'|trans }}</strong></div>
           <span class="product-card-action">{{ 'Voir la sélection'|trans }} <b aria-hidden="true">↗</b></span>
         </a>
@@ -58,7 +58,7 @@
 
   <section class="content-section">
     <div class="shell content-grid reveal">
-      <div><div class="section-index">{{ 'LICENCES OFFICIELLES'|trans }}</div><h2>{{ 'Des univers'|trans }}<br><em>{{ 'cultes.'|trans }}</em></h2></div>
+      <div><div class="section-index">{{ 'LICENCES OFFICIELLES'|trans }}</div><h2>{{ 'Des univers'|trans }} <br><em>{{ 'cultes.'|trans }}</em></h2></div>
       <div class="prose">
         <p>{{ 'ULTRAPOP développe ses collections avec des licences connues en France et à l’international, parmi lesquelles One Piece, Naruto Shippuden, Dragon Ball, Demon Slayer et League of Legends.'|trans }}</p>
         <p>{{ 'Cette proximité avec des communautés engagées permet de créer des lancements attendus, des séries à collectionner et des assortiments qui renouvellent régulièrement l’intérêt en point de vente.'|trans }}</p>
@@ -72,6 +72,7 @@
     </div>
   </section>
 
-  <section class="inline-cta"><div class="shell"><h2>{{ 'Vous voulez ULTRAPOP dans vos rayons ?'|trans }}</h2><button class="button" type="button" data-open-contact data-interest="Catalogue ULTRAPOP">{{ 'Devenir partenaire'|trans }} <span>↗</span></button></div></section>
+  {% include 'pages/_ultrapop_advice.html.twig' %}
+    <section class="inline-cta"><div class="shell"><h2>{{ 'Vous voulez ULTRAPOP dans vos rayons ?'|trans }}</h2><button class="button" type="button" data-open-contact data-interest="Catalogue ULTRAPOP">{{ 'Devenir partenaire'|trans }} <span>↗</span></button></div></section>
 </main>
 {% endblock %}

@@ -23,9 +23,21 @@ use Symfony\Component\RateLimiter\Storage\InMemoryStorage;
 
 final class ContactControllerTest extends WebTestCase
 {
-    public function testItConfirmsTheSavedSubmissionWithoutCallingHubSpot(): void
+    public function testItRejectsACrossOriginSubmissionWithoutStartingASession(): void
     {
         $client = static::createClient();
+        $crawler = $client->request('GET', '/fr/contact');
+        self::assertSame([], $client->getResponse()->headers->getCookies());
+        $client->request('POST', '/contact', [
+            '_csrf_token' => $crawler->filter('#contact-form input[name="_csrf_token"]')->attr('value'),
+            'website' => 'bot.example',
+        ], server: ['HTTP_ORIGIN' => 'https://untrusted.example', 'HTTP_SEC_FETCH_SITE' => 'cross-site']);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testItConfirmsTheSavedSubmissionWithoutCallingHubSpot(): void
+    {
+        $client = static::createClient([], ['HTTP_ORIGIN' => 'http://localhost']);
         $client->disableReboot();
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
@@ -79,7 +91,7 @@ final class ContactControllerTest extends WebTestCase
 
     public function testItRejectsInvalidContactDataBeforeCallingHubSpot(): void
     {
-        $client = static::createClient();
+        $client = static::createClient([], ['HTTP_ORIGIN' => 'http://localhost']);
         $crawler = $client->request('GET', '/fr/');
         $token = $crawler->filter('#contact-form input[name="_csrf_token"]')->attr('value');
 
@@ -106,7 +118,7 @@ final class ContactControllerTest extends WebTestCase
 
     public function testItKeepsTheVisitorSourceAfterNavigationAndReplacesItForTheNextEnquiry(): void
     {
-        $client = static::createClient();
+        $client = static::createClient([], ['HTTP_ORIGIN' => 'http://localhost']);
         $client->disableReboot();
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
         self::assertSame('pdo_sqlite', $entityManager->getConnection()->getParams()['driver']);
@@ -148,7 +160,7 @@ final class ContactControllerTest extends WebTestCase
 
     public function testHoneypotSilentlyRejectsBots(): void
     {
-        $client = static::createClient();
+        $client = static::createClient([], ['HTTP_ORIGIN' => 'http://localhost']);
         $crawler = $client->request('GET', '/en/');
         $token = $crawler->filter('#contact-form input[name="_csrf_token"]')->attr('value');
 

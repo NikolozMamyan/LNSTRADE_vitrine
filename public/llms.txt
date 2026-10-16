@@ -7,6 +7,7 @@
 - Site anglais : https://lnstrade.fr/en/
 - Site français : https://lnstrade.fr/fr/
 - Entreprise : LNS Trade
+- Raison sociale : LNS TRADE, SARL, SIREN 803 854 447, RCS Strasbourg
 - Marque : ULTRAPOP
 - Adresse : 13 Quai Kléber, 67000 Strasbourg, France
 - Téléphone : +33 3 88 84 03 80
@@ -26,6 +27,12 @@
 - [Grossiste en snacks et boissons manga](https://lnstrade.fr/fr/grossiste-snacks-boissons-manga)
 - [Insights](https://lnstrade.fr/en/insights)
 - [Le Mag LNS Trade](https://lnstrade.fr/fr/blog)
+- [Gammes ULTRAPOP pour professionnels](https://lnstrade.fr/fr/catalogue-produits)
+- [ULTRAPOP product ranges](https://lnstrade.fr/en/product-range)
+- [Contact professionnel](https://lnstrade.fr/fr/contact)
+- [Trade contact](https://lnstrade.fr/en/contact)
+- [Mentions légales](https://lnstrade.fr/fr/mentions-legales)
+- [Legal notice](https://lnstrade.fr/en/legal-notice)
 
 ## Catalogue professionnel
 
@@ -34,5 +41,7 @@
 ## Gammes ULTRAPOP
 
 ULTRAPOP développe des boissons, bubble teas, snacks salés, confiseries et nouilles instantanées sous licences officielles, notamment One Piece, Naruto Shippuden, Dragon Ball, Demon Slayer et League of Legends.
+
+Ultra Ice Tea fait partie des gammes de boissons ULTRAPOP, marque de LNS Trade. Chipsan désigne une gamme de snacks salés et Negisan une gamme de nouilles instantanées.
 
 Pour connaître les références disponibles, les tarifs, les quantités ou les zones de distribution, contacter directement l’équipe LNS Trade.

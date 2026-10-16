@@ -1,19 +1,19 @@
 {% set range_products = [
-  {id: 'ice-tea-luffy', category: 'drinks', name: 'Ultra Ice Tea — Luffy', license: 'One Piece', kind: 'builder.kind.iced_tea', image: 'images/ultra-ice-tea-luffy.jpg'},
-  {id: 'ice-tea-naruto', category: 'drinks', name: 'Ultra Ice Tea — Naruto', license: 'Naruto Shippuden', kind: 'builder.kind.iced_tea', image: 'images/ultra-ice-tea-naruto.jpg'},
-  {id: 'drinks-selection', category: 'drinks', name: 'ULTRAPOP Drinks Selection', license: 'Multi-licences', kind: 'builder.kind.drinks_selection', image: 'images/ULTRAPOP-boissons.jpg'},
-  {id: 'chipsan-dbz', category: 'savoury', name: 'Chipsan', license: 'Dragon Ball Z', kind: 'builder.kind.savoury_snack', image: 'images/chipsan-lifestyle.jpg'},
-  {id: 'savoury-selection', category: 'savoury', name: 'ULTRAPOP Savoury Selection', license: 'Multi-licences', kind: 'builder.kind.savoury_selection', image: 'images/ULTRAPOP-sale.jpg'},
-  {id: 'candy-selection', category: 'sweet', name: 'ULTRAPOP Candy Selection', license: 'Multi-licences', kind: 'builder.kind.candy_selection', image: 'images/ULTRAPOP-sucre.jpg'},
-  {id: 'gummies-selection', category: 'sweet', name: 'ULTRAPOP Gummies Selection', license: 'Multi-licences', kind: 'builder.kind.gummies_selection', image: 'images/ULTRAPOP-sucre.jpg'},
-  {id: 'negisan-dbs', category: 'noodles', name: 'Negisan', license: 'Dragon Ball Super', kind: 'builder.kind.instant_noodles', image: 'images/negisan-lifestyle.jpg'},
-  {id: 'noodles-selection', category: 'noodles', name: 'ULTRAPOP Noodles Selection', license: 'Multi-licences', kind: 'builder.kind.noodles_selection', image: 'images/ULTRAPOP-sale.jpg'}
+  {id: 'ice-tea-luffy', category: 'drinks', name: 'Ultra Ice Tea — Luffy', license: 'One Piece', kind: 'builder.kind.iced_tea', image: 'images/ultra-ice-tea-luffy-640.webp'},
+  {id: 'ice-tea-naruto', category: 'drinks', name: 'Ultra Ice Tea — Naruto', license: 'Naruto Shippuden', kind: 'builder.kind.iced_tea', image: 'images/ultra-ice-tea-naruto-640.webp'},
+  {id: 'drinks-selection', category: 'drinks', name: 'ULTRAPOP Drinks Selection', license: 'Multi-licences', kind: 'builder.kind.drinks_selection', image: 'images/ULTRAPOP-boissons-640.webp'},
+  {id: 'chipsan-dbz', category: 'savoury', name: 'Chipsan', license: 'Dragon Ball Z', kind: 'builder.kind.savoury_snack', image: 'images/chipsan-lifestyle-640.webp'},
+  {id: 'savoury-selection', category: 'savoury', name: 'ULTRAPOP Savoury Selection', license: 'Multi-licences', kind: 'builder.kind.savoury_selection', image: 'images/ULTRAPOP-sale-640.webp'},
+  {id: 'candy-selection', category: 'sweet', name: 'ULTRAPOP Candy Selection', license: 'Multi-licences', kind: 'builder.kind.candy_selection', image: 'images/ULTRAPOP-sucre-640.webp'},
+  {id: 'gummies-selection', category: 'sweet', name: 'ULTRAPOP Gummies Selection', license: 'Multi-licences', kind: 'builder.kind.gummies_selection', image: 'images/ULTRAPOP-sucre-640.webp'},
+  {id: 'negisan-dbs', category: 'noodles', name: 'Negisan', license: 'Dragon Ball Super', kind: 'builder.kind.instant_noodles', image: 'images/negisan-lifestyle-640.webp'},
+  {id: 'noodles-selection', category: 'noodles', name: 'ULTRAPOP Noodles Selection', license: 'Multi-licences', kind: 'builder.kind.noodles_selection', image: 'images/ULTRAPOP-sale-640.webp'}
 ] %}
 {% set range_categories = [
-  {id: 'drinks', label: 'builder.category.drinks', description: 'builder.category.drinks_description', image: 'images/ULTRAPOP-boissons.jpg'},
-  {id: 'sweet', label: 'builder.category.sweet', description: 'builder.category.sweet_description', image: 'images/ULTRAPOP-sucre.jpg'},
-  {id: 'savoury', label: 'builder.category.savoury', description: 'builder.category.savoury_description', image: 'images/chipsan-lifestyle.jpg'},
-  {id: 'noodles', label: 'builder.category.noodles', description: 'builder.category.noodles_description', image: 'images/negisan-lifestyle.jpg'}
+  {id: 'drinks', label: 'builder.category.drinks', description: 'builder.category.drinks_description', image: 'images/ULTRAPOP-boissons-640.webp'},
+  {id: 'sweet', label: 'builder.category.sweet', description: 'builder.category.sweet_description', image: 'images/ULTRAPOP-sucre-640.webp'},
+  {id: 'savoury', label: 'builder.category.savoury', description: 'builder.category.savoury_description', image: 'images/chipsan-lifestyle-640.webp'},
+  {id: 'noodles', label: 'builder.category.noodles', description: 'builder.category.noodles_description', image: 'images/negisan-lifestyle-640.webp'}
 ] %}
 
 <dialog
@@ -44,13 +44,13 @@
 
     <div class="range-builder-head">
       <div class="range-builder-brand">
-        <img src="{{ asset('images/logo-ULTRAPOP-white.png') }}" alt="ULTRAPOP" width="2690" height="592">
+        <img src="{{ asset('images/logo-ULTRAPOP-white.webp') }}" alt="ULTRAPOP" width="1600" height="352" srcset="{{ asset('images/logo-ULTRAPOP-white-640.webp') }} 640w, {{ asset('images/logo-ULTRAPOP-white.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw">
         <span>{{ 'builder.badge'|trans }}</span>
       </div>
       <div class="range-builder-heading">
         <div>
           <p>{{ 'builder.eyebrow'|trans }}</p>
-          <h2 id="range-builder-title">{{ 'builder.title'|trans }}</h2>
+          <p class="builder-title-2" id="range-builder-title">{{ 'builder.title'|trans }}</p>
         </div>
         <p>{{ 'builder.intro'|trans }}</p>
       </div>
@@ -65,7 +65,7 @@
     <div class="range-builder-body">
       <section class="range-builder-panel is-active" data-builder-panel="1">
         <div class="range-builder-panel-heading">
-          <div><span>01 — {{ 'builder.step.categories'|trans }}</span><h3>{{ 'builder.categories_title'|trans }}</h3></div>
+          <div><span>01 — {{ 'builder.step.categories'|trans }}</span><p class="builder-title-3">{{ 'builder.categories_title'|trans }}</p></div>
           <p>{{ 'builder.categories_intro'|trans }}</p>
         </div>
         <div class="range-builder-categories">
@@ -88,7 +88,7 @@
         <div class="range-builder-products-layout">
           <div class="range-builder-products-main">
             <div class="range-builder-panel-heading compact">
-              <div><span>02 — {{ 'builder.step.products'|trans }}</span><h3>{{ 'builder.products_title'|trans }}</h3></div>
+              <div><span>02 — {{ 'builder.step.products'|trans }}</span><p class="builder-title-3">{{ 'builder.products_title'|trans }}</p></div>
               <p>{{ 'builder.products_intro'|trans }}</p>
             </div>
             <button class="range-builder-text-button range-builder-inline-back" type="button" data-builder-go="1">← {{ 'builder.change_category'|trans }}</button>
@@ -116,7 +116,7 @@
                   </div>
                   <div class="range-builder-product-copy">
                     <small>{{ product.license }}</small>
-                    <h4>{{ product.name }}</h4>
+                    <p class="builder-title-4">{{ product.name }}</p>
                     <p>{{ product.kind|trans }}</p>
                     <div class="range-builder-product-actions">
                       <button class="range-builder-add" type="button" data-builder-add="{{ product.id }}" aria-pressed="false">{{ 'builder.add'|trans }} <span>+</span></button>
@@ -146,7 +146,7 @@
         <div class="range-builder-basket-layout">
           <div>
             <div class="range-builder-panel-heading compact">
-              <div><span>03 — {{ 'builder.step.basket'|trans }}</span><h3>{{ 'builder.basket_title'|trans }}</h3></div>
+              <div><span>03 — {{ 'builder.step.basket'|trans }}</span><p class="builder-title-3">{{ 'builder.basket_title'|trans }}</p></div>
               <p>{{ 'builder.basket_intro'|trans }}</p>
             </div>
             <button class="range-builder-text-button range-builder-inline-back" type="button" data-builder-go="2">← {{ 'builder.add_products'|trans }}</button>
@@ -171,7 +171,7 @@
         <div class="range-builder-contact-layout" data-builder-contact-view>
           <div class="range-builder-contact-aside">
             <span>04 — {{ 'builder.step.contact'|trans }}</span>
-            <h3>{{ 'builder.contact_title'|trans }}</h3>
+            <p class="builder-title-3">{{ 'builder.contact_title'|trans }}</p>
             <p>{{ 'builder.contact_intro'|trans }}</p>
             <button class="range-builder-text-button light" type="button" data-builder-go="3">← {{ 'builder.back_basket'|trans }}</button>
             <div class="range-builder-contact-stats">
@@ -201,7 +201,7 @@
 
         <div class="range-builder-success" data-builder-success hidden>
           <span class="range-builder-success-icon" aria-hidden="true">✓</span>
-          <h3>{{ 'builder.success_title'|trans }}</h3>
+          <p class="builder-title-3">{{ 'builder.success_title'|trans }}</p>
           <p>{{ 'builder.success_intro'|trans }}</p>
           <button class="range-builder-text-button" type="button" data-builder-reset>{{ 'builder.start_again'|trans }}</button>
         </div>

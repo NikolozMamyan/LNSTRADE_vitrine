@@ -17,6 +17,21 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ContactController extends AbstractController
 {
+    #[Route(path: ['en' => '/en/contact', 'fr' => '/fr/contact'], name: 'app_contact', methods: ['GET'])]
+    public function page(): Response
+    {
+        return $this->render('pages/contact.html.twig');
+    }
+
+    #[Route('/contact', name: 'app_contact_page_redirect', methods: ['GET'])]
+    public function redirectToPage(Request $request): Response
+    {
+        $response = $this->redirectToRoute('app_contact.'.($request->getPreferredLanguage(['en', 'fr']) ?? 'en'), $request->query->all());
+        $response->setVary('Accept-Language');
+
+        return $response;
+    }
+
     #[Route('/contact', name: 'app_contact_submit', methods: ['POST'], format: 'json')]
     public function __invoke(
         Request $request,

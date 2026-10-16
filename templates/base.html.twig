@@ -2,14 +2,14 @@
 {% set route_name = route_name|default('app_home') %}
 {% set body_class = body_class|default('') %}
 {% set is_article = is_article|default(false) %}
-{% set skeleton_variant = page_id in ['choosingWholesaler', 'merchandising', 'snackingTrends', 'terms', 'privacy'] ? 'article' : page_id %}
+{% set skeleton_variant = page_id in ['choosingWholesaler', 'merchandising', 'snackingTrends', 'terms', 'privacy', 'legal', 'contact', 'products'] ? 'article' : page_id %}
 {% set site_origin = site_url|trim('/') %}
 {% set canonical_url = site_origin ~ path(route_name ~ '.' ~ app.request.locale) %}
 {% set english_url = site_origin ~ path(route_name ~ '.en') %}
 {% set french_url = site_origin ~ path(route_name ~ '.fr') %}
 {% set page_title = ('meta.' ~ page_id ~ '.title')|trans %}
 {% set page_description = ('meta.' ~ page_id ~ '.description')|trans %}
-{% set social_image = site_origin ~ (og_image|default(asset('images/ULTRAPOP-collection.jpg'))) %}
+{% set social_image = site_origin ~ (og_image|default(asset('images/ULTRAPOP-collection.webp'))) %}
 {% set organization_id = site_origin ~ '/#organization' %}
 {% set website_id = site_origin ~ '/#website' %}
 <!doctype html>
@@ -40,7 +40,7 @@
   <link rel="canonical" href="{{ canonical_url }}">
   <link rel="alternate" hreflang="en" href="{{ english_url }}">
   <link rel="alternate" hreflang="fr" href="{{ french_url }}">
-  <link rel="alternate" hreflang="x-default" href="{{ english_url }}">
+  <link rel="alternate" hreflang="x-default" href="{{ page_id == 'home' ? site_origin ~ path('app_locale') : english_url }}">
   <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" sizes="any">
 
   <meta property="og:type" content="{{ is_article ? 'article' : 'website' }}">
@@ -66,6 +66,27 @@
   {{ turbo_refreshes_with(method: 'morph', scroll: 'preserve') }}
   {{ importmap('app') }}
 
+  {% set page_schema = {
+    '@type': is_article ? 'BlogPosting' : 'WebPage',
+    '@id': canonical_url ~ '#page',
+    'url': canonical_url,
+    'name': page_title,
+    'headline': page_title,
+    'description': page_description,
+    'inLanguage': app.request.locale,
+    'image': social_image,
+    'mainEntityOfPage': canonical_url,
+    'isPartOf': {'@id': website_id},
+    'publisher': {'@id': organization_id}
+  } %}
+  {% if is_article %}
+    {% set page_schema = page_schema|merge({
+      'author': {'@type': 'Organization', '@id': organization_id, 'name': 'LNS Trade', 'url': site_origin ~ path('app_home.' ~ app.request.locale)},
+      'datePublished': article_date,
+      'dateModified': article_modified|default(article_date)
+    }) %}
+    <meta property="article:modified_time" content="{{ article_modified|default(article_date) }}T09:00:00+02:00">
+  {% endif %}
   {% set organization_schema = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -75,7 +96,7 @@
         'name': 'LNS Trade',
         'alternateName': ['LNSTRADE', 'ULTRAPOP by LNS Trade'],
         'url': site_origin ~ '/',
-        'logo': site_origin ~ asset('images/logo-lns-white.png'),
+        'logo': site_origin ~ asset('images/logo-lns-white.webp'),
         'description': 'seo.organization_description'|trans,
         'foundingDate': '2014',
         'address': {
@@ -93,7 +114,7 @@
           'availableLanguage': ['fr', 'en']
         },
         'brand': {'@type': 'Brand', '@id': site_origin ~ path('app_ultrapop.en') ~ '#brand', 'name': 'ULTRAPOP'},
-        'hasOfferCatalog': {'@type': 'OfferCatalog', 'name': 'seo.catalog_name'|trans, 'url': absolute_url(path('app_catalog'))},
+        'hasOfferCatalog': {'@type': 'OfferCatalog', 'name': 'seo.catalog_name'|trans, 'url': site_origin ~ path('app_products.' ~ app.request.locale)},
         'sameAs': ['https://www.instagram.com/ULTRAPOP_/', 'https://www.tiktok.com/@ULTRAPOP_', 'https://fr.linkedin.com/company/ULTRAPOPbylnstrade']
       },
       {
@@ -104,25 +125,25 @@
         'inLanguage': app.request.locale,
         'publisher': {'@id': organization_id}
       },
-      {
-        '@type': is_article ? 'BlogPosting' : 'WebPage',
-        '@id': canonical_url ~ '#page',
-        'url': canonical_url,
-        'name': page_title,
-        'headline': page_title,
-        'description': page_description,
-        'inLanguage': app.request.locale,
-        'image': social_image,
-        'mainEntityOfPage': canonical_url,
-        'isPartOf': {'@id': website_id},
-        'author': is_article ? {'@id': organization_id} : null,
-        'publisher': {'@id': organization_id},
-        'datePublished': is_article ? article_date : null,
-        'dateModified': is_article ? article_date : null
-      }
+      page_schema
     ]
   } %}
-  <script type="application/ld+json">{{ organization_schema|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
+  {% if page_id != 'home' %}
+    {% set breadcrumb_items = [{'@type': 'ListItem', 'position': 1, 'name': 'Accueil'|trans, 'item': site_origin ~ path('app_home.' ~ app.request.locale)}] %}
+    {% if is_article %}
+      {% set breadcrumb_items = breadcrumb_items|merge([{'@type': 'ListItem', 'position': 2, 'name': 'Le Mag'|trans, 'item': site_origin ~ path('app_blog.' ~ app.request.locale)}]) %}
+    {% endif %}
+    {% set breadcrumb_items = breadcrumb_items|merge([{'@type': 'ListItem', 'position': breadcrumb_items|length + 1, 'name': page_title, 'item': canonical_url}]) %}
+    {% set organization_schema = organization_schema|merge({'@graph': organization_schema['@graph']|merge([{'@type': 'BreadcrumbList', '@id': canonical_url ~ '#breadcrumb', 'itemListElement': breadcrumb_items}])}) %}
+  {% endif %}
+  {% if faq_items|default([]) is not empty %}
+    {% set questions = [] %}
+    {% for faq in faq_items %}
+      {% set questions = questions|merge([{'@type': 'Question', 'name': faq.question|trans, 'acceptedAnswer': {'@type': 'Answer', 'text': faq.answer|trans}}]) %}
+    {% endfor %}
+    {% set organization_schema = organization_schema|merge({'@graph': organization_schema['@graph']|merge([{'@type': 'FAQPage', '@id': canonical_url ~ '#faq', 'mainEntity': questions}])}) %}
+  {% endif %}
+  <script type="application/ld+json" data-page-schema>{{ organization_schema|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
 </head>
 <body class="{{ body_class }}" data-route="{{ page_id }}" data-catalog-url="{{ path('app_catalog') }}">
   <!-- Google Tag Manager (noscript) -->
@@ -135,7 +156,7 @@
   {% block body %}{% endblock %}
   {% include 'partials/_footer.html.twig' %}
   {% if page_id in ['home', 'blog', 'choosingWholesaler', 'merchandising', 'snackingTrends'] %}{% include 'partials/_newsletter.html.twig' %}{% endif %}
-  {% if page_id != 'wholesale' %}{% include 'partials/_contact_modal.html.twig' %}{% endif %}
+  {% if page_id not in ['wholesale', 'contact'] %}{% include 'partials/_contact_modal.html.twig' %}{% endif %}
   {% include 'partials/_range_builder_modal.html.twig' %}
   <script id="lns-ui-copy" type="application/json">{{ {
     locale: app.request.locale,

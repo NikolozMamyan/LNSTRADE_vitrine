@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+{% set page_id = 'contact' %}
+{% set route_name = 'app_contact' %}
+{% set body_class = 'inner-page contact-page' %}
+
+{% block body %}
+<main id="main">
+  <header class="page-hero legal-hero">
+    <div class="shell">
+      <div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> / {{ 'seo.contact.title'|trans }}</div>
+      <p class="eyebrow light"><span></span> LNS Trade · B2B</p>
+      <h1>{{ 'seo.contact.title'|trans }}</h1>
+      <p>{{ 'seo.contact.intro'|trans }}</p>
+    </div>
+  </header>
+  <section class="content-section shell content-grid">
+    <div class="prose">
+      <h2>{{ 'seo.contact.details'|trans }}</h2>
+      <address>LNS TRADE<br>13 Quai Kléber<br>67000 Strasbourg, France</address>
+      <p><a href="tel:+33388840380">+33 3 88 84 03 80</a><br><a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a></p>
+      <p>{{ 'seo.contact.help'|trans }}</p>
+      <p><a href="{{ path('app_wholesale.' ~ app.request.locale) }}">{{ 'Grossiste manga'|trans }}</a> · <a href="{{ path('app_trading.' ~ app.request.locale) }}">{{ 'Trading, import et distribution alimentaire'|trans }}</a></p>
+    </div>
+    {% include 'partials/_contact_form.html.twig' with {contact_context: 'Demande générale'} %}
+  </section>
+</main>
+{% endblock %}

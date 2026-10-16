@@ -10,6 +10,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class LegalController extends AbstractController
 {
+    #[Route(path: ['en' => '/en/legal-notice', 'fr' => '/fr/mentions-legales'], name: 'app_legal', methods: ['GET'])]
+    public function notice(): Response
+    {
+        return $this->render('pages/legal/notice.html.twig');
+    }
+
     #[Route(
         path: ['en' => '/en/terms-and-conditions', 'fr' => '/fr/conditions-generales-utilisation'],
         name: 'app_terms',

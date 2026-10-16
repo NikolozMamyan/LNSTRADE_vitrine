@@ -10,26 +10,32 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final readonly class SeoCatalog
 {
     private const PAGES = [
-        ['route' => 'app_home.en', 'changefreq' => 'weekly', 'priority' => '1.0'],
-        ['route' => 'app_home.fr', 'changefreq' => 'weekly', 'priority' => '1.0'],
-        ['route' => 'app_trading.en', 'changefreq' => 'monthly', 'priority' => '0.9'],
-        ['route' => 'app_trading.fr', 'changefreq' => 'monthly', 'priority' => '0.9'],
-        ['route' => 'app_ultrapop.en', 'changefreq' => 'monthly', 'priority' => '0.9'],
-        ['route' => 'app_ultrapop.fr', 'changefreq' => 'monthly', 'priority' => '0.9'],
-        ['route' => 'app_wholesale.en', 'changefreq' => 'monthly', 'priority' => '0.8'],
-        ['route' => 'app_wholesale.fr', 'changefreq' => 'monthly', 'priority' => '0.8'],
-        ['route' => 'app_blog.en', 'changefreq' => 'weekly', 'priority' => '0.8'],
-        ['route' => 'app_blog.fr', 'changefreq' => 'weekly', 'priority' => '0.8'],
-        ['route' => 'app_article_wholesaler.en', 'changefreq' => 'monthly', 'priority' => '0.7'],
-        ['route' => 'app_article_wholesaler.fr', 'changefreq' => 'monthly', 'priority' => '0.7'],
-        ['route' => 'app_article_merchandising.en', 'changefreq' => 'monthly', 'priority' => '0.7'],
-        ['route' => 'app_article_merchandising.fr', 'changefreq' => 'monthly', 'priority' => '0.7'],
-        ['route' => 'app_article_trends.en', 'changefreq' => 'monthly', 'priority' => '0.7'],
-        ['route' => 'app_article_trends.fr', 'changefreq' => 'monthly', 'priority' => '0.7'],
-        ['route' => 'app_terms.en', 'changefreq' => 'yearly', 'priority' => '0.3'],
-        ['route' => 'app_terms.fr', 'changefreq' => 'yearly', 'priority' => '0.3'],
-        ['route' => 'app_privacy.en', 'changefreq' => 'yearly', 'priority' => '0.3'],
-        ['route' => 'app_privacy.fr', 'changefreq' => 'yearly', 'priority' => '0.3'],
+        ['route' => 'app_home.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_home.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_trading.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_trading.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_ultrapop.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_ultrapop.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_wholesale.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_wholesale.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_blog.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_blog.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_article_wholesaler.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_article_wholesaler.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_article_merchandising.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_article_merchandising.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_article_trends.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_article_trends.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_terms.en', 'lastmod' => '2024-04-05'],
+        ['route' => 'app_terms.fr', 'lastmod' => '2024-04-05'],
+        ['route' => 'app_privacy.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_privacy.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_legal.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_legal.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_contact.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_contact.fr', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_products.en', 'lastmod' => '2026-10-16'],
+        ['route' => 'app_products.fr', 'lastmod' => '2026-10-16'],
     ];
 
     public function __construct(
@@ -39,7 +45,7 @@ final readonly class SeoCatalog
     ) {
     }
 
-    /** @return list<array{url: string, changefreq: string, priority: string}> */
+    /** @return list<array{url: string, lastmod: string}> */
     public function publicPages(): array
     {
         return array_map(fn (array $page): array => [
@@ -48,8 +54,7 @@ final readonly class SeoCatalog
                 [],
                 UrlGeneratorInterface::ABSOLUTE_PATH,
             ),
-            'changefreq' => $page['changefreq'],
-            'priority' => $page['priority'],
+            'lastmod' => $page['lastmod'],
         ], self::PAGES);
     }
 }

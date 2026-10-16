@@ -1,0 +1,5 @@
+<aside class="article-author">
+  <strong>{{ 'seo.article.author'|trans }}</strong>
+  <p>{{ 'seo.article.method'|trans }}</p>
+  <p>{{ 'seo.updated'|trans }} <time datetime="{{ article_modified }}">{{ article_modified|date('d/m/Y') }}</time> · <a href="{{ path('app_contact.' ~ app.request.locale) }}">{{ 'Nous contacter'|trans }}</a></p>
+</aside>

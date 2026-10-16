@@ -76,6 +76,21 @@ final class AdminCatalogControllerTest extends WebTestCase
         parent::tearDown();
     }
 
+    public function testPublicCatalogueHasACanonicalAndPreviewStaysUnindexable(): void
+    {
+        $crawler = $this->client->request('GET', '/catalogue');
+        self::assertResponseIsSuccessful();
+        self::assertSame('https://lnstrade.fr/catalogue', $crawler->filter('link[rel="canonical"]')->attr('href'));
+        self::assertSame('index,follow', $crawler->filter('meta[name="robots"]')->attr('content'));
+        self::assertSame(3, $crawler->filter('[data-catalog-target="page"] img[width="595"][height="842"]')->count());
+        self::assertSame(1, $crawler->filter('a.catalog-range-link')->count());
+
+        $crawler = $this->client->request('GET', '/admin/catalogue/apercu');
+        self::assertResponseIsSuccessful();
+        self::assertSame('noindex,nofollow', $crawler->filter('meta[name="robots"]')->attr('content'));
+        self::assertSame(0, $crawler->filter('link[rel="canonical"]')->count());
+    }
+
     public function testAjaxMoveAndDeleteReturnTheSavedOrder(): void
     {
         $id = $this->pageIds[1];

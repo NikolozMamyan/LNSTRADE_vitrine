@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+{% set page_id = 'products' %}
+{% set route_name = 'app_products' %}
+{% set body_class = 'inner-page' %}
+
+{% block body %}
+<main id="main">
+  <header class="page-hero legal-hero"><div class="shell">
+    <div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> / ULTRAPOP</div>
+    <p class="eyebrow light"><span></span> ULTRAPOP · LNS Trade</p>
+    <h1>{{ 'seo.products.title'|trans }}</h1>
+    <p>{{ 'seo.products.intro'|trans }}</p>
+    <a class="button button-primary" href="{{ path('app_contact.' ~ app.request.locale) }}">{{ 'Recevoir nos tarifs professionnels'|trans }} <span aria-hidden="true">↗</span></a>
+  </div></header>
+  <section class="content-section shell product-ranges">
+    <p class="lead">{{ 'seo.products.scope'|trans }}</p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="{{ 'seo.products.table.caption'|trans }}">
+      <table class="trade-table">
+        <caption>{{ 'seo.products.table.caption'|trans }}</caption>
+        <thead><tr><th scope="col">{{ 'seo.products.table.range'|trans }}</th><th scope="col">{{ 'seo.products.table.selection'|trans }}</th><th scope="col">{{ 'seo.products.table.project'|trans }}</th></tr></thead>
+        <tbody>
+          {% for range in ['drinks', 'savoury', 'sweet', 'noodles'] %}
+            <tr><th scope="row"><a href="#{{ range }}">{{ ('seo.products.' ~ range)|trans }}</a></th><td>{{ ('seo.products.' ~ range ~ '.text')|trans }}</td><td>{{ ('seo.products.' ~ range ~ '.ask')|trans }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% set ranges = [
+      {id: 'drinks', image: 'images/ULTRAPOP-boissons.webp', width: 1600, height: 640},
+      {id: 'savoury', image: 'images/chipsan-lifestyle.webp', width: 1083, height: 1083},
+      {id: 'sweet', image: 'images/ULTRAPOP-sucre.webp', width: 1600, height: 960},
+      {id: 'noodles', image: 'images/negisan-lifestyle.webp', width: 1083, height: 1083}
+    ] %}
+    <div class="product-range-grid">
+      {% for range in ranges %}
+        <article class="product-range" id="{{ range.id }}">
+          <img src="{{ asset(range.image) }}" srcset="{{ asset(range.image|replace({'.webp': '-640.webp'})) }} 640w, {{ asset(range.image) }} {{ range.width }}w" sizes="(max-width: 700px) 100vw, 50vw" alt="{{ ('seo.products.' ~ range.id)|trans }} ULTRAPOP" width="{{ range.width }}" height="{{ range.height }}" loading="lazy">
+          <h2>{{ ('seo.products.' ~ range.id)|trans }}</h2>
+          <p>{{ ('seo.products.' ~ range.id ~ '.text')|trans }}</p>
+          <p><a class="text-link" href="{{ path('app_contact.' ~ app.request.locale) }}">{{ 'Recevoir nos tarifs professionnels'|trans }} <span aria-hidden="true">↗</span></a></p>
+        </article>
+      {% endfor %}
+    </div>
+    <div class="prose">
+      <h2>{{ 'seo.products.next.title'|trans }}</h2>
+      <p>{{ 'seo.products.next.text'|trans }}</p>
+      <p><a href="{{ path('app_ultrapop.' ~ app.request.locale) }}">ULTRAPOP, {{ 'UNE MARQUE LNS TRADE'|trans }}</a> · <a href="{{ path('app_wholesale.' ~ app.request.locale) }}">{{ 'Grossiste manga'|trans }}</a></p>
+      <a class="button button-primary" href="{{ path('app_catalog') }}" target="_blank" rel="opener">{{ 'Voir le catalogue'|trans }} <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+  {% include 'partials/_trade_conditions.html.twig' %}
+</main>
+{% endblock %}

@@ -13,6 +13,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class SeoController extends AbstractController
 {
+    #[Route('/.well-known/llms.txt', name: 'app_seo_llms_alias', methods: ['GET'])]
+    public function llmsAlias(): Response
+    {
+        return $this->redirect('/llms.txt', Response::HTTP_MOVED_PERMANENTLY);
+    }
+
     #[Route('/robots.txt', name: 'app_seo_robots', methods: ['GET'])]
     public function robots(Request $request, SeoIndexingPolicy $indexingPolicy): Response
     {

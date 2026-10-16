@@ -35,4 +35,18 @@ final class LegalPagesTest extends WebTestCase
             self::assertResponseIsSuccessful();
         }
     }
+
+    public function testLegalNoticesIncludeTheCompanyIdentityAndAreLinkedFromTheFooter(): void
+    {
+        $client = static::createClient();
+        foreach (['/fr/mentions-legales', '/en/legal-notice'] as $path) {
+            $crawler = $client->request('GET', $path);
+            self::assertResponseIsSuccessful();
+            self::assertStringContainsString('803 854 447', $crawler->filter('main')->text());
+            self::assertStringContainsString('FR84803854447', $crawler->filter('main')->text());
+            self::assertStringContainsString('13 Quai Kléber', $crawler->filter('main')->text());
+            self::assertStringContainsString('Éric Uzan', $crawler->filter('main')->text());
+            self::assertSame(1, $crawler->filter('.footer-bottom a[href="https://lnstrade.fr'.$path.'"]')->count());
+        }
+    }
 }

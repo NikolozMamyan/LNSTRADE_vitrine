@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="{{ isPreview ? 'noindex,nofollow' : 'index,follow' }}">
+  {% if not isPreview %}<link rel="canonical" href="{{ site_url|trim('/') ~ path('app_catalog') }}"><meta name="description" content="Catalogue professionnel ULTRAPOP : boissons, snacks et confiseries sous licences officielles. Consultez aussi les gammes et contactez LNS Trade.">{% endif %}
   <meta name="theme-color" content="#11110f">
   <title>{{ catalog.title }} · ULTRAPOP</title>
   <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -18,7 +19,7 @@
   {% if isPreview %}<div class="catalog-preview-banner">Aperçu administrateur · <a href="{{ path('admin_catalog') }}">Retour au constructeur</a></div>{% endif %}
 
   <a class="catalog-brand" href="{{ path('app_locale') }}" aria-label="Fermer le catalogue et revenir au site ULTRAPOP" data-action="catalog#returnToSite">
-    <img src="{{ asset('images/logo-ultrapop-red.png') }}" alt="ULTRAPOP">
+    <img src="{{ asset('images/logo-ultrapop-red.webp') }}" alt="ULTRAPOP" width="1600" height="352" srcset="{{ asset('images/logo-ultrapop-red-640.webp') }} 640w, {{ asset('images/logo-ultrapop-red.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw">
   </a>
 
   <a class="catalog-contact-cta" href="{{ path('app_wholesale.' ~ (app.request.getPreferredLanguage(['en', 'fr']) ?? 'en')) }}#contact">Request pricing <span aria-hidden="true">↗</span></a>
@@ -31,7 +32,7 @@
       <div class="catalog-drag-hint" data-catalog-target="hint" aria-hidden="true"><span><i></i></span><p><strong>Maintenez et glissez</strong>pour tourner la page</p></div>
       <div class="catalog-loading" data-catalog-target="loading" role="status" aria-live="polite">
         <div class="catalog-loading-card">
-          <div class="catalog-loading-preview" aria-hidden="true"><img src="{{ asset('images/logo-ultrapop-red.png') }}" alt=""><span></span><i></i><b></b></div>
+          <div class="catalog-loading-preview" aria-hidden="true"><img src="{{ asset('images/logo-ultrapop-red.webp') }}" alt="" width="1600" height="352" srcset="{{ asset('images/logo-ultrapop-red-640.webp') }} 640w, {{ asset('images/logo-ultrapop-red.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw"><span></span><i></i><b></b></div>
           <strong>Ouverture du catalogue</strong>
           <small>Les premières pages arrivent…</small>
           <button type="button" data-catalog-target="loadingRetry" data-action="catalog#retryLoading" hidden>Réessayer</button>
@@ -43,9 +44,9 @@
             <div class="catalog-page-source{{ loop.first or loop.last ? ' catalog-page-source-hard' : '' }}" data-catalog-target="page" data-title="{{ catalogPage.title|e('html_attr') }}" data-pdf="{{ catalogPage.pdfPath|default('')|e('html_attr') }}" data-page-index="{{ loop.index0 }}"{% if loop.first or loop.last %} data-density="hard"{% endif %}>
               <article class="catalog-page-sheet">
                 {% if catalogPage.imagePath %}
-                  <img src="{{ asset(catalogPage.imagePath) }}" alt="{{ catalogPage.title }}" draggable="false"{% if loop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
+                  <img src="{{ asset(catalogPage.imagePath) }}" alt="{{ catalogPage.title }}" width="595" height="842" draggable="false"{% if loop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
                 {% elseif catalogPage.pdfPath %}
-                  <img class="catalog-pdf-image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" alt="{{ catalogPage.title }}" draggable="false">
+                  <img class="catalog-pdf-image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" alt="{{ catalogPage.title }}" width="595" height="842" draggable="false">
                 {% endif %}
                 {% if catalogPage.linkUrl %}
                   <a class="catalog-page-link" href="{{ catalogPage.linkUrl }}"{% if catalogPage.opensLinkInNewTab %} target="_blank" rel="noopener noreferrer"{% endif %} aria-label="Ouvrir le lien associé à {{ catalogPage.title }}"><span>Ouvrir</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
@@ -82,12 +83,14 @@
     </nav>
   </main>
 
+  <a class="catalog-range-link" href="{{ path('app_products.' ~ (app.request.getPreferredLanguage(['en', 'fr']) ?? 'en')) }}">Product ranges &amp; trade information</a>
+
   <aside class="catalog-menu" aria-hidden="true" data-catalog-target="menu" inert>
     <header><div><span>Sommaire</span><h2>{{ catalog.title }}</h2><p>{{ catalogPages|length }} pages</p></div><button type="button" aria-label="Fermer le sommaire" data-action="catalog#closeMenu"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
     <div class="catalog-thumbnails">
       {% for catalogPage in catalogPages %}
         <button type="button" data-page-index="{{ loop.index0 }}" data-action="catalog#goTo" data-catalog-target="thumbnail">
-          <span class="catalog-thumbnail-media">{% if catalogPage.imagePath %}<img src="{{ asset(catalogPage.imagePath) }}" alt="" loading="lazy">{% else %}<img class="catalog-pdf-image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" alt="">{% endif %}<i>{{ '%02d'|format(loop.index) }}</i></span>
+          <span class="catalog-thumbnail-media">{% if catalogPage.imagePath %}<img src="{{ asset(catalogPage.imagePath) }}" alt="" width="595" height="842" loading="lazy">{% else %}<img class="catalog-pdf-image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-pdf-source="{{ asset(catalogPage.pdfPath) }}" data-pdf-page="{{ catalogPage.pdfPage|default(1) }}" alt="" width="595" height="842">{% endif %}<i>{{ '%02d'|format(loop.index) }}</i></span>
           <strong>{{ catalogPage.title }}</strong>
         </button>
       {% endfor %}
