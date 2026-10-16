@@ -28,5 +28,11 @@
       <span>© <span data-year>2026</span> LNS Trade</span>
       <div><a href="{{ site_url|trim('/') ~ path('app_terms.' ~ app.request.locale) }}">{{ 'Conditions générales'|trans }}</a><a href="{{ site_url|trim('/') ~ path('app_privacy.' ~ app.request.locale) }}">{{ 'Confidentialité'|trans }}</a></div>
       <div class="socials"><a href="https://www.instagram.com/ULTRAPOP_/" target="_blank" rel="noopener">Instagram</a><a href="https://www.tiktok.com/@ULTRAPOP_" target="_blank" rel="noopener">TikTok</a><a href="https://fr.linkedin.com/company/ULTRAPOPbylnstrade" target="_blank" rel="noopener">LinkedIn</a></div>
+      <a class="footer-credit" href="https://optiwebsolutions.fr/" target="_blank" rel="noopener noreferrer">
+        <span>{{ 'Développé par'|trans }}</span>
+        <img src="{{ asset('images/optiwebsolutions-favicon.png') }}" alt="" width="18" height="18" loading="lazy">
+        <span>OptiWebSolutions</span>
+        <svg class="footer-credit-heart" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M12 21s-9-5.4-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.6-9 12-9 12Z"/></svg>
+      </a>
     </div>
   </footer>

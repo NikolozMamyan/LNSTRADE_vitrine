@@ -469,9 +469,12 @@ html.skeleton-active, html.skeleton-active body { overflow: hidden; }
 .footer-col a, .footer-col button, .footer-col address { padding: 0; background: none; color: rgba(255,255,255,.75); font-size: 12px; font-style: normal; cursor: pointer; }
 .footer-col a:hover, .footer-col button:hover { color: var(--yellow); }
 .footer-contact address { margin-bottom: 8px; line-height: 1.8; }
-.footer-bottom { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 30px; border-top: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.36); font-size: 9px; text-transform: uppercase; letter-spacing: .04em; }
+.footer-bottom { min-height: 74px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 30px; padding-block: 22px; border-top: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.36); font-size: 9px; text-transform: uppercase; letter-spacing: .04em; }
 .footer-bottom > div { display: flex; gap: 24px; }
 .footer-bottom a:hover { color: var(--white); }
+.footer-credit { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,.65); font-size: 11px; text-transform: none; letter-spacing: 0; white-space: nowrap; }
+.footer-credit img { width: 18px; height: 18px; flex-shrink: 0; border-radius: 4px; }
+.footer-credit-heart { flex-shrink: 0; fill: #ef4444; }
 
 /* Modal loading skeletons */
 .modal-loading-skeleton { position: absolute; z-index: 30; inset: 0; overflow: hidden; background: #efefec; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .16s ease, visibility 0s linear .16s; }
