@@ -44,9 +44,11 @@ final readonly class VisitorReportProvider
             ->setFirstResult(($page - 1) * 25)->setMaxResults(25)->getQuery()->getResult();
 
         $chart = [];
+        $dailySources = [];
+        $contributions = ['sources' => [], 'campaigns' => []];
         for ($index = 0; $index < $chartDays; ++$index) {
             $date = $start->modify('+'.$index.' days')->format('Y-m-d');
-            $chart[$date] = ['date' => $date, 'sessions' => 0, 'views' => 0];
+            $chart[$date] = ['date' => $date, 'sessions' => 0, 'views' => 0, 'campaignViews' => 0];
         }
         $chartParameters = [
             'since' => $start->setTimezone($utc)->format('Y-m-d H:i:s'),
@@ -57,15 +59,59 @@ final readonly class VisitorReportProvider
             $chartParameters['ip'] = $invalidIp ? 'invalid' : $ip;
         }
         foreach (['sessions' => ['visitor_session session', 'session.started_at'], 'views' => ['page_visit visit JOIN visitor_session session ON session.id = visit.session_id', 'visit.visited_at']] as $metric => [$table, $column]) {
+            $dimensions = 'views' === $metric ? ', session.source, session.medium, session.campaign' : '';
             $rows = $this->connection->fetchAllAssociative(
-                'SELECT SUBSTR('.$column.', 1, 13) AS hour, COUNT(*) AS total FROM '.$table.' WHERE '.$column.' >= :since AND '.$column.' < :until'.$ipWhere.' GROUP BY hour',
+                'SELECT SUBSTR('.$column.', 1, 13) AS hour'.$dimensions.', COUNT(*) AS total FROM '.$table.' WHERE '.$column.' >= :since AND '.$column.' < :until'.$ipWhere.' GROUP BY hour'.$dimensions,
                 $chartParameters,
             );
             foreach ($rows as $row) {
                 $date = (new \DateTimeImmutable($row['hour'].':00:00', $utc))->setTimezone($today->getTimezone())->format('Y-m-d');
-                $chart[$date][$metric] += (int) $row['total'];
+                $total = (int) $row['total'];
+                $chart[$date][$metric] += $total;
+                if ('views' === $metric) {
+                    $source = (string) $row['source'];
+                    $medium = (string) ($row['medium'] ?? '');
+                    $campaign = (string) ($row['campaign'] ?? '');
+                    $sourceKey = json_encode([$source, $medium], JSON_THROW_ON_ERROR);
+                    $campaignKey = '' === $campaign ? 'none' : json_encode([$campaign, $source, $medium], JSON_THROW_ON_ERROR);
+                    $contributions['sources'][$sourceKey] ??= ['source' => $source, 'medium' => $medium, 'views' => 0];
+                    $contributions['sources'][$sourceKey]['views'] += $total;
+                    $contributions['campaigns'][$campaignKey] ??= ['campaign' => $campaign, 'source' => '' === $campaign ? '' : $source, 'medium' => '' === $campaign ? '' : $medium, 'views' => 0];
+                    $contributions['campaigns'][$campaignKey]['views'] += $total;
+                    $dailySources[$date][$sourceKey] = ($dailySources[$date][$sourceKey] ?? 0) + $total;
+                    if ('' !== $campaign) {
+                        $chart[$date]['campaignViews'] += $total;
+                    }
+                }
             }
         }
+        $periodViews = array_sum(array_column($chart, 'views'));
+        $campaignViews = array_sum(array_column($chart, 'campaignViews'));
+        $peakDay = null;
+        foreach ($chart as &$day) {
+            $day['campaignShare'] = $day['views'] > 0 ? $day['campaignViews'] / $day['views'] * 100 : 0;
+            $day['periodShare'] = $periodViews > 0 ? $day['views'] / $periodViews * 100 : 0;
+            $day['topSource'] = null;
+            foreach ($dailySources[$day['date']] ?? [] as $key => $views) {
+                if (null === $day['topSource'] || $views > $day['topSource']['views']) {
+                    $day['topSource'] = [...$contributions['sources'][$key], 'views' => $views, 'share' => $views / $day['views'] * 100];
+                }
+            }
+            if ($day['views'] > 0 && (null === $peakDay || $day['views'] >= $peakDay['views'])) {
+                $peakDay = $day;
+            }
+        }
+        unset($day);
+        foreach ($contributions as &$groups) {
+            ksort($groups);
+            $groups = array_values($groups);
+            usort($groups, static fn (array $a, array $b): int => $b['views'] <=> $a['views']);
+            foreach ($groups as &$group) {
+                $group['share'] = $periodViews > 0 ? $group['views'] / $periodViews * 100 : 0;
+            }
+            unset($group);
+        }
+        unset($groups);
         $activeParameters = ['since' => $now->modify('-5 minutes')->format('Y-m-d H:i:s'), 'now' => $now->format('Y-m-d H:i:s')];
         if ('' !== $ip) {
             $activeParameters['ip'] = $invalidIp ? 'invalid' : $ip;
@@ -82,7 +128,10 @@ final readonly class VisitorReportProvider
             'days' => $days, 'chartDays' => $chartDays, 'ip' => $ip, 'invalidIp' => $invalidIp,
             'activeSince' => $now->modify('-5 minutes'), 'activeCount' => $activeCount,
             'periodSessions' => array_sum(array_column($chart, 'sessions')),
-            'periodViews' => array_sum(array_column($chart, 'views')), 'todayViews' => $chart[$today->format('Y-m-d')]['views'],
+            'periodViews' => $periodViews, 'todayViews' => $chart[$today->format('Y-m-d')]['views'],
+            'campaignViews' => $campaignViews, 'campaignShare' => $periodViews > 0 ? $campaignViews / $periodViews * 100 : 0,
+            'averageDailyViews' => $periodViews / $chartDays, 'peakDay' => $peakDay,
+            'trafficSources' => $contributions['sources'], 'trafficCampaigns' => $contributions['campaigns'],
             'chart' => array_values($chart), 'chartMax' => max(4, (int) ceil($maxValue / 4) * 4), 'updatedAt' => $now,
         ];
     }

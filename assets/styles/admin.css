@@ -198,17 +198,65 @@ svg { display: block; }
 .visitor-campaign { max-width: 230px; white-space: normal; overflow-wrap: anywhere; }
 .visitor-panel-note { margin: 9px 0 0; font-size: 12px; color: var(--admin-muted); line-height: 1.5; }
 .visitor-chart { padding: 0 20px; overflow-x: auto; }
-.visitor-chart svg { width: 100%; min-width: 600px; }
+.visitor-chart svg { display: block; width: 100%; min-width: 720px; min-height: 260px; }
+.visitor-chart-area { position: relative; }
+.visitor-chart-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0 27px 22px; }
+.visitor-chart-summary > div { padding: 15px; border: 1px solid var(--admin-line); border-radius: 8px; }
+.visitor-chart-summary span { color: var(--admin-muted); font-size: 12px; }
+.visitor-chart-summary strong { display: block; margin-top: 8px; font-size: 25px; line-height: 1.2; }
+.visitor-chart-summary small { display: block; margin-top: 5px; color: var(--admin-muted); font-size: 12px; font-weight: 400; }
+.visitor-chart-summary .visitor-campaign-summary { border-color: rgba(35,162,109,.25); background: rgba(35,162,109,.05); }
+.visitor-campaign-summary strong { color: var(--admin-green); }
 .visitor-chart-grid { stroke: var(--admin-line); stroke-width: 1; }
 .visitor-chart-label { fill: var(--admin-muted); font-size: 18px; }
+.visitor-chart-axis { fill: var(--admin-muted); font-size: 15px; }
+.visitor-chart-percent { fill: var(--admin-green); }
+.visitor-chart-help { padding: 0 27px; color: var(--admin-muted); font-size: 12px; line-height: 1.6; }
 .visitor-chart-hint { display: none; padding: 0 27px; color: var(--admin-muted); font-size: 12px; }
 .visitor-chart-views { fill: var(--admin-orange); }
 .visitor-chart-sessions { fill: var(--admin-violet); }
-.visitor-chart-day:hover, .visitor-chart-day:focus { opacity: .7; }
+.visitor-chart-campaigns { fill: none; stroke: var(--admin-green); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; pointer-events: none; }
+.visitor-chart-campaign-point { fill: var(--admin-green); pointer-events: none; }
+.visitor-chart-hitbox { fill: transparent; }
+.visitor-chart-day { cursor: crosshair; }
+.visitor-chart-day:hover .visitor-chart-hitbox, .visitor-chart-day:focus .visitor-chart-hitbox { fill: rgba(115,87,255,.06); }
+.visitor-chart-day:focus { outline: none; }
+.visitor-chart-day:focus-visible .visitor-chart-hitbox { stroke: var(--admin-violet); stroke-width: 1; }
 .visitor-chart-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; }
 .visitor-chart-legend span { display: flex; align-items: center; gap: 7px; }
-.visitor-chart-legend i { width: 10px; height: 10px; border-radius: 2px; background: var(--admin-orange); }
-.visitor-chart-legend span:last-child i { background: var(--admin-violet); }
+.visitor-chart-legend i { width: 10px; height: 10px; flex-shrink: 0; border-radius: 2px; }
+.visitor-key-views { background: var(--admin-orange); }
+.visitor-key-sessions { background: var(--admin-violet); }
+.visitor-key-campaigns { background: var(--admin-green); }
+.visitor-chart-legend .visitor-key-campaigns { width: 18px; height: 3px; }
+.visitor-chart-tooltip { position: absolute; z-index: 10; width: 300px; max-width: calc(100% - 16px); padding: 15px; border: 1px solid var(--admin-line); border-radius: 10px; background: var(--admin-white); color: var(--admin-ink); box-shadow: 0 8px 30px rgba(0,0,0,.14); pointer-events: none; font-size: 12px; }
+.visitor-tooltip-date { display: block; margin-bottom: 11px; font-size: 15px; }
+.visitor-chart-tooltip dl { display: grid; gap: 8px; margin: 0; }
+.visitor-chart-tooltip dl > div { display: flex; justify-content: space-between; gap: 12px; }
+.visitor-chart-tooltip dt { display: flex; align-items: center; gap: 6px; color: var(--admin-muted); }
+.visitor-chart-tooltip dd { margin: 0; white-space: nowrap; font-weight: 800; }
+.visitor-chart-tooltip i { width: 8px; height: 8px; flex-shrink: 0; border-radius: 2px; }
+.visitor-tooltip-campaign dd { color: var(--admin-green); }
+.visitor-tooltip-source { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--admin-line); color: var(--admin-muted); line-height: 1.5; }
+.visitor-tooltip-source strong { display: block; color: var(--admin-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.visitor-tooltip-source span { display: block; }
+.visitor-contributions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.visitor-contribution-panel { min-width: 0; margin-top: 0; }
+.visitor-contribution-note, .visitor-contribution-empty { margin: 0 27px 20px; color: var(--admin-muted); font-size: 12px; line-height: 1.6; }
+.visitor-contribution-list { max-height: 390px; margin: 0 27px 25px; padding-right: 8px; overflow-y: auto; }
+.visitor-contribution-row + .visitor-contribution-row { padding-top: 17px; margin-top: 17px; border-top: 1px solid var(--admin-line); }
+.visitor-contribution-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.visitor-contribution-heading > div { min-width: 0; }
+.visitor-contribution-heading > div > strong { font-size: 14px; overflow-wrap: anywhere; }
+.visitor-contribution-heading small { display: block; margin-top: 4px; color: var(--admin-muted); font-size: 12px; overflow-wrap: anywhere; }
+.visitor-share-value { flex-shrink: 0; color: var(--admin-green); font-size: 18px; white-space: nowrap; }
+.visitor-share-track { height: 7px; margin-top: 10px; border-radius: 8px; overflow: hidden; background: rgba(35,162,109,.1); }
+.visitor-share-track span { display: block; height: 100%; border-radius: inherit; background: var(--admin-green); }
+.visitor-contribution-row > p { margin: 6px 0 0; color: var(--admin-muted); font-size: 12px; }
+.visitor-contribution-row.is-unattributed .visitor-share-value { color: var(--admin-muted); }
+.visitor-contribution-row.is-unattributed .visitor-share-track { background: var(--admin-line); }
+.visitor-contribution-row.is-unattributed .visitor-share-track span { background: #96928a; }
+.visitor-attribution-note { margin: 14px 0 0; color: var(--admin-muted); font-size: 12px; line-height: 1.7; }
 .visitor-footnote { padding: 0 27px 12px; margin: 12px 0 0; font-size: 12px; line-height: 1.7; color: var(--admin-muted); }
 .visitor-updated { margin-top: 18px; color: var(--admin-muted); font-size: 12px; text-align: right; }
 .visitor-session-summary { margin-top: 28px; padding: 24px 27px; }
@@ -219,7 +267,8 @@ svg { display: block; }
 .visitor-agent dd { color: var(--admin-muted); font-size: 12px; }
 .visitor-related-sessions { display: flex; flex-wrap: wrap; gap: 12px; padding: 0 27px 15px; }
 .visitor-related-sessions .admin-button { font-size: 11px; }
-@media (max-width: 680px) { .visitor-panel .admin-panel-head { flex-direction: column; } .visitor-chart-hint { display: block; } }
+@media (max-width: 980px) { .visitor-contributions { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 680px) { .visitor-panel .admin-panel-head { flex-direction: column; } .visitor-chart-hint { display: block; } .visitor-chart-help { display: none; } .visitor-chart-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } .visitor-campaign-summary { grid-column: 1 / -1; } }
 .admin-prospect-message { margin-top: 8px; }
 .admin-prospect-message summary { cursor: pointer; }
 .admin-prospect-message p { width: 280px; white-space: pre-wrap; overflow-wrap: anywhere; }

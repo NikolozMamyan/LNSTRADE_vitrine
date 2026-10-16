@@ -157,6 +157,61 @@ final class VisitorTrackingTest extends WebTestCase
         self::assertSame(30, $invalid['chartDays']);
     }
 
+    public function testTrafficSharesCountOnlyPagesInTheSelectedPeriodAndIp(): void
+    {
+        $recorder = static::getContainer()->get(VisitorRecorder::class);
+        $today = new \DateTimeImmutable('today', new \DateTimeZone('Europe/Paris'));
+        $start = $today->modify('-6 days');
+        $request = Request::create('/fr/?utm_source=google&utm_medium=cpc&utm_campaign=lnstrade_europe', server: [
+            'REMOTE_ADDR' => '198.51.100.20', 'HTTP_USER_AGENT' => 'Chrome/140.0',
+        ]);
+        $recorder->record($request, $start->modify('-5 minutes'));
+        $recorder->record($request, $start->modify('+5 minutes'));
+        $recorder->record($request, $start->modify('+10 minutes'));
+        $request = Request::create('/en/?utm_source=google&utm_medium=cpc&utm_campaign=lnstrade_hors_europe', server: [
+            'REMOTE_ADDR' => '198.51.100.21', 'HTTP_USER_AGENT' => 'Chrome/140.0',
+        ]);
+        $recorder->record($request, $today->modify('+10 minutes'));
+        $request = Request::create('/fr/', server: ['REMOTE_ADDR' => '198.51.100.22', 'HTTP_USER_AGENT' => 'Chrome/140.0']);
+        foreach ([15, 20, 25] as $minutes) {
+            $recorder->record($request, $today->modify('+'.$minutes.' minutes'));
+        }
+
+        $reports = static::getContainer()->get(VisitorReportProvider::class);
+        $report = $reports->overview(Request::create('/admin/visiteurs?days=7'));
+        self::assertSame(6, $report['periodViews']);
+        self::assertSame(3, $report['campaignViews']);
+        self::assertEqualsWithDelta(50.0, $report['campaignShare'], 0.001);
+        self::assertEqualsWithDelta(6 / 7, $report['averageDailyViews'], 0.001);
+        self::assertSame(4, $report['peakDay']['views']);
+        $sources = array_column($report['trafficSources'], null, 'source');
+        self::assertSame(3, $sources['google']['views']);
+        self::assertEqualsWithDelta(50.0, $sources['google']['share'], 0.001);
+        self::assertSame(3, $sources['direct']['views']);
+        $campaigns = array_column($report['trafficCampaigns'], null, 'campaign');
+        self::assertSame(2, $campaigns['lnstrade_europe']['views']);
+        self::assertEqualsWithDelta(100 / 3, $campaigns['lnstrade_europe']['share'], 0.001);
+        self::assertSame(1, $campaigns['lnstrade_hors_europe']['views']);
+        self::assertSame(3, $campaigns['']['views']);
+        self::assertEqualsWithDelta(100.0, array_sum(array_column($report['trafficCampaigns'], 'share')), 0.001);
+        self::assertSame(2, $report['chart'][0]['views']);
+        self::assertEqualsWithDelta(100.0, $report['chart'][0]['campaignShare'], 0.001);
+        self::assertEqualsWithDelta(25.0, $report['chart'][6]['campaignShare'], 0.001);
+        self::assertSame('direct', $report['chart'][6]['topSource']['source']);
+
+        $filtered = $reports->overview(Request::create('/admin/visiteurs?days=7&ip=198.51.100.20'));
+        self::assertSame(2, $filtered['periodViews']);
+        self::assertCount(1, $filtered['trafficSources']);
+        self::assertCount(1, $filtered['trafficCampaigns']);
+        self::assertEqualsWithDelta(100.0, $filtered['trafficCampaigns'][0]['share'], 0.001);
+        $empty = $reports->overview(Request::create('/admin/visiteurs?days=7&ip=198.51.100.99'));
+        self::assertSame(0, $empty['periodViews']);
+        self::assertSame(0, $empty['campaignShare']);
+        self::assertSame([], $empty['trafficSources']);
+        self::assertSame([], $empty['trafficCampaigns']);
+        self::assertNull($empty['peakDay']);
+    }
+
     public function testSessionAndPageHistoryArePaginated(): void
     {
         $recorder = static::getContainer()->get(VisitorRecorder::class);

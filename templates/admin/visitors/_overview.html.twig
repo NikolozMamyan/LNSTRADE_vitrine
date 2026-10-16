@@ -70,24 +70,34 @@
   <section class="admin-panel activity-panel visitor-panel">
     <header class="admin-panel-head">
       <div><p class="admin-eyebrow"><span></span> Fréquentation</p><h2>Évolution des visites</h2><p class="visitor-panel-note">{{ chartDays }} derniers jours · Heure de Paris{{ ip ? ' · IP ' ~ ip : '' }}</p></div>
-      <div class="visitor-chart-legend"><span><i></i> Pages consultées</span><span><i></i> Sessions démarrées</span></div>
+      <div class="visitor-chart-legend"><span><i class="visitor-key-views"></i> Pages consultées</span><span><i class="visitor-key-sessions"></i> Sessions démarrées</span><span><i class="visitor-key-campaigns"></i> Part des campagnes (%)</span></div>
     </header>
-    <div class="visitor-chart">
-      <svg viewBox="0 0 1100 280" role="img" aria-labelledby="visitor-chart-title visitor-chart-description">
+    <div class="visitor-chart-summary">
+      <div><span>Moyenne quotidienne</span><strong>{{ averageDailyViews|number_format(1, ',', ' ') }} <small>pages / jour</small></strong></div>
+      <div><span>Jour le plus actif</span><strong>{{ peakDay ? peakDay.date|date('d/m') : '—' }} <small>{{ peakDay ? peakDay.views|number_format(0, ',', ' ') ~ ' pages' : 'Aucune visite' }}</small></strong></div>
+      <div class="visitor-campaign-summary"><span>Pages avec une campagne</span><strong>{{ campaignShare|number_format(1, ',', ' ') }} % <small>{{ campaignViews|number_format(0, ',', ' ') }} pages sur {{ periodViews|number_format(0, ',', ' ') }}</small></strong></div>
+    </div>
+    <div class="visitor-chart-area">
+      <div class="visitor-chart">
+      <svg viewBox="0 0 1160 280" role="img" aria-labelledby="visitor-chart-title visitor-chart-description">
         <title id="visitor-chart-title">Visites sur les {{ chartDays }} derniers jours</title>
-        <desc id="visitor-chart-description">{{ periodViews }} pages consultées et {{ periodSessions }} sessions démarrées. Survolez les barres pour voir les chiffres par jour.</desc>
+        <desc id="visitor-chart-description">{{ periodViews }} pages consultées et {{ periodSessions }} sessions démarrées, axe de gauche. La courbe verte indique la part des pages avec une campagne, en pourcentage sur l’axe de droite. Survolez, touchez ou sélectionnez une date au clavier pour afficher ses détails.</desc>
+        <text x="50" y="15" class="visitor-chart-axis">Pages / sessions</text>
+        <text x="1148" y="15" text-anchor="end" class="visitor-chart-axis visitor-chart-percent">Campagnes (%)</text>
         {% for tick in 0..4 %}
           {% set y = 225 - tick * 50 %}
           <line x1="50" y1="{{ y }}" x2="1080" y2="{{ y }}" class="visitor-chart-grid" />
           <text x="40" y="{{ y + 4 }}" text-anchor="end" class="visitor-chart-label">{{ chartMax * tick / 4 }}</text>
+          <text x="1090" y="{{ y + 4 }}" class="visitor-chart-label visitor-chart-percent">{{ tick * 25 }} %</text>
         {% endfor %}
         {% set step = 1030 / chart|length %}
         {% set labelStep = (chartDays / 7)|round(0, 'ceil') %}
+        {% set campaignPoints = '' %}
         {% for day in chart %}
           {% set x = 50 + loop.index0 * step %}
-          <g class="visitor-chart-day" tabindex="0" aria-label="{{ day.date|date('d/m/Y') }} : {{ day.views }} pages, {{ day.sessions }} sessions">
-            <title>{{ day.date|date('d/m/Y') }} : {{ day.views }} pages consultées, {{ day.sessions }} sessions démarrées</title>
-            <rect x="{{ x }}" y="25" width="{{ step }}" height="200" fill="transparent" />
+          {% set campaignPoints = campaignPoints ~ (x + step / 2) ~ ',' ~ (225 - day.campaignShare * 2) ~ ' ' %}
+          <g class="visitor-chart-day" data-visitor-day="{{ day.date }}" tabindex="0" aria-label="{{ day.date|date('d/m/Y') }} : {{ day.views }} pages, {{ day.sessions }} sessions, {{ day.campaignShare|number_format(1, ',', ' ') }} % des pages avec une campagne">
+            <rect x="{{ x }}" y="25" width="{{ step }}" height="200" class="visitor-chart-hitbox" />
             <rect x="{{ x + step * 0.12 }}" y="{{ 225 - day.views / chartMax * 200 }}" width="{{ step * 0.34 }}" height="{{ day.views / chartMax * 200 }}" class="visitor-chart-views" rx="2" />
             <rect x="{{ x + step * 0.52 }}" y="{{ 225 - day.sessions / chartMax * 200 }}" width="{{ step * 0.34 }}" height="{{ day.sessions / chartMax * 200 }}" class="visitor-chart-sessions" rx="2" />
           </g>
@@ -95,10 +105,61 @@
             <text x="{{ x + step / 2 }}" y="250" text-anchor="middle" class="visitor-chart-label">{{ day.date|date('d/m') }}</text>
           {% endif %}
         {% endfor %}
+        <polyline points="{{ campaignPoints|trim }}" class="visitor-chart-campaigns" />
+        {% for day in chart %}
+          <circle cx="{{ 50 + (loop.index0 + 0.5) * step }}" cy="{{ 225 - day.campaignShare * 2 }}" r="3" class="visitor-chart-campaign-point" />
+        {% endfor %}
       </svg>
+      </div>
+      <div class="visitor-chart-tooltip" id="visitor-chart-tooltip" data-visitor-tooltip role="tooltip" hidden></div>
+      {% for day in chart %}
+        <template id="visitor-day-tooltip-{{ day.date }}">
+          <strong class="visitor-tooltip-date">{{ day.date|date('d/m/Y') }}</strong>
+          <dl>
+            <div><dt><i class="visitor-key-views"></i> Pages consultées</dt><dd>{{ day.views|number_format(0, ',', ' ') }}</dd></div>
+            <div><dt><i class="visitor-key-sessions"></i> Sessions démarrées</dt><dd>{{ day.sessions|number_format(0, ',', ' ') }}</dd></div>
+            <div class="visitor-tooltip-campaign"><dt><i class="visitor-key-campaigns"></i> Avec campagne</dt><dd>{{ day.campaignViews|number_format(0, ',', ' ') }} · {{ day.campaignShare|number_format(1, ',', ' ') }} %</dd></div>
+            <div><dt>Part des pages de la période</dt><dd>{{ day.periodShare|number_format(1, ',', ' ') }} %</dd></div>
+          </dl>
+          {% if day.topSource %}
+            <p class="visitor-tooltip-source">Source principale <strong>{{ day.topSource.source == 'direct' ? 'Accès direct' : day.topSource.source }}{% if day.topSource.medium %} · {{ day.topSource.medium }}{% endif %}</strong><span>{{ day.topSource.views|number_format(0, ',', ' ') }} pages · {{ day.topSource.share|number_format(1, ',', ' ') }} % de ce jour</span></p>
+          {% else %}
+            <p class="visitor-tooltip-source">Aucune page consultée ce jour.</p>
+          {% endif %}
+        </template>
+      {% endfor %}
     </div>
-    <p class="visitor-chart-hint">Glissez horizontalement pour explorer les dates du graphique.</p>
+    <p class="visitor-chart-help">Survolez une date pour voir ses détails. La courbe verte utilise l’axe de droite, en pourcentage.</p>
+    <p class="visitor-chart-hint">Glissez horizontalement pour explorer les dates, puis touchez une date pour voir ses détails.</p>
     <p class="visitor-footnote">Sessions estimées à partir de l’IP et du navigateur, sans nouveau cookie. Une nouvelle session commence après 30 minutes d’inactivité. Robots connus et préchargements exclus.</p>
   </section>
+  <div class="visitor-contributions">
+    {% for kind, rows in {sources: trafficSources, campaigns: trafficCampaigns} %}
+      <section class="admin-panel activity-panel visitor-panel visitor-contribution-panel">
+        <header class="admin-panel-head"><div><p class="admin-eyebrow"><span></span> Contribution au trafic</p><h2>{{ kind == 'sources' ? 'Sources' : 'Campagnes' }}</h2><p class="visitor-panel-note">{{ chartDays }} derniers jours{{ ip ? ' · IP ' ~ ip : '' }}</p></div></header>
+        <p class="visitor-contribution-note">Part des {{ periodViews|number_format(0, ',', ' ') }} pages consultées sur cette période.</p>
+        {% if rows is empty %}
+          <p class="visitor-contribution-empty">Aucune page consultée sur cette période.</p>
+        {% else %}
+          <div class="visitor-contribution-list">
+            {% for row in rows %}
+              <article class="visitor-contribution-row{{ kind == 'campaigns' and not row.campaign ? ' is-unattributed' : '' }}">
+                <div class="visitor-contribution-heading">
+                  <div>
+                    <strong>{{ kind == 'sources' ? (row.source == 'direct' ? 'Accès direct' : row.source) : row.campaign|default('Sans campagne identifiée', true) }}</strong>
+                    {% if kind == 'sources' and row.medium %}<small>{{ row.medium }}</small>{% elseif kind == 'campaigns' and row.campaign %}<small>{{ row.source }}{% if row.medium %} · {{ row.medium }}{% endif %}</small>{% endif %}
+                  </div>
+                  <strong class="visitor-share-value">{{ row.share|number_format(1, ',', ' ') }} %</strong>
+                </div>
+                <div class="visitor-share-track" aria-hidden="true"><span style="width: {{ row.share|number_format(4, '.', '') }}%"></span></div>
+                <p>{{ row.views|number_format(0, ',', ' ') }} pages sur {{ periodViews|number_format(0, ',', ' ') }}</p>
+              </article>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+  <p class="visitor-attribution-note">Chaque page est attribuée à la source d’entrée de sa session. Les pourcentages représentent la part des pages consultées sur la période filtrée.</p>
   <p class="visitor-updated">Dernière actualisation : {{ updatedAt|date('H:i:s', 'Europe/Paris') }}</p>
 </div>
