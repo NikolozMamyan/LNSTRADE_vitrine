@@ -70,7 +70,10 @@
   <section class="admin-panel activity-panel visitor-panel">
     <header class="admin-panel-head">
       <div><p class="admin-eyebrow"><span></span> Fréquentation</p><h2>Évolution des visites</h2><p class="visitor-panel-note">{{ chartDays }} derniers jours · Heure de Paris{{ ip ? ' · IP ' ~ ip : '' }}</p></div>
-      <div class="visitor-chart-legend"><span><i class="visitor-key-views"></i> Pages consultées</span><span><i class="visitor-key-sessions"></i> Sessions démarrées</span><span><i class="visitor-key-campaigns"></i> Part des campagnes (%)</span></div>
+      <div class="visitor-chart-actions">
+        <a class="admin-button admin-button-primary" href="{{ path('app_admin_visitors_export', {days: days, ip: ip}) }}" data-turbo="false">Exporter en Excel ↓</a>
+        <div class="visitor-chart-legend"><span><i class="visitor-key-views"></i> Pages consultées</span><span><i class="visitor-key-sessions"></i> Sessions démarrées</span><span><i class="visitor-key-campaigns"></i> Part des campagnes (%)</span></div>
+      </div>
     </header>
     <div class="visitor-chart-summary">
       <div><span>Moyenne quotidienne</span><strong>{{ averageDailyViews|number_format(1, ',', ' ') }} <small>pages / jour</small></strong></div>

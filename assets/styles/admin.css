@@ -222,6 +222,8 @@ svg { display: block; }
 .visitor-chart-day:hover .visitor-chart-hitbox, .visitor-chart-day:focus .visitor-chart-hitbox { fill: rgba(115,87,255,.06); }
 .visitor-chart-day:focus { outline: none; }
 .visitor-chart-day:focus-visible .visitor-chart-hitbox { stroke: var(--admin-violet); stroke-width: 1; }
+.visitor-chart-actions { display: flex; align-items: flex-start; flex-direction: column; gap: 16px; }
+.visitor-chart-actions .admin-button { font-size: 11px; }
 .visitor-chart-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; }
 .visitor-chart-legend span { display: flex; align-items: center; gap: 7px; }
 .visitor-chart-legend i { width: 10px; height: 10px; flex-shrink: 0; border-radius: 2px; }

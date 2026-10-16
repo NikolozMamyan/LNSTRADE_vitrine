@@ -14,6 +14,11 @@ use App\Visitor\VisitorReportProvider;
 use App\Visitor\IpGeolocation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -107,6 +112,7 @@ final class VisitorTrackingTest extends WebTestCase
         $this->client->request('GET', 'https://localhost/admin/visiteurs');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('.admin-nav-link.is-active[href="/admin/visiteurs"]');
+        self::assertSelectorExists('a[data-turbo="false"][href^="/admin/visiteurs/export.xlsx?days=30"]');
         self::assertSelectorCount(1, '.visitor-panel .admin-table tbody tr');
         self::assertSelectorTextContains('.visitor-ip', '198.51.100.20');
         self::assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;', (string) $this->client->getResponse()->getContent());
@@ -123,7 +129,7 @@ final class VisitorTrackingTest extends WebTestCase
 
     public function testVisitorDataIsNotAvailableWithoutAnAdminSession(): void
     {
-        foreach (['/admin/visiteurs', '/admin/visiteurs/1'] as $url) {
+        foreach (['/admin/visiteurs', '/admin/visiteurs/1', '/admin/visiteurs/export.xlsx'] as $url) {
             $this->client->request('GET', $url, server: ['HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest']);
             self::assertResponseRedirects('/admin/login');
         }
@@ -232,6 +238,113 @@ final class VisitorTrackingTest extends WebTestCase
         self::assertSame(2, $history['page']);
         self::assertCount(1, $history['visits']);
         self::assertSame('/fr/blog', $history['visits'][0]->getPath());
+    }
+
+    public function testExcelExportContainsFilteredNumbersChartsAndAllSourcesWithoutExecutingVisitorText(): void
+    {
+        $http = new MockHttpClient();
+        static::getContainer()->set(IpGeolocation::class, new IpGeolocation($http, new ArrayAdapter(), new RateLimiterFactory([
+            'id' => 'export_geolocation', 'policy' => 'fixed_window', 'limit' => 40, 'interval' => '1 minute',
+        ], new InMemoryStorage()), null));
+        $recorder = static::getContainer()->get(VisitorRecorder::class);
+        $today = new \DateTimeImmutable('today', new \DateTimeZone('Europe/Paris'));
+        for ($number = 1; $number <= 26; ++$number) {
+            $query = http_build_query([
+                'utm_source' => 26 === $number ? '=1+1' : 'source_'.$number,
+                'utm_medium' => 'cpc',
+                'utm_campaign' => 0 === $number % 2 ? '=2+2' : '',
+            ]);
+            $recorder->record(Request::create('/fr/?'.$query, server: [
+                'REMOTE_ADDR' => '8.8.8.8', 'HTTP_USER_AGENT' => 'Chrome/140.0-'.$number,
+            ]), $today->modify('+15 minutes'));
+        }
+        $recorder->record(Request::create('/fr/?utm_source=outside_period', server: [
+            'REMOTE_ADDR' => '8.8.8.8', 'HTTP_USER_AGENT' => 'Chrome/140.0',
+        ]), $today->modify('-8 days'));
+        $recorder->record(Request::create('/fr/?utm_source=other_ip', server: [
+            'REMOTE_ADDR' => '198.51.100.21', 'HTTP_USER_AGENT' => 'Chrome/140.0',
+        ]), $today);
+
+        $this->login();
+        $this->client->request('GET', 'https://localhost/admin/visiteurs/export.xlsx?days=7&ip=8.8.8.8&page=2');
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        self::assertStringContainsString('attachment; filename=lnstrade-visiteurs-', $this->client->getResponse()->headers->get('Content-Disposition'));
+        self::assertStringContainsString('no-store', $this->client->getResponse()->headers->get('Cache-Control'));
+        self::assertSame(0, $http->getRequestsCount());
+        self::assertSame(28, $this->entityManager->getRepository(PageVisit::class)->count([]));
+
+        $book = $this->readExcelExport();
+        try {
+            self::assertSame(['Synthèse', 'Évolution', 'Sources', 'Campagnes'], $book->getSheetNames());
+            $summary = $book->getSheetByName('Synthèse');
+            self::assertSame(7, $summary->getCell('B9')->getValue());
+            self::assertSame('8.8.8.8', $summary->getCell('B10')->getValue());
+            self::assertSame(26, $summary->getCell('B12')->getValue());
+            self::assertSame(26, $summary->getCell('B13')->getValue());
+            self::assertSame(13, $summary->getCell('B17')->getValue());
+            self::assertEqualsWithDelta(0.5, $summary->getCell('B18')->getValue(), 0.001);
+            self::assertSame('0.0%', $summary->getCell('B18')->getStyle()->getNumberFormat()->getFormatCode());
+            $daily = $book->getSheetByName('Évolution');
+            self::assertSame(26, $daily->getCell('B13')->getValue());
+            self::assertSame(0, $daily->getCell('B7')->getValue());
+            self::assertSame(2, $daily->getChartCount());
+            self::assertSame(DataSeriesValues::DATASERIES_TYPE_NUMBER, $daily->getChartByIndex(0)->getPlotArea()->getPlotGroupByIndex(0)->getPlotCategoryByIndex(0)->getDataType());
+            $campaignSeries = $daily->getChartByIndex(1)->getPlotArea()->getPlotGroupByIndex(0);
+            self::assertSame(DataSeries::GROUPING_STANDARD, $campaignSeries->getPlotGrouping());
+            self::assertEqualsWithDelta(0.5, $campaignSeries->getPlotValuesByIndex(0)->getDataValues()[6], 0.001);
+            $sources = $book->getSheetByName('Sources');
+            self::assertSame(32, $sources->getHighestDataRow());
+            self::assertSame('=1+1', $sources->getCell('A7')->getValue());
+            self::assertSame(DataType::TYPE_STRING, $sources->getCell('A7')->getDataType());
+            self::assertSame(1, $sources->getChartCount());
+            self::assertSame(10, $sources->getChartByIndex(0)->getPlotArea()->getPlotGroupByIndex(0)->getPlotValuesByIndex(0)->getPointCount());
+            $campaigns = $book->getSheetByName('Campagnes');
+            self::assertSame('=2+2', $campaigns->getCell('A8')->getValue());
+            self::assertSame(DataType::TYPE_STRING, $campaigns->getCell('A8')->getDataType());
+            self::assertSame(20, $campaigns->getHighestDataRow());
+            self::assertSame(1, $campaigns->getChartCount());
+        } finally {
+            $book->disconnectWorksheets();
+        }
+    }
+
+    public function testExcelExportHandlesEmptyInvalidIpAndAllHistoryLikeTheChart(): void
+    {
+        $this->login();
+        $this->client->request('GET', 'https://localhost/admin/visiteurs/export.xlsx?days=0&ip=invalid');
+        self::assertResponseIsSuccessful();
+        $book = $this->readExcelExport();
+        try {
+            $summary = $book->getSheetByName('Synthèse');
+            self::assertSame(30, $summary->getCell('B9')->getValue());
+            self::assertStringContainsString('IP invalide', $summary->getCell('B10')->getValue());
+            self::assertSame(0, $summary->getCell('B12')->getValue());
+            self::assertEqualsWithDelta(0, $summary->getCell('B18')->getValue(), 0.001);
+            self::assertStringContainsString('30 derniers jours du graphique', $summary->getCell('A31')->getValue());
+            self::assertSame(36, $book->getSheetByName('Évolution')->getHighestDataRow());
+            self::assertSame(2, $book->getSheetByName('Évolution')->getChartCount());
+            foreach (['Sources', 'Campagnes'] as $name) {
+                self::assertSame('Aucune page consultée sur cette période.', $book->getSheetByName($name)->getCell('A8')->getValue());
+                self::assertSame(0, $book->getSheetByName($name)->getChartCount());
+            }
+        } finally {
+            $book->disconnectWorksheets();
+        }
+    }
+
+    private function readExcelExport(): Spreadsheet
+    {
+        $filename = tempnam(sys_get_temp_dir(), 'lnstrade_visitors_');
+        try {
+            file_put_contents($filename, $this->client->getInternalResponse()->getContent());
+            $reader = new Xlsx();
+            $reader->setIncludeCharts(true);
+
+            return $reader->load($filename);
+        } finally {
+            unlink($filename);
+        }
     }
 
     public function testIpLocationAppearsInTheListAndSessionDetails(): void

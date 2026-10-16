@@ -19,7 +19,7 @@ final readonly class VisitorReportProvider
     ) {
     }
 
-    public function overview(Request $request): array
+    public function overview(Request $request, bool $includeSessions = true): array
     {
         $days = $request->query->getInt('days', 30);
         $days = in_array($days, [0, 7, 30, 90], true) ? $days : 30;
@@ -40,8 +40,8 @@ final readonly class VisitorReportProvider
         $count = (int) (clone $query)->select('COUNT(session.id)')->getQuery()->getSingleScalarResult();
         $pageCount = max(1, (int) ceil($count / 25));
         $page = min($pageCount, max(1, $request->query->getInt('page', 1)));
-        $sessions = $query->select('session')->orderBy('session.lastSeenAt', 'DESC')->addOrderBy('session.id', 'DESC')
-            ->setFirstResult(($page - 1) * 25)->setMaxResults(25)->getQuery()->getResult();
+        $sessions = $includeSessions ? $query->select('session')->orderBy('session.lastSeenAt', 'DESC')->addOrderBy('session.id', 'DESC')
+            ->setFirstResult(($page - 1) * 25)->setMaxResults(25)->getQuery()->getResult() : [];
 
         $chart = [];
         $dailySources = [];
