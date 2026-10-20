@@ -59,17 +59,19 @@ final class VisitorTrackingTest extends WebTestCase
         self::assertResponseIsSuccessful();
         $this->client->request('GET', '/en/manga-snacks-drinks-wholesaler');
         self::assertResponseIsSuccessful();
+        $this->client->request('GET', '/fr/grossiste-one-piece-boissons-snacks');
+        self::assertResponseIsSuccessful();
         $session = $this->entityManager->getRepository(VisitorSession::class)->findOneBy([]);
         self::assertInstanceOf(VisitorSession::class, $session);
         self::assertSame('198.51.100.20', $session->getIpAddress());
         self::assertSame('/fr/', $session->getEntryPath());
-        self::assertSame('/en/manga-snacks-drinks-wholesaler', $session->getCurrentPath());
-        self::assertSame(2, $session->getPageViewCount());
+        self::assertSame('/fr/grossiste-one-piece-boissons-snacks', $session->getCurrentPath());
+        self::assertSame(3, $session->getPageViewCount());
         self::assertSame('google', $session->getSource());
         self::assertSame('cpc', $session->getMedium());
         self::assertSame('lnstrade_europe', $session->getCampaign());
         self::assertSame(1, $this->entityManager->getRepository(VisitorSession::class)->count([]));
-        self::assertSame(2, $this->entityManager->getRepository(PageVisit::class)->count([]));
+        self::assertSame(3, $this->entityManager->getRepository(PageVisit::class)->count([]));
         self::assertSame([], $this->client->getResponse()->headers->getCookies());
     }
 
