@@ -1,21 +1,12 @@
 <section class="content-section shell"><div class="prose seo-prose">
-  {% if app.request.locale == 'fr' %}
-    <h2>Ultra Ice Tea, Chipsan et Negisan : les gammes ULTRAPOP</h2>
-    <p>ULTRAPOP est la marque de LNS Trade dédiée aux produits alimentaires sous licences officielles manga, anime et gaming. Ultra Ice Tea fait partie de ses gammes de boissons, avec des références illustrées notamment par Luffy de One Piece et Naruto. Chipsan appartient à l’univers du snack salé et Negisan à celui des nouilles instantanées. Ces gammes permettent d’aborder plusieurs moments de consommation tout en conservant un lien visuel avec les univers appréciés des fans.</p>
-    <p>Pour un acheteur professionnel, la marque sert de repère ; le choix se fait ensuite référence par référence. La catégorie, le format, le conditionnement et le marché de destination doivent être précisés avant l’achat. Notre <a href="{{ path('app_products.fr') }}">présentation des gammes ULTRAPOP</a> et le catalogue illustré sont des points de départ. Ils ne remplacent pas la confirmation des disponibilités et des conditions commerciales par notre équipe.</p>
-    <h2>Choisir une collection pour votre activité</h2>
-    <p>Un distributeur, une enseigne et un commerce indépendant ne construisent pas leur sélection de la même façon. La place en rayon, le mode de vente et les possibilités de réassort orientent les catégories à privilégier. Vous pouvez étudier un corner multi-catégories ou compléter une offre déjà en place. Les licences et les références proposées dépendent du territoire : notre équipe vérifie les possibilités pour votre projet avant de vous communiquer une sélection.</p>
-    <p>La page <a href="{{ path('app_wholesale.fr') }}">grossiste snacks et boissons pour professionnels</a> présente notre démarche B2B. Pour préparer le lancement, le guide sur le <a href="{{ path('app_article_merchandising.fr') }}">merchandising des produits sous licence</a> explique comment organiser une présentation lisible et suivre les premiers essais. Le produit conserve son usage alimentaire ; le personnage complète cette expérience sans remplacer les informations utiles au consommateur.</p>
-    <h2>Échanger directement avec LNS Trade</h2>
-    <p>Pour demander une proposition ULTRAPOP, indiquez votre société, votre pays, votre canal de vente et les familles qui vous intéressent. Ajoutez vos volumes estimés si vous les connaissez. Les quantités, prix, modalités de transport et délais sont étudiés selon le projet. Vous pouvez envoyer cette demande depuis notre <a href="{{ path('app_contact.fr') }}">page de contact professionnel</a>, sans passer commande ni vous engager à acheter.</p>
-  {% else %}
-    <h2>Ultra Ice Tea, Chipsan and Negisan: ULTRAPOP ranges</h2>
-    <p>ULTRAPOP is the LNS Trade brand for food products under official manga, anime and gaming licences. Ultra Ice Tea belongs to its drinks ranges, with references featuring characters including Luffy from One Piece and Naruto. Chipsan is part of its savoury snack offer and Negisan its instant noodles. These ranges address different consumption occasions while maintaining a visual connection with familiar fan universes.</p>
-    <p>For a professional buyer, the brand provides a starting point; the final selection is made reference by reference. Specify the category, format, packaging and destination market before purchasing. Our <a href="{{ path('app_products.en') }}">ULTRAPOP ranges overview</a> and illustrated catalogue introduce the offer but do not replace confirmation of availability and commercial terms by our team.</p>
-    <h2>Choose a collection for your business</h2>
-    <p>Distributors, retail groups and independent stores build selections differently. Shelf space, sales methods and replenishment options help determine which categories to consider. You can explore a multi-category corner or extend an existing offer. Licences and references depend on the territory; our team checks options for your project before providing a selection.</p>
-    <p>The <a href="{{ path('app_wholesale.en') }}">professional drinks and snacks wholesale page</a> explains our trade enquiry process. To prepare a launch, our <a href="{{ path('app_article_merchandising.en') }}">licensed product merchandising guide</a> covers clear displays and monitoring initial tests. The product retains its food use; the character complements the experience rather than replacing information useful to the customer.</p>
-    <h2>Talk directly with LNS Trade</h2>
-    <p>For an ULTRAPOP proposal, share your company, country, sales channel and preferred product families. Add estimated volumes if known. Quantities, prices, transport arrangements and lead times depend on the project. Send your enquiry through our <a href="{{ path('app_contact.en') }}">trade contact page</a> without placing an order or committing to a purchase.</p>
-  {% endif %}
+
+    <h2>{{ 'content.ultrapop_advice.1'|trans }}</h2>
+    <p>{{ 'content.ultrapop_advice.2'|trans }}</p>
+    <p>{{ 'content.ultrapop_advice.3'|trans }} <a href="{{ path('app_products.' ~ app.request.locale) }}">{{ 'content.ultrapop_advice.4'|trans }}</a> {{ 'content.ultrapop_advice.5'|trans }}</p>
+    <h2>{{ 'content.ultrapop_advice.6'|trans }}</h2>
+    <p>{{ 'content.ultrapop_advice.7'|trans }}</p>
+    <p>{{ 'content.ultrapop_advice.8'|trans }} <a href="{{ path('app_wholesale.' ~ app.request.locale) }}">{{ 'content.ultrapop_advice.9'|trans }}</a> {{ 'content.ultrapop_advice.10'|trans }} <a href="{{ path('app_article_merchandising.' ~ app.request.locale) }}">{{ 'content.ultrapop_advice.11'|trans }}</a> {{ 'content.ultrapop_advice.12'|trans }}</p>
+    <h2>{{ 'content.ultrapop_advice.13'|trans }}</h2>
+    <p>{{ 'content.ultrapop_advice.14'|trans }} <a href="{{ path('app_contact.' ~ app.request.locale) }}">{{ 'content.ultrapop_advice.15'|trans }}</a> {{ 'content.ultrapop_advice.16'|trans }}</p>
+
 </div></section>

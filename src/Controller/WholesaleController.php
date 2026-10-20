@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class WholesaleController extends AbstractController
 {
     #[Route(
-        path: ['en' => '/en/manga-snacks-drinks-wholesaler', 'fr' => '/fr/grossiste-snacks-boissons-manga'],
+        path: ['en' => '/en/manga-snacks-drinks-wholesaler', 'fr' => '/fr/grossiste-snacks-boissons-manga', 'de' => '/de/manga-snacks-getraenke-grosshandel', 'es' => '/es/mayorista-snacks-bebidas-manga', 'nb' => '/nb/grossist-manga-snacks-drikke', 'nl' => '/nl/groothandel-manga-snacks-dranken'],
         name: 'app_wholesale',
         methods: ['GET'],
     )]

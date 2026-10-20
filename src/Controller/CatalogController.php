@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CatalogController extends AbstractController
 {
-    #[Route(path: ['en' => '/en/product-range', 'fr' => '/fr/catalogue-produits'], name: 'app_products', methods: ['GET'])]
+    #[Route(path: ['en' => '/en/product-range', 'fr' => '/fr/catalogue-produits', 'de' => '/de/produktsortiment', 'es' => '/es/catalogo-productos', 'nb' => '/nb/produktutvalg', 'nl' => '/nl/productassortiment'], name: 'app_products', methods: ['GET'])]
     public function products(): Response
     {
         return $this->render('pages/products.html.twig');
@@ -31,10 +31,13 @@ final class CatalogController extends AbstractController
             return $this->redirectToRoute('app_locale');
         }
 
-        return $this->render('catalog/index.html.twig', [
+        $response = $this->render('catalog/index.html.twig', [
             'catalog' => $catalog,
             'catalogPages' => $visiblePages,
             'isPreview' => false,
         ]);
+        $response->setVary('Accept-Language');
+
+        return $response;
     }
 }

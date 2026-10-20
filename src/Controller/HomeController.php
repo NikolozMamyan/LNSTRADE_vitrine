@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class HomeController extends AbstractController
 {
     #[Route(
-        path: ['en' => '/en/', 'fr' => '/fr/'],
+        path: ['en' => '/en/', 'fr' => '/fr/', 'de' => '/de/', 'es' => '/es/', 'nb' => '/nb/', 'nl' => '/nl/'],
         name: 'app_home',
         methods: ['GET'],
     )]

@@ -38,15 +38,15 @@
   <meta name="theme-color" content="#11110f">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <link rel="canonical" href="{{ canonical_url }}">
-  <link rel="alternate" hreflang="en" href="{{ english_url }}">
-  <link rel="alternate" hreflang="fr" href="{{ french_url }}">
+  {% for locale in site_locales %}<link rel="alternate" hreflang="{{ locale }}" href="{{ site_origin ~ path(route_name ~ '.' ~ locale) }}">{% endfor %}
   <link rel="alternate" hreflang="x-default" href="{{ page_id == 'home' ? site_origin ~ path('app_locale') : english_url }}">
   <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" sizes="any">
 
   <meta property="og:type" content="{{ is_article ? 'article' : 'website' }}">
   <meta property="og:site_name" content="LNS Trade">
-  <meta property="og:locale" content="{{ app.request.locale == 'fr' ? 'fr_FR' : 'en_GB' }}">
-  <meta property="og:locale:alternate" content="{{ app.request.locale == 'fr' ? 'en_GB' : 'fr_FR' }}">
+  {% set social_locales = {en: 'en_GB', fr: 'fr_FR', de: 'de_DE', es: 'es_ES', nb: 'nb_NO', nl: 'nl_NL'} %}
+  <meta property="og:locale" content="{{ social_locales[app.request.locale] }}">
+  {% for locale in site_locales %}{% if locale != app.request.locale %}<meta property="og:locale:alternate" content="{{ social_locales[locale] }}">{% endif %}{% endfor %}
   <meta property="og:title" content="{{ page_title }}">
   <meta property="og:description" content="{{ page_description }}">
   <meta property="og:url" content="{{ canonical_url }}">

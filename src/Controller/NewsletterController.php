@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Locale\SiteLocale;
 use App\Newsletter\NewsletterRecorder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -40,7 +41,7 @@ final class NewsletterController extends AbstractController
             return $this->json(['ok' => false, 'error' => 'validation'], 422);
         }
         $locale = $request->request->getString('locale');
-        $created = $recorder->subscribe($email, in_array($locale, ['fr', 'en'], true) ? $locale : 'en', $request->request->getString('origin'));
+        $created = $recorder->subscribe($email, in_array($locale, SiteLocale::CODES, true) ? $locale : 'en', $request->request->getString('origin'));
 
         return $this->json(['ok' => true, 'subscribed' => true, 'created' => $created]);
     }

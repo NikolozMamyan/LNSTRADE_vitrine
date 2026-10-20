@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\HubSpot;
 
+use App\Locale\SiteLocale;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class ContactSubmission
@@ -29,7 +30,7 @@ final readonly class ContactSubmission
         public string $context,
         #[Assert\Length(max: 1000)]
         public string $origin,
-        #[Assert\Choice(choices: ['en', 'fr'])]
+        #[Assert\Choice(choices: SiteLocale::CODES)]
         public string $locale,
         public string $countryCode = '',
     ) {

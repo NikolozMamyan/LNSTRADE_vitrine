@@ -14,11 +14,13 @@
 
   <div class="language-switcher" data-language-switcher>
     <button class="language-switcher-trigger" type="button" aria-expanded="false" aria-haspopup="listbox" aria-label="{{ 'selector.label'|trans }}">
-      <span class="language-current">{{ app.request.locale|upper }}</span><span aria-hidden="true">⌄</span>
+      <span class="language-current">{{ app.request.locale == 'nb' ? 'NO' : app.request.locale|upper }}</span><span aria-hidden="true">⌄</span>
     </button>
     <div class="language-menu" role="listbox" aria-label="{{ 'selector.label'|trans }}">
-      <a href="{{ path(route_name ~ '.en') }}" role="option" data-language="en" aria-selected="{{ app.request.locale == 'en' ? 'true' : 'false' }}"><span>EN</span><strong>{{ 'selector.english'|trans }}</strong></a>
-      <a href="{{ path(route_name ~ '.fr') }}" role="option" data-language="fr" aria-selected="{{ app.request.locale == 'fr' ? 'true' : 'false' }}"><span>FR</span><strong>{{ 'selector.french'|trans }}</strong></a>
+      {% set language_names = {en: 'English', fr: 'Français', de: 'Deutsch', es: 'Español', nb: 'Norsk', nl: 'Nederlands'} %}
+      {% for locale in site_locales %}
+        <a href="{{ path(route_name ~ '.' ~ locale) }}" role="option" data-language="{{ locale }}" lang="{{ locale }}" hreflang="{{ locale }}" aria-selected="{{ app.request.locale == locale ? 'true' : 'false' }}"><span>{{ locale == 'nb' ? 'NO' : locale|upper }}</span><strong>{{ language_names[locale] }}</strong></a>
+      {% endfor %}
     </div>
   </div>
 

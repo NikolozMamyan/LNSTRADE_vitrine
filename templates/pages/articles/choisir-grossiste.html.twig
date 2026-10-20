@@ -5,7 +5,7 @@
 {% set og_image = asset('images/ultra-ice-tea-naruto.webp') %}
 {% set is_article = true %}
 {% set article_date = '2026-09-21' %}
-{% set article_modified = '2026-10-16' %}
+{% set article_modified = app.request.locale in ['en', 'fr'] ? '2026-10-16' : '2026-10-20' %}
 
 {% block body %}
 <main id="main"><article><header class="page-hero article-hero"><div class="shell"><div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> / <a href="{{ path('app_blog.' ~ app.request.locale) }}">{{ 'Le Mag'|trans }}</a> {{ '/ Distribution'|trans }}</div><p class="eyebrow light"><span></span> {{ 'Guide professionnel'|trans }}</p><h1>{{ 'Comment choisir son grossiste en boissons'|trans }} <em>{{ 'manga ?'|trans }}</em></h1><div class="article-meta"><span>{{ '21 septembre 2026'|trans }}</span><span>{{ '5 min de lecture'|trans }}</span><span>{{ 'Par LNS Trade'|trans }}</span></div></div><img class="article-cover" src="{{ asset('images/ultra-ice-tea-naruto.webp') }}" alt="{{ 'Canette Ultra Ice Tea Naruto sur un terrain de tennis'|trans }}" width="1083" height="1083" srcset="{{ asset('images/ultra-ice-tea-naruto-640.webp') }} 640w, {{ asset('images/ultra-ice-tea-naruto.webp') }} 1083w" sizes="100vw"></header>

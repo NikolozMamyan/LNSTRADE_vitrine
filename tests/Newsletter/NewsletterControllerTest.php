@@ -125,6 +125,18 @@ final class NewsletterControllerTest extends WebTestCase
         self::assertStringContainsString('no-store', $this->client->getResponse()->headers->get('Cache-Control'));
     }
 
+    public function testNewSubscriberLanguagesArePreserved(): void
+    {
+        foreach (['de', 'es', 'nb', 'nl'] as $locale) {
+            $email = $locale.'@example.com';
+            $this->subscribe(['email' => $email, 'locale' => $locale, 'origin' => '/'.$locale.'/']);
+            self::assertResponseIsSuccessful();
+            $subscriber = $this->entityManager->getRepository(NewsletterSubscriber::class)->findOneBy(['email' => $email]);
+            self::assertInstanceOf(NewsletterSubscriber::class, $subscriber);
+            self::assertSame($locale, $subscriber->getLocale());
+        }
+    }
+
     private function subscribe(array $data = [], array $server = []): void
     {
         $this->client->request('POST', 'https://localhost/newsletter/subscribe', array_replace([

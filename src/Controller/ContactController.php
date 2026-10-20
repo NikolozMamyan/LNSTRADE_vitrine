@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\HubSpot\ContactSubmission;
+use App\Locale\SiteLocale;
 use App\Prospect\ProspectRecorder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,16 +18,16 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ContactController extends AbstractController
 {
-    #[Route(path: ['en' => '/en/contact', 'fr' => '/fr/contact'], name: 'app_contact', methods: ['GET'])]
+    #[Route(path: ['en' => '/en/contact', 'fr' => '/fr/contact', 'de' => '/de/kontakt', 'es' => '/es/contacto', 'nb' => '/nb/kontakt', 'nl' => '/nl/contact'], name: 'app_contact', methods: ['GET'])]
     public function page(): Response
     {
         return $this->render('pages/contact.html.twig');
     }
 
     #[Route('/contact', name: 'app_contact_page_redirect', methods: ['GET'])]
-    public function redirectToPage(Request $request): Response
+    public function redirectToPage(Request $request, SiteLocale $siteLocale): Response
     {
-        $response = $this->redirectToRoute('app_contact.'.($request->getPreferredLanguage(['en', 'fr']) ?? 'en'), $request->query->all());
+        $response = $this->redirectToRoute('app_contact.'.$siteLocale->preferred($request), $request->query->all());
         $response->setVary('Accept-Language');
 
         return $response;
@@ -48,8 +49,8 @@ final class ContactController extends AbstractController
         }
 
         $locale = $this->field($request, 'locale');
-        if (!in_array($locale, ['en', 'fr'], true)) {
-            $locale = in_array($request->getLocale(), ['en', 'fr'], true) ? $request->getLocale() : 'en';
+        if (!in_array($locale, SiteLocale::CODES, true)) {
+            $locale = in_array($request->getLocale(), SiteLocale::CODES, true) ? $request->getLocale() : 'en';
         }
 
         $submission = new ContactSubmission(

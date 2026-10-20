@@ -4,7 +4,7 @@ import { PageFlip } from 'page-flip';
 import { createCatalogRenderer } from '../catalog_media.js';
 
 export default class extends Controller {
-  static values = { workerUrl: String };
+  static values = { workerUrl: String, copy: Object };
   static targets = [
     'stage', 'book', 'page', 'loading', 'loadingRetry', 'previous', 'next', 'first', 'last', 'stagePrevious', 'stageNext',
     'hint', 'currentTitle', 'progress', 'pageNumber', 'download', 'menu', 'menuButton', 'backdrop', 'thumbnail',
@@ -207,8 +207,8 @@ export default class extends Controller {
     window.clearTimeout(this.loadingTimer);
     this.loadingRetryTarget.hidden = true;
     this.loadingTarget.classList.toggle('is-inline', !initial);
-    this.loadingTarget.querySelector('strong').textContent = initial ? 'Ouverture du catalogue' : 'Chargement des pages';
-    this.loadingTarget.querySelector('small').textContent = initial ? 'Les premières pages arrivent…' : 'Votre page arrive…';
+    this.loadingTarget.querySelector('strong').textContent = initial ? this.copyValue.opening : this.copyValue.loading;
+    this.loadingTarget.querySelector('small').textContent = initial ? this.copyValue.initial : this.copyValue.loading_page;
     this.stageTarget.setAttribute('aria-busy', 'true');
     if (initial) this.loadingTarget.classList.remove('is-hidden');
     else {
@@ -227,8 +227,8 @@ export default class extends Controller {
     window.clearTimeout(this.loadingTimer);
     this.loadingTarget.classList.remove('is-hidden');
     this.stageTarget.setAttribute('aria-busy', 'false');
-    this.loadingTarget.querySelector('strong').textContent = 'Chargement interrompu';
-    this.loadingTarget.querySelector('small').textContent = 'Réessayez sans recharger la page.';
+    this.loadingTarget.querySelector('strong').textContent = this.copyValue.interrupted;
+    this.loadingTarget.querySelector('small').textContent = this.copyValue.retry_hint;
     this.loadingRetryTarget.hidden = false;
   }
 
@@ -266,7 +266,7 @@ export default class extends Controller {
     else this.downloadTarget.removeAttribute('href');
     window.clearTimeout(this.prefetchTimer);
     this.prefetchTimer = window.setTimeout(() => this.preparePagesNear(this.currentIndex), 120);
-    if (announce) this.announcementTarget.textContent = `Page affichée : ${page.dataset.title}`;
+    if (announce) this.announcementTarget.textContent = `${this.copyValue.displayed} ${page.dataset.title}`;
   }
 
   updateNavigation(state = this.pageFlip?.getState()) {
@@ -357,10 +357,10 @@ export default class extends Controller {
       if (navigator.share) await navigator.share(data);
       else {
         await navigator.clipboard.writeText(data.url);
-        this.announcementTarget.textContent = 'Le lien du catalogue a été copié.';
+        this.announcementTarget.textContent = this.copyValue.copied;
       }
     } catch (error) {
-      if (error.name !== 'AbortError') this.announcementTarget.textContent = 'Le catalogue ne peut pas être partagé.';
+      if (error.name !== 'AbortError') this.announcementTarget.textContent = this.copyValue.share_error;
     }
   }
 
@@ -368,13 +368,13 @@ export default class extends Controller {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
       else await document.documentElement.requestFullscreen();
-    } catch { this.announcementTarget.textContent = 'Le plein écran n’est pas disponible.'; }
+    } catch { this.announcementTarget.textContent = this.copyValue.fullscreen_error; }
   }
 
   fullscreenChanged() {
     const active = Boolean(document.fullscreenElement);
-    this.fullscreenTarget.setAttribute('aria-label', active ? 'Quitter le plein écran' : 'Plein écran');
-    this.fullscreenTarget.title = active ? 'Quitter le plein écran' : 'Plein écran';
+    this.fullscreenTarget.setAttribute('aria-label', active ? this.copyValue.fullscreen_exit : this.copyValue.fullscreen);
+    this.fullscreenTarget.title = active ? this.copyValue.fullscreen_exit : this.copyValue.fullscreen;
   }
 
   keyboard(event) {

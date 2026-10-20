@@ -1,21 +1,12 @@
 <section class="content-section shell"><div class="prose seo-prose">
-  {% if app.request.locale == 'fr' %}
-    <h2>Un brief d’approvisionnement pour cadrer le projet</h2>
-    <p>Un projet d’import commence par un besoin précis, même lorsque les références ne sont pas encore arrêtées. Indiquez les catégories recherchées, le pays de commercialisation, votre canal de vente et les volumes envisagés. Précisez si vous recherchez une opportunité ponctuelle ou un approvisionnement à renouveler. Ces éléments permettent de distinguer une demande de sourcing d’un simple accès au catalogue et d’étudier les produits compatibles avec votre activité.</p>
-    <p>Le cahier des charges doit aussi intégrer la réception et l’exploitation des marchandises : lieu de livraison, contraintes de stockage, informations produit nécessaires et organisation du réassort. Une proposition se compare sur un périmètre clair, avec des unités, des références et des modalités de transport identifiées. Le prix seul ne permet pas d’évaluer la pertinence d’un approvisionnement si ces éléments restent différents ou inconnus.</p>
-    <h2>Vérifier le produit et son marché de destination</h2>
-    <p>LNS Trade coordonne les échanges commerciaux et logistiques autour du projet étudié. La disponibilité d’une marchandise et la possibilité de la commercialiser sur un territoire sont deux points distincts. Les caractéristiques de la référence, son étiquetage et, pour les produits sous licence, les droits de distribution doivent être examinés pour le marché concerné. Les responsabilités et les documents utiles sont précisés dans le cadre de l’opération, sans supposer qu’un même montage s’applique à tous les pays.</p>
-    <h2>Associer sourcing et gammes ULTRAPOP</h2>
-    <p>Notre activité couvre à la fois l’étude de produits alimentaires sourcés et le développement de notre marque <a href="{{ path('app_ultrapop.fr') }}">ULTRAPOP</a>. Pour un projet manga, anime ou gaming, consultez les <a href="{{ path('app_products.fr') }}">gammes de boissons et snacks sous licences officielles</a>. Pour une sélection destinée à votre point de vente, la page <a href="{{ path('app_wholesale.fr') }}">grossiste snacks et boissons pour professionnels</a> présente la démarche de demande de tarifs.</p>
-    <p>Décrivez votre besoin dans le <a href="{{ path('app_contact.fr') }}">formulaire de contact professionnel</a>. Notre équipe peut alors examiner le périmètre et préparer les informations nécessaires à une proposition. Quantités, prix, disponibilités et conditions de livraison restent propres au projet ; l’envoi du formulaire ne constitue aucun engagement de commande.</p>
-  {% else %}
-    <h2>Define the procurement brief</h2>
-    <p>An import project starts with a clear requirement, even when references are not yet final. Specify product categories, destination market, sales channel and anticipated volumes. Explain whether you need a one-off opportunity or repeat supply. This distinguishes sourcing from simple catalogue access and helps assess products relevant to your business.</p>
-    <p>The brief should also cover receiving and handling goods: delivery location, storage constraints, product information and reorder arrangements. Compare proposals with a clear scope, including identified units, references and transport terms. Price alone cannot establish whether procurement is suitable while these elements differ or remain unknown.</p>
-    <h2>Check the product and its destination market</h2>
-    <p>LNS Trade coordinates commercial and logistics discussions for the project being assessed. Availability and permission to sell in a territory are separate points. Review the reference, its labelling and, for licensed products, distribution rights for the intended market. Responsibilities and relevant documentation are specified within the operation rather than assuming the same arrangements apply to every country.</p>
-    <h2>Combine sourcing with ULTRAPOP ranges</h2>
-    <p>Our activity includes sourced food products and the development of our <a href="{{ path('app_ultrapop.en') }}">ULTRAPOP brand</a>. For manga, anime or gaming projects, explore the <a href="{{ path('app_products.en') }}">officially licensed drinks and snack ranges</a>. Our <a href="{{ path('app_wholesale.en') }}">professional drinks and snacks wholesale page</a> explains the pricing enquiry process for retail assortments.</p>
-    <p>Describe your requirement in the <a href="{{ path('app_contact.en') }}">trade contact form</a>. Our team can assess the scope and prepare the information needed for a proposal. Quantities, prices, availability and delivery terms are project-specific; sending the form does not commit you to an order.</p>
-  {% endif %}
+
+    <h2>{{ 'content.trading_advice.1'|trans }}</h2>
+    <p>{{ 'content.trading_advice.2'|trans }}</p>
+    <p>{{ 'content.trading_advice.3'|trans }}</p>
+    <h2>{{ 'content.trading_advice.4'|trans }}</h2>
+    <p>{{ 'content.trading_advice.5'|trans }}</p>
+    <h2>{{ 'content.trading_advice.6'|trans }}</h2>
+    <p>{{ 'content.trading_advice.7'|trans }} <a href="{{ path('app_ultrapop.' ~ app.request.locale) }}">{{ 'content.trading_advice.8'|trans }}</a>{{ 'content.trading_advice.9'|trans }} <a href="{{ path('app_products.' ~ app.request.locale) }}">{{ 'content.trading_advice.10'|trans }}</a>{{ 'content.trading_advice.11'|trans }} <a href="{{ path('app_wholesale.' ~ app.request.locale) }}">{{ 'content.trading_advice.12'|trans }}</a> {{ 'content.trading_advice.13'|trans }}</p>
+    <p>{{ 'content.trading_advice.14'|trans }} <a href="{{ path('app_contact.' ~ app.request.locale) }}">{{ 'content.trading_advice.15'|trans }}</a>{{ 'content.trading_advice.16'|trans }}</p>
+
 </div></section>

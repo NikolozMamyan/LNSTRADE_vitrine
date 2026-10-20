@@ -5,7 +5,7 @@
 {% set og_image = asset('images/ULTRAPOP-sale.webp') %}
 {% set is_article = true %}
 {% set article_date = '2026-09-21' %}
-{% set article_modified = '2026-10-16' %}
+{% set article_modified = app.request.locale in ['en', 'fr'] ? '2026-10-16' : '2026-10-20' %}
 
 {% block body %}
 <main id="main"><article><header class="page-hero article-hero"><div class="shell"><div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> / <a href="{{ path('app_blog.' ~ app.request.locale) }}">{{ 'Le Mag'|trans }}</a> {{ '/ Retail'|trans }}</div><p class="eyebrow light"><span></span> {{ 'Merchandising'|trans }}</p><h1>{{ '5 leviers pour rendre vos produits sous licence'|trans }} <em>{{ 'irrésistibles.'|trans }}</em></h1><div class="article-meta"><span>{{ '21 septembre 2026'|trans }}</span><span>{{ '7 min de lecture'|trans }}</span><span>{{ 'Par LNS Trade'|trans }}</span></div></div><img class="article-cover" src="{{ asset('images/ULTRAPOP-sale.webp') }}" alt="{{ 'Sélection de snacks salés ULTRAPOP sous licences manga'|trans }}" width="1201" height="801" srcset="{{ asset('images/ULTRAPOP-sale-640.webp') }} 640w, {{ asset('images/ULTRAPOP-sale.webp') }} 1201w" sizes="100vw"></header>

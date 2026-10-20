@@ -20,11 +20,11 @@ final class SeoSmokeTest extends WebTestCase
 
         $xml = $client->getResponse()->getContent();
         self::assertIsString($xml);
-        self::assertSame(26, substr_count($xml, '<url>'));
+        self::assertSame(78, substr_count($xml, '<url>'));
         self::assertStringContainsString('<loc>https://lnstrade.fr/en/</loc>', $xml);
         self::assertStringContainsString('<loc>https://lnstrade.fr/fr/</loc>', $xml);
         self::assertStringNotContainsString('xml-stylesheet', $xml);
-        self::assertSame(26, substr_count($xml, '<lastmod>'));
+        self::assertSame(78, substr_count($xml, '<lastmod>'));
         self::assertStringNotContainsString('<priority>', $xml);
         self::assertStringNotContainsString('<changefreq>', $xml);
         self::assertStringNotContainsString('internal-proxy.local', $xml);
@@ -33,7 +33,7 @@ final class SeoSmokeTest extends WebTestCase
         self::assertTrue($document->loadXML($xml));
         $xpath = new \DOMXPath($document);
         $xpath->registerNamespace('sm', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-        self::assertSame(26, $xpath->query('/sm:urlset/sm:url')->length);
+        self::assertSame(78, $xpath->query('/sm:urlset/sm:url')->length);
     }
 
     public function testProductionRobotsAllowsCrawlersAndDeclaresSitemap(): void

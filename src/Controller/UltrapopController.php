@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class UltrapopController extends AbstractController
 {
     #[Route(
-        path: ['en' => '/en/ultrapop-brand', 'fr' => '/fr/marque-ultrapop'],
+        path: ['en' => '/en/ultrapop-brand', 'fr' => '/fr/marque-ultrapop', 'de' => '/de/ultrapop-marke', 'es' => '/es/marca-ultrapop', 'nb' => '/nb/ultrapop-merket', 'nl' => '/nl/ultrapop-merk'],
         name: 'app_ultrapop',
         methods: ['GET'],
     )]
