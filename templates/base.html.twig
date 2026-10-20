@@ -2,13 +2,13 @@
 {% set route_name = route_name|default('app_home') %}
 {% set body_class = body_class|default('') %}
 {% set is_article = is_article|default(false) %}
-{% set skeleton_variant = page_id in ['choosingWholesaler', 'merchandising', 'snackingTrends', 'terms', 'privacy', 'legal', 'contact', 'products'] ? 'article' : page_id %}
+{% set skeleton_variant = page_id == 'licence' ? 'wholesale' : (page_id in ['choosingWholesaler', 'merchandising', 'snackingTrends', 'terms', 'privacy', 'legal', 'contact', 'products'] ? 'article' : page_id) %}
 {% set site_origin = site_url|trim('/') %}
-{% set canonical_url = site_origin ~ path(route_name ~ '.' ~ app.request.locale) %}
-{% set english_url = site_origin ~ path(route_name ~ '.en') %}
-{% set french_url = site_origin ~ path(route_name ~ '.fr') %}
-{% set page_title = ('meta.' ~ page_id ~ '.title')|trans %}
-{% set page_description = ('meta.' ~ page_id ~ '.description')|trans %}
+{% set canonical_url = site_origin ~ path(route_name ~ '.' ~ app.request.locale, route_params|default({})) %}
+{% set english_url = site_origin ~ path(route_name ~ '.en', route_params|default({})) %}
+{% set french_url = site_origin ~ path(route_name ~ '.fr', route_params|default({})) %}
+{% set page_title = page_title|default(('meta.' ~ page_id ~ '.title')|trans) %}
+{% set page_description = page_description|default(('meta.' ~ page_id ~ '.description')|trans) %}
 {% set social_image = site_origin ~ (og_image|default(asset('images/ULTRAPOP-collection.webp'))) %}
 {% set organization_id = site_origin ~ '/#organization' %}
 {% set website_id = site_origin ~ '/#website' %}
@@ -38,7 +38,7 @@
   <meta name="theme-color" content="#11110f">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <link rel="canonical" href="{{ canonical_url }}">
-  {% for locale in site_locales %}<link rel="alternate" hreflang="{{ locale }}" href="{{ site_origin ~ path(route_name ~ '.' ~ locale) }}">{% endfor %}
+  {% for locale in site_locales %}<link rel="alternate" hreflang="{{ locale }}" href="{{ site_origin ~ path(route_name ~ '.' ~ locale, route_params|default({})) }}">{% endfor %}
   <link rel="alternate" hreflang="x-default" href="{{ page_id == 'home' ? site_origin ~ path('app_locale') : english_url }}">
   <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" sizes="any">
 
@@ -51,12 +51,12 @@
   <meta property="og:description" content="{{ page_description }}">
   <meta property="og:url" content="{{ canonical_url }}">
   <meta property="og:image" content="{{ social_image }}">
-  <meta property="og:image:alt" content="{{ 'seo.social_image_alt'|trans }}">
+  <meta property="og:image:alt" content="{{ og_image_alt|default('seo.social_image_alt'|trans) }}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ page_title }}">
   <meta name="twitter:description" content="{{ page_description }}">
   <meta name="twitter:image" content="{{ social_image }}">
-  <meta name="twitter:image:alt" content="{{ 'seo.social_image_alt'|trans }}">
+  <meta name="twitter:image:alt" content="{{ og_image_alt|default('seo.social_image_alt'|trans) }}">
   {% if is_article %}<meta property="article:published_time" content="{{ article_date }}T09:00:00+02:00">{% endif %}
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,7 +67,7 @@
   {{ importmap('app') }}
 
   {% set page_schema = {
-    '@type': is_article ? 'BlogPosting' : 'WebPage',
+    '@type': is_article ? 'BlogPosting' : page_schema_type|default('WebPage'),
     '@id': canonical_url ~ '#page',
     'url': canonical_url,
     'name': page_title,
@@ -79,6 +79,7 @@
     'isPartOf': {'@id': website_id},
     'publisher': {'@id': organization_id}
   } %}
+  {% if page_schema_extra is defined %}{% set page_schema = page_schema|merge(page_schema_extra) %}{% endif %}
   {% if is_article %}
     {% set page_schema = page_schema|merge({
       'author': {'@type': 'Organization', '@id': organization_id, 'name': 'LNS Trade', 'url': site_origin ~ path('app_home.' ~ app.request.locale)},
@@ -133,7 +134,10 @@
     {% if is_article %}
       {% set breadcrumb_items = breadcrumb_items|merge([{'@type': 'ListItem', 'position': 2, 'name': 'Le Mag'|trans, 'item': site_origin ~ path('app_blog.' ~ app.request.locale)}]) %}
     {% endif %}
-    {% set breadcrumb_items = breadcrumb_items|merge([{'@type': 'ListItem', 'position': breadcrumb_items|length + 1, 'name': page_title, 'item': canonical_url}]) %}
+    {% if page_id == 'licence' %}
+      {% set breadcrumb_items = breadcrumb_items|merge([{'@type': 'ListItem', 'position': 2, 'name': 'ULTRAPOP', 'item': site_origin ~ path('app_ultrapop.' ~ app.request.locale)}]) %}
+    {% endif %}
+    {% set breadcrumb_items = breadcrumb_items|merge([{'@type': 'ListItem', 'position': breadcrumb_items|length + 1, 'name': breadcrumb_title|default(page_title), 'item': canonical_url}]) %}
     {% set organization_schema = organization_schema|merge({'@graph': organization_schema['@graph']|merge([{'@type': 'BreadcrumbList', '@id': canonical_url ~ '#breadcrumb', 'itemListElement': breadcrumb_items}])}) %}
   {% endif %}
   {% if faq_items|default([]) is not empty %}
@@ -156,7 +160,7 @@
   {% block body %}{% endblock %}
   {% include 'partials/_footer.html.twig' %}
   {% if page_id in ['home', 'blog', 'choosingWholesaler', 'merchandising', 'snackingTrends'] %}{% include 'partials/_newsletter.html.twig' %}{% endif %}
-  {% if page_id not in ['wholesale', 'contact'] %}{% include 'partials/_contact_modal.html.twig' %}{% endif %}
+  {% if page_id not in ['wholesale', 'contact', 'licence'] %}{% include 'partials/_contact_modal.html.twig' %}{% endif %}
   {% include 'partials/_range_builder_modal.html.twig' %}
   <script id="lns-ui-copy" type="application/json">{{ {
     locale: app.request.locale,

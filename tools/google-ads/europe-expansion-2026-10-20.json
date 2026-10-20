@@ -4,6 +4,30 @@
   "campaign": "LNSTRADE | Search B2B | Europe",
   "existing_daily_budget_eur": 32,
   "outside_europe_status": "Paused",
+  "live_verification": {
+    "date": "2026-10-20",
+    "campaign_status": "Enabled",
+    "new_ad_groups_enabled": 4,
+    "new_ads_enabled": 4,
+    "new_ads_serving_status": "Eligible",
+    "keywords_enabled_per_group": 16,
+    "keyword_match_types": ["Exact match", "Phrase match"],
+    "new_negative_keywords": 31,
+    "negative_match_type": "Phrase match",
+    "new_ad_group_sitelinks": 16,
+    "campaign_languages": ["English", "French", "German", "Spanish", "Norwegian", "Dutch"],
+    "requested_countries_already_targeted": ["Germany", "Spain", "Norway", "Netherlands"],
+    "location_option": "Presence: People in or regularly in your included locations",
+    "landing_pages_http_200": 4,
+    "sitelink_pages_http_200": 16,
+    "creation_templates_status": "Paused; live groups and ads enabled in Google Ads after deployment verification",
+    "applied_upload_ids": {
+      "ad_groups": "8800994672449901288",
+      "keywords": "4231947555754531862",
+      "ads": "5028502692190226851",
+      "sitelinks": "8907233921286541398"
+    }
+  },
   "groups": [
     {
       "locale": "de",
@@ -12,7 +36,7 @@
       "url": "https://lnstrade.fr/de/manga-snacks-getraenke-grosshandel",
       "keywords": ["getränke großhandel", "snacks großhandel", "süßwaren großhandel", "manga getränke großhandel", "anime snacks großhandel", "getränke lieferant", "japanische snacks großhandel", "bubble tea großhandel"],
       "negatives": ["rezept", "rezepte", "jobs", "karriere", "alkohol", "bier", "wein", "ohne gewerbe"],
-      "headlines": ["Snacks & Getränke Großhandel", "Großhandelspreise anfragen", "Manga-Produkte mit Lizenz", "ULTRAPOP für Ihren Handel", "Für Händler & Onlineshops", "LNS Trade B2B-Vertrieb", "Getränke, Snacks & Süßwaren", "Ihr Sortiment mit ULTRAPOP", "Offizielle Manga-Lizenzen", "Angebot für Geschäftskunden"],
+      "headlines": ["Snacks & Getränke Großhandel", "Großhandelspreise anfragen", "Manga-Produkte mit Lizenz", "ULTRAPOP für Ihren Handel", "Für Händler & Onlineshops", "LNS Trade B2B-Vertrieb", "Getränke, Snacks & Süßwaren", "Ihr Sortiment mit ULTRAPOP", "Offizielle Manga-Lizenzen", "Angebot für Geschäftskunden", "Ihr Getränke-Lieferant", "Süßwaren für den Handel", "Japanische Snacks im Sortiment", "Bubble Tea im Großhandel", "B2B-Katalog entdecken"],
       "descriptions": ["Lizenzierte Manga-Getränke, Snacks und Süßwaren für Händler. Jetzt Preise anfragen.", "Für Großhändler, Geschäfte und Onlineshops. Entdecken Sie die ULTRAPOP Produktwelten.", "Teilen Sie uns Ihr Unternehmen, Ihren Markt und Ihren Bedarf mit. Wir beraten Sie.", "LNS Trade: Lebensmittelimport und B2B-Vertrieb. Konditionen für Ihr Projekt anfragen."],
       "path1": "grosshandel",
       "path2": "b2b-preise"
@@ -24,7 +48,7 @@
       "url": "https://lnstrade.fr/es/mayorista-snacks-bebidas-manga",
       "keywords": ["mayorista bebidas", "mayorista snacks", "distribuidor bebidas", "mayorista golosinas", "bebidas manga al por mayor", "snacks japoneses al por mayor", "proveedor snacks", "bubble tea al por mayor"],
       "negatives": ["receta", "recetas", "empleo", "trabajo", "alcohol", "cerveza", "vino"],
-      "headlines": ["Mayorista de Snacks y Bebidas", "Solicite Tarifas Profesionales", "Productos Manga con Licencia", "ULTRAPOP para su Comercio", "Para Tiendas y Distribuidores", "LNS Trade: Oferta B2B", "Bebidas, Snacks y Golosinas", "Descubra las Gamas ULTRAPOP", "Licencias Oficiales Manga", "Prepare su Surtido Profesional"],
+      "headlines": ["Mayorista de Snacks y Bebidas", "Solicite Tarifas Profesionales", "Productos Manga con Licencia", "ULTRAPOP para su Comercio", "Para Tiendas y Distribuidores", "LNS Trade: Oferta B2B", "Bebidas, Snacks y Golosinas", "Descubra las Gamas ULTRAPOP", "Licencias Oficiales Manga", "Prepare su Surtido Profesional", "Su Distribuidor de Bebidas", "Golosinas al por Mayor", "Snacks Japoneses para Tiendas", "Bubble Tea al por Mayor", "Consulte el Catálogo B2B"],
       "descriptions": ["Bebidas, snacks y golosinas manga con licencias oficiales. Solicite tarifas B2B.", "Oferta para comercios, distribuidores y tiendas online. Descubra las gamas ULTRAPOP.", "Cuéntenos su actividad, país y productos deseados. Nuestro equipo estudiará su proyecto.", "Importación y distribución alimentaria B2B. Consulte referencias y condiciones de pedido."],
       "path1": "mayorista",
       "path2": "tarifas-b2b"
@@ -36,7 +60,7 @@
       "url": "https://lnstrade.fr/nb/grossist-manga-snacks-drikke",
       "keywords": ["drikke grossist", "snacks grossist", "godteri grossist", "brus grossist", "manga drikke grossist", "japanske snacks grossist", "leverandør drikkevarer", "bubble tea grossist"],
       "negatives": ["oppskrift", "oppskrifter", "jobb", "jobber", "alkohol", "øl", "vin", "privatpersoner"],
-      "headlines": ["Grossist på Snacks og Drikke", "Be om Engrospriser", "Manga-Produkter med Lisens", "ULTRAPOP for Din Butikk", "For Butikker og Nettbutikker", "LNS Trade: B2B-Distribusjon", "Drikke, Snacks og Godteri", "Utforsk ULTRAPOP Sortimentet", "Offisielle Manga-Lisenser", "Et Tilbud til Din Bedrift"],
+      "headlines": ["Grossist på Snacks og Drikke", "Be om Engrospriser", "Manga-Produkter med Lisens", "ULTRAPOP for Din Butikk", "For Butikker og Nettbutikker", "LNS Trade: B2B-Distribusjon", "Drikke, Snacks og Godteri", "Utforsk ULTRAPOP Sortimentet", "Offisielle Manga-Lisenser", "Et Tilbud til Din Bedrift", "Din Leverandør av Drikkevarer", "Godteri til Butikken", "Japanske Snacks for Bedrifter", "Bubble Tea fra Grossist", "Se Vår B2B-Katalog"],
       "descriptions": ["Lisensiert manga-drikke, snacks og godteri for bedrifter. Be om engrospriser.", "For butikker, grossister og nettbutikker. Utforsk produktutvalget fra ULTRAPOP.", "Fortell oss om bedriften, landet og produktene du ønsker. Vi vurderer din forespørsel.", "LNS Trade tilbyr import og B2B-distribusjon. Spør om utvalg, priser og vilkår."],
       "path1": "grossist",
       "path2": "engrospriser"
@@ -48,7 +72,7 @@
       "url": "https://lnstrade.fr/nl/groothandel-manga-snacks-dranken",
       "keywords": ["dranken groothandel", "snacks groothandel", "snoep groothandel", "frisdrank groothandel", "manga dranken groothandel", "japanse snacks groothandel", "dranken leverancier", "bubble tea groothandel"],
       "negatives": ["recept", "recepten", "vacature", "vacatures", "alcohol", "bier", "wijn", "particulieren"],
-      "headlines": ["Groothandel Snacks & Dranken", "Vraag Groothandelsprijzen Aan", "Manga-Producten met Licentie", "ULTRAPOP voor Uw Winkel", "Voor Winkels en Webshops", "LNS Trade: B2B-Distributie", "Dranken, Snacks en Snoep", "Ontdek ULTRAPOP Assortiment", "Officiële Manga-Licenties", "Een Voorstel voor Uw Bedrijf"],
+      "headlines": ["Groothandel Snacks & Dranken", "Vraag Groothandelsprijzen Aan", "Manga-Producten met Licentie", "ULTRAPOP voor Uw Winkel", "Voor Winkels en Webshops", "LNS Trade: B2B-Distributie", "Dranken, Snacks en Snoep", "Ontdek ULTRAPOP Assortiment", "Officiële Manga-Licenties", "Een Voorstel voor Uw Bedrijf", "Uw Drankenleverancier", "Snoep voor de Detailhandel", "Japanse Snacks voor Uw Winkel", "Bubble Tea Groothandel", "Bekijk de B2B-Catalogus"],
       "descriptions": ["Manga-dranken, snacks en snoep met officiële licenties. Vraag uw B2B-prijzen aan.", "Voor winkels, groothandels en webshops. Ontdek de productlijnen van ULTRAPOP.", "Vertel ons over uw bedrijf, land en gewenste producten. Ons team bekijkt uw aanvraag.", "LNS Trade: import en B2B-distributie. Vraag naar assortiment en bestelvoorwaarden."],
       "path1": "groothandel",
       "path2": "b2b-prijzen"

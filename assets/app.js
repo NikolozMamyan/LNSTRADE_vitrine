@@ -1,6 +1,7 @@
 import './stimulus_bootstrap.js';
 import './styles/app.css';
 import './styles/newsletter.css';
+import './styles/licences.css';
 import { setupNewsletter, newsletterExperimentData, recordNewsletterLead } from './newsletter.js';
 
 let initializedBody = null;
@@ -44,12 +45,12 @@ const playModalSkeleton = (modal, duration = 360) => {
 const skeletonVariantForUrl = (value) => {
   const url = new URL(value, window.location.href);
   const segments = url.pathname.split('/').filter(Boolean);
-  if (['en', 'fr'].includes(segments[0])) segments.shift();
+  if (['en', 'fr', 'de', 'es', 'nb', 'nl'].includes(segments[0])) segments.shift();
   if (segments.length === 0) return 'home';
   if (['blog', 'insights'].includes(segments[0])) return segments.length > 1 ? 'article' : 'blog';
   if (segments[0].includes('trading')) return 'trading';
   if (segments[0].includes('ultrapop')) return 'ultrapop';
-  if (segments[0].includes('grossiste') || segments[0].includes('wholesaler')) return 'wholesale';
+  if (['grossist', 'wholesale', 'grosshandel', 'mayorista', 'groothandel'].some((part) => segments[0].includes(part))) return 'wholesale';
   return 'home';
 };
 
@@ -672,7 +673,8 @@ const initializePage = () => {
     if (!contactModal?.open && !rangeBuilderModal?.open) document.body.classList.remove('modal-open');
   };
 
-  document.querySelectorAll('[data-open-contact]').forEach((button) => listen(button, 'click', () => {
+  document.querySelectorAll('[data-open-contact]').forEach((button) => listen(button, 'click', (event) => {
+    event.preventDefault();
     const context = button.dataset.interest || defaultJourney.context;
     if (context.toLocaleLowerCase().includes('catalog')) {
       openCatalogue();

@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class StorefrontLinksTest extends WebTestCase
 {
-    public function testHomeProductAndLicenseCardsLinkToFilteredUltrapopPages(): void
+    public function testHomeProductsKeepShopLinksAndLicenseCardsLinkToOurCollections(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/fr/');
@@ -21,8 +21,8 @@ final class StorefrontLinksTest extends WebTestCase
         self::assertStringContainsString('https://ultrapop.com/boutique?category=Boissons', $html);
         self::assertStringContainsString('https://ultrapop.com/boutique?category=%C3%89picerie%20sal%C3%A9e', $html);
         self::assertStringContainsString('https://ultrapop.com/boutique?category=N%C3%A9gisan%20-%20Nouilles%20instantan%C3%A9es', $html);
-        self::assertStringContainsString('https://ultrapop.com/licences?license=One%20Piece', $html);
-        self::assertStringContainsString('https://ultrapop.com/licences?license=Dragon%20Ball%20Z', $html);
+        self::assertStringContainsString('href="/fr/grossiste-one-piece-boissons-snacks"', $html);
+        self::assertStringContainsString('href="/fr/grossiste-dragon-ball-boissons-snacks"', $html);
         self::assertStringContainsString('https://ultrapop.com/licences?license=Jujutsu%20Kaisen', $html);
     }
 

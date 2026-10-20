@@ -169,14 +169,14 @@
       </div>
 
       {% set licenses = [
-        {image: 'licences/MENU_LICENCE-01.webp', name: 'One Piece', alt: 'Licence One Piece'|trans},
-        {image: 'licences/MENU_LICENCE-02.webp', name: 'Naruto', alt: 'Licence Naruto Shippuden'|trans},
-        {image: 'licences/MENU_LICENCE-03.webp', name: 'Dragon Ball Z', alt: 'Licence Dragon Ball Z'|trans},
-        {image: 'licences/MENU_LICENCE-04.webp', name: 'Dragon Ball Super', alt: 'Licence Dragon Ball Super'|trans},
-        {image: 'licences/MENU_LICENCE-05.webp', name: 'League Of Legends', alt: 'Licence Arcane League of Legends'|trans},
-        {image: 'licences/MENU_LICENCE-06.webp', name: 'Demon Slayer', alt: 'Licence Demon Slayer'|trans},
+        {image: 'licences/MENU_LICENCE-01.webp', name: 'One Piece', slug: 'one-piece', alt: 'Licence One Piece'|trans},
+        {image: 'licences/MENU_LICENCE-02.webp', name: 'Naruto', slug: 'naruto', alt: 'Licence Naruto Shippuden'|trans},
+        {image: 'licences/MENU_LICENCE-03.webp', name: 'Dragon Ball Z', slug: 'dragon-ball', alt: 'Licence Dragon Ball Z'|trans},
+        {image: 'licences/MENU_LICENCE-04.webp', name: 'Dragon Ball Super', slug: 'dragon-ball', alt: 'Licence Dragon Ball Super'|trans},
+        {image: 'licences/MENU_LICENCE-05.webp', name: 'League Of Legends', slug: 'league-of-legends', alt: 'Licence Arcane League of Legends'|trans},
+        {image: 'licences/MENU_LICENCE-06.webp', name: 'Demon Slayer', slug: 'demon-slayer', alt: 'Licence Demon Slayer'|trans},
         {image: 'licences/MENU_LICENCE-07.webp', name: 'Jujutsu Kaisen', alt: 'Licence Jujutsu Kaisen'|trans},
-        {image: 'licences/licenses-league-of-legends-c0558db7973198d0.webp', name: 'League Of Legends', alt: 'Licence League of Legends'|trans}
+        {image: 'licences/licenses-league-of-legends-c0558db7973198d0.webp', name: 'League Of Legends', slug: 'league-of-legends', alt: 'Licence League of Legends'|trans}
       ] %}
       <div class="license-strip shell reveal" aria-labelledby="license-carousel-title">
         <div class="license-carousel-heading">
@@ -188,7 +188,7 @@
             {% for duplicate in 0..1 %}
               <div class="license-carousel-group"{% if duplicate == 1 %} aria-hidden="true"{% endif %}>
                 {% for license in licenses %}
-                  <a class="license-carousel-card" href="https://ultrapop.com/licences?license={{ license.name|url_encode }}" target="_blank" rel="noopener external" aria-label="{{ 'Voir les produits %license%'|trans({'%license%': license.name}) }}"{% if duplicate == 1 %} tabindex="-1"{% endif %}>
+                  <a class="license-carousel-card" href="{{ license.slug is defined ? path('app_licence.' ~ app.request.locale, {licence: license.slug}) : 'https://ultrapop.com/licences?license=' ~ license.name|url_encode }}"{% if license.slug is not defined %} target="_blank" rel="noopener external"{% endif %} aria-label="{{ 'Voir les produits %license%'|trans({'%license%': license.name}) }}"{% if duplicate == 1 %} tabindex="-1"{% endif %}>
                     <img src="{{ asset(license.image) }}" alt="{{ duplicate == 0 ? license.alt : '' }}" width="1615" height="695" loading="lazy" decoding="async">
                   </a>
                 {% endfor %}

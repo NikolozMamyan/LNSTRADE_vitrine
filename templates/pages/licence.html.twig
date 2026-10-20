@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+{% set page_id = 'licence' %}
+{% set route_name = 'app_licence' %}
+{% set route_params = {licence: licence_slug} %}
+{% set body_class = 'inner-page licence-page licence-' ~ licence_slug %}
+{% set page_title = (licence_slug ~ '.meta.title')|trans({}, 'licences') %}
+{% set page_description = (licence_slug ~ '.meta.description')|trans({}, 'licences') %}
+{% set breadcrumb_title = licence.name %}
+{% set og_image = asset('images/licences/' ~ licence_slug ~ '-selection.webp') %}
+{% set og_image_alt = 'common.hero_alt'|trans({'%licence%': licence.name}, 'licences') %}
+{% set contact_context = 'common.context'|trans({'%licence%': licence.name}, 'licences') %}
+{% set contact_cta = 'common.cta'|trans({'%licence%': licence.name}, 'licences') %}
+{% set faq_items = [] %}
+{% for i in 1..4 %}
+  {% set faq_items = faq_items|merge([{
+    question: (licence_slug ~ '.faq.' ~ i ~ '.question')|trans({}, 'licences'),
+    answer: (licence_slug ~ '.faq.' ~ i ~ '.answer')|trans({}, 'licences')
+  }]) %}
+{% endfor %}
+{% set page_schema_type = 'CollectionPage' %}
+{% set collection_items = [] %}
+{% for product in licence.products %}
+  {% set collection_items = collection_items|merge([{
+    '@type': 'ListItem',
+    position: loop.index,
+    item: {
+      '@type': 'Thing',
+      name: (licence_slug ~ '.product.' ~ product ~ '.title')|trans({}, 'licences'),
+      description: (licence_slug ~ '.product.' ~ product ~ '.text')|trans({}, 'licences'),
+      url: site_url|trim('/') ~ path('app_licence.' ~ app.request.locale, route_params) ~ '#' ~ product,
+      image: site_url|trim('/') ~ asset('images/licences/' ~ licence_slug ~ '-' ~ product ~ '.webp')
+    }
+  }]) %}
+{% endfor %}
+{% set page_schema_extra = {mainEntity: {'@type': 'ItemList', itemListElement: collection_items, numberOfItems: licence.products|length}} %}
+
+{% block body %}
+<main id="main">
+  <section class="licence-hero">
+    <div class="shell">
+      <nav class="breadcrumb" aria-label="{{ 'common.breadcrumb'|trans({}, 'licences') }}">
+        <a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a><span aria-hidden="true">/</span>
+        <a href="{{ path('app_ultrapop.' ~ app.request.locale) }}">ULTRAPOP</a><span aria-hidden="true">/</span>
+        <span aria-current="page">{{ licence.name }}</span>
+      </nav>
+      <div class="licence-hero-grid">
+        <div class="licence-hero-copy">
+          <p class="eyebrow light"><span></span> {{ 'common.eyebrow'|trans({}, 'licences') }}</p>
+          <h1>{{ (licence_slug ~ '.h1')|trans({}, 'licences') }}</h1>
+          <p class="licence-subtitle">{{ (licence_slug ~ '.subtitle')|trans({}, 'licences') }}</p>
+          <p class="licence-intro">{{ (licence_slug ~ '.intro')|trans({}, 'licences') }}</p>
+          <div class="licence-actions">
+            <a class="button button-primary" href="#contact-form">{{ contact_cta }} <span aria-hidden="true">↗</span></a>
+            <a class="licence-text-link" href="#selection">{{ 'common.range_cta'|trans({}, 'licences') }} <span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
+        <figure class="licence-hero-visual">
+          <img src="{{ og_image }}" srcset="{{ asset('images/licences/' ~ licence_slug ~ '-selection-640.webp') }} 640w, {{ og_image }} {{ licence.hero_width }}w" sizes="(max-width: 900px) calc(100vw - 40px), 55vw" width="{{ licence.hero_width }}" height="{{ licence.hero_height }}" alt="{{ og_image_alt }}" fetchpriority="high">
+          <figcaption><span>ULTRAPOP</span><strong>{{ licence.name }}</strong></figcaption>
+        </figure>
+      </div>
+      <ul class="licence-proof">
+        {% for key in ['licence', 'b2b', 'quote'] %}<li><span aria-hidden="true">✓</span>{{ ('common.proof.' ~ key)|trans({}, 'licences') }}</li>{% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  <section class="content-section licence-selection shell" id="selection" aria-labelledby="selection-title">
+    <div class="licence-section-heading">
+      <div><p class="section-index">{{ 'common.range_eyebrow'|trans({}, 'licences') }}</p><h2 id="selection-title">{{ 'common.range_title'|trans({'%licence%': licence.name}, 'licences') }}</h2></div>
+      <p>{{ (licence_slug ~ '.range_intro')|trans({}, 'licences') }}</p>
+    </div>
+    <div class="licence-product-grid">
+      {% for product in licence.products %}
+        <article class="licence-product" id="{{ product }}">
+          <div class="licence-product-image">
+            <img src="{{ asset('images/licences/' ~ licence_slug ~ '-' ~ product ~ '.webp') }}" srcset="{{ asset('images/licences/' ~ licence_slug ~ '-' ~ product ~ '-400.webp') }} 400w, {{ asset('images/licences/' ~ licence_slug ~ '-' ~ product ~ '.webp') }} 800w" sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 1100px) 45vw, 24vw" alt="{{ (licence_slug ~ '.product.' ~ product ~ '.title')|trans({}, 'licences') }}" width="800" height="1000" loading="lazy" decoding="async">
+            <span aria-hidden="true">0{{ loop.index }}</span>
+          </div>
+          <h3>{{ (licence_slug ~ '.product.' ~ product ~ '.title')|trans({}, 'licences') }}</h3>
+          <p>{{ (licence_slug ~ '.product.' ~ product ~ '.text')|trans({}, 'licences') }}</p>
+          <a class="licence-text-link" href="#contact-form" data-open-contact data-interest="{{ contact_context ~ ' — ' ~ (licence_slug ~ '.product.' ~ product ~ '.title')|trans({}, 'licences') }}" data-contact-label="{{ contact_cta }}">{{ 'common.product_cta'|trans({}, 'licences') }} <span aria-hidden="true">↗</span></a>
+        </article>
+      {% endfor %}
+    </div>
+    <p class="licence-range-note">{{ 'common.range_note'|trans({}, 'licences') }}</p>
+  </section>
+
+  <section class="content-section licence-approach">
+    <div class="shell content-grid">
+      <div><p class="section-index">{{ 'common.approach_eyebrow'|trans({}, 'licences') }}</p><h2>{{ (licence_slug ~ '.approach.title')|trans({}, 'licences') }}</h2></div>
+      <div class="prose">
+        <p>{{ (licence_slug ~ '.approach.text1')|trans({}, 'licences') }}</p>
+        <p>{{ (licence_slug ~ '.approach.text2')|trans({}, 'licences') }}</p>
+        <div class="licence-resources">
+          <strong>{{ 'common.resources'|trans({}, 'licences') }}</strong>
+          <a href="{{ path('app_products.' ~ app.request.locale) }}">{{ 'common.resource.range'|trans({}, 'licences') }} <span aria-hidden="true">↗</span></a>
+          <a href="{{ path('app_wholesale.' ~ app.request.locale) }}">{{ 'common.resource.wholesale'|trans({}, 'licences') }} <span aria-hidden="true">↗</span></a>
+          <a href="{{ path('app_article_wholesaler.' ~ app.request.locale) }}">{{ 'common.resource.guide'|trans({}, 'licences') }} <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section shell licence-method">
+    <h2>{{ 'common.method_title'|trans({}, 'licences') }}</h2>
+    <ol>
+      {% for i in 1..3 %}<li><span aria-hidden="true">0{{ i }}</span><h3>{{ ('common.method.' ~ i ~ '.title')|trans({}, 'licences') }}</h3><p>{{ ('common.method.' ~ i ~ '.text')|trans({}, 'licences') }}</p></li>{% endfor %}
+    </ol>
+  </section>
+
+  <section class="content-section shell faq">
+    <div class="faq-title"><p class="section-index">{{ 'common.faq_eyebrow'|trans({}, 'licences') }}</p><h2>{{ 'common.faq_title'|trans({}, 'licences') }}</h2></div>
+    <div class="faq-list">{% include 'partials/_faq_list.html.twig' %}</div>
+  </section>
+
+  <section class="content-section licence-contact">
+    <div class="shell licence-contact-grid">
+      <div>
+        <p class="eyebrow light"><span></span> {{ 'common.form_eyebrow'|trans({}, 'licences') }}</p>
+        <h2>{{ 'common.form_title'|trans({'%licence%': licence.name}, 'licences') }}</h2>
+        <p>{{ 'common.form_text'|trans({}, 'licences') }}</p>
+        <p class="licence-contact-note">{{ 'common.form_note'|trans({}, 'licences') }}</p>
+        <div class="licence-direct-contact"><a href="tel:+33388840380">+33 3 88 84 03 80</a><a href="mailto:info@lnstrade.fr">info@lnstrade.fr</a></div>
+      </div>
+      {% include 'partials/_contact_form.html.twig' with {form_class: 'wholesale-lead-form', contact_context: contact_context, contact_label: contact_cta, submit_label: contact_cta} %}
+    </div>
+  </section>
+  {% include 'partials/_trade_conditions.html.twig' %}
+  {% include 'partials/_licence_links.html.twig' with {current_licence: licence_slug} %}
+</main>
+{% endblock %}

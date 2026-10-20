@@ -4,6 +4,7 @@ twig:
         site_url: '%env(SEO_ORIGIN)%'
         site_locales: !php/const App\Locale\SiteLocale::CODES
         site_locale: '@App\Locale\SiteLocale'
+        licence_catalog: '@App\Catalog\LicenceCatalog'
 
 when@test:
     twig:

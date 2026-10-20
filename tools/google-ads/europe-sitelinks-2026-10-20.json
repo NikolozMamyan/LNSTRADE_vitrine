@@ -1,0 +1,26 @@
+{
+  "de": [
+    ["B2B-Preise anfragen", "/de/kontakt", "Konditionen für Ihr Unternehmen", "Kontakt zu unserem Vertrieb"],
+    ["Unser Produktsortiment", "/de/produktsortiment", "Getränke, Snacks und Süßwaren", "Entdecken Sie die Produktwelten"],
+    ["Die Marke ULTRAPOP", "/de/ultrapop-marke", "Offizielle Manga-Lizenzen", "Produkte für Ihr Geschäft"],
+    ["Import und B2B-Vertrieb", "/de/lebensmittelhandel-import-vertrieb", "Lebensmittel für den Handel", "Sourcing und Distribution"]
+  ],
+  "es": [
+    ["Solicite tarifas B2B", "/es/contacto", "Condiciones para su negocio", "Contacte con nuestro equipo"],
+    ["Catálogo de productos", "/es/catalogo-productos", "Bebidas, snacks y golosinas", "Descubra nuestro surtido"],
+    ["Nuestra marca ULTRAPOP", "/es/marca-ultrapop", "Licencias oficiales manga", "Productos para su comercio"],
+    ["Importación y venta B2B", "/es/importacion-distribucion-alimentaria", "Distribución alimentaria", "Oferta para profesionales"]
+  ],
+  "nb": [
+    ["Be om engrospriser", "/nb/kontakt", "Vilkår for din bedrift", "Kontakt vårt salgsteam"],
+    ["Se produktutvalget", "/nb/produktutvalg", "Drikke, snacks og godteri", "Utforsk vårt sortiment"],
+    ["Merkevaren ULTRAPOP", "/nb/ultrapop-merket", "Offisielle manga-lisenser", "Produkter til din butikk"],
+    ["Import og distribusjon", "/nb/matvarehandel-import-distribusjon", "Matvarer for forhandlere", "Sourcing og distribusjon"]
+  ],
+  "nl": [
+    ["Vraag B2B-prijzen aan", "/nl/contact", "Voorwaarden voor uw bedrijf", "Neem contact op met ons team"],
+    ["Bekijk ons assortiment", "/nl/productassortiment", "Dranken, snacks en snoep", "Ontdek onze productlijnen"],
+    ["Ons merk ULTRAPOP", "/nl/ultrapop-merk", "Officiële manga-licenties", "Producten voor uw winkel"],
+    ["Import en B2B-distributie", "/nl/levensmiddelenhandel-import-distributie", "Levensmiddelen voor de handel", "Sourcing en distributie"]
+  ]
+}

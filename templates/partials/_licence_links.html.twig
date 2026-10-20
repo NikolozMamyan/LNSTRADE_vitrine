@@ -1,0 +1,19 @@
+<section class="content-section licence-discovery" id="licences" aria-labelledby="licence-discovery-title">
+  <div class="shell">
+    <div class="licence-section-heading">
+      <div><p class="section-index">{{ 'common.related_eyebrow'|trans({}, 'licences') }}</p><h2 id="licence-discovery-title">{{ 'common.related_title'|trans({}, 'licences') }}</h2></div>
+      <p>{{ 'common.related_intro'|trans({}, 'licences') }}</p>
+    </div>
+    <div class="licence-discovery-grid">
+      {% for slug, collection in licence_catalog.all %}
+        {% if slug != current_licence|default('') %}
+          <a class="licence-discovery-card" href="{{ path('app_licence.' ~ app.request.locale, {licence: slug}) }}">
+            <img src="{{ asset('images/licences/' ~ slug ~ '-selection-640.webp') }}" alt="{{ 'common.hero_alt'|trans({'%licence%': collection.name}, 'licences') }}" width="640" height="{{ (collection.hero_height * 640 / collection.hero_width)|round }}" loading="lazy" decoding="async">
+            <span>{{ collection.name }} <span aria-hidden="true">↗</span></span>
+            <small>{{ 'common.related_cta'|trans({'%licence%': collection.name}, 'licences') }}</small>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
