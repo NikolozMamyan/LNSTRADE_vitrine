@@ -137,7 +137,7 @@ final readonly class HubSpotClient implements HubSpotGateway
         $escape = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $message = '' !== $submission->message ? nl2br($escape($submission->message)) : '—';
         $body = sprintf(
-            '<strong>Nouvelle demande depuis lnstrade.fr</strong><br><br><strong>Contexte :</strong> %s<br><strong>Entreprise :</strong> %s<br><strong>Contact :</strong> %s<br><strong>E-mail :</strong> %s<br><strong>Téléphone :</strong> %s<br><strong>N° de TVA :</strong> %s<br><strong>Pays estimé :</strong> %s<br><strong>Langue :</strong> %s<br><strong>Page d’origine :</strong> %s<br><br><strong>Message :</strong><br>%s',
+            '<strong>Nouvelle demande depuis lnstrade.fr</strong><br><br><strong>Contexte :</strong> %s<br><strong>Entreprise :</strong> %s<br><strong>Contact :</strong> %s<br><strong>E-mail :</strong> %s<br><strong>Téléphone :</strong> %s<br><strong>N° de TVA :</strong> %s<br><strong>Pays estimé :</strong> %s<br><strong>Langue :</strong> %s<br><br><strong>Message :</strong><br>%s',
             $escape($submission->context ?: 'Demande générale'),
             $escape($submission->company),
             $escape($submission->name),
@@ -146,7 +146,6 @@ final readonly class HubSpotClient implements HubSpotGateway
             $escape($submission->vat ?: '—'),
             $escape($this->countryName($submission->countryCode) ?: '—'),
             strtoupper($escape($submission->locale)),
-            $escape($submission->origin),
             $message,
         );
 
