@@ -26,6 +26,24 @@ final class LegalController extends AbstractController
         return $this->render('pages/legal/terms.html.twig');
     }
 
+    #[Route('/cgv', name: 'app_cgv_redirect', methods: ['GET'])]
+    public function salesRedirect(): Response
+    {
+        return $this->redirectToRoute('app_cgv.fr', status: Response::HTTP_MOVED_PERMANENTLY);
+    }
+
+    #[Route(path: ['en' => '/en/cgv', 'fr' => '/fr/cgv'], name: 'app_cgv', methods: ['GET'])]
+    public function sales(): Response
+    {
+        return $this->render('pages/legal/cgv.html.twig');
+    }
+
+    #[Route('/{locale}/cgv', name: 'app_cgv_fallback', requirements: ['locale' => '[a-z]{2}'], methods: ['GET'], priority: -10)]
+    public function salesFallback(): Response
+    {
+        return $this->redirectToRoute('app_cgv.en', status: Response::HTTP_MOVED_PERMANENTLY);
+    }
+
     #[Route(
         path: ['en' => '/en/privacy-policy', 'fr' => '/fr/politique-de-confidentialite', 'de' => '/de/datenschutz', 'es' => '/es/politica-de-privacidad', 'nb' => '/nb/personvern', 'nl' => '/nl/privacybeleid'],
         name: 'app_privacy',

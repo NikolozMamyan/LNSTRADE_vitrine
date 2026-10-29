@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% set page_id = 'cgv' %}
+{% set route_name = 'app_cgv' %}
+{% set body_class = 'inner-page' %}
+{% set site_locales = ['en', 'fr'] %}
+{% set page_title = ('title'|trans({}, 'cgv')) ~ ' | LNS Trade' %}
+{% set page_description = 'description'|trans({}, 'cgv') %}
+
+{% block body %}
+<main id="main">
+  <header class="page-hero legal-hero">
+    <div class="shell">
+      <div class="breadcrumb"><a href="{{ path('app_home.' ~ app.request.locale) }}">{{ 'Accueil'|trans }}</a> / {{ 'title'|trans({}, 'cgv') }}</div>
+      <p class="eyebrow light"><span></span> LNS Trade</p>
+      <h1>{{ 'title'|trans({}, 'cgv') }}</h1>
+    </div>
+  </header>
+  <article class="legal-document shell">
+    <p class="legal-updated">{{ 'version'|trans({}, 'cgv') }}</p>
+    {% for article in 1..16 %}
+      <h2>{{ ('article.' ~ article ~ '.title')|trans({}, 'cgv') }}</h2>
+      <p>{{ ('article.' ~ article ~ '.text')|trans({}, 'cgv') }}</p>
+    {% endfor %}
+  </article>
+</main>
+{% endblock %}
