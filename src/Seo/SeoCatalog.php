@@ -21,7 +21,7 @@ final readonly class SeoCatalog
         ['route' => 'app_article_merchandising', 'lastmod' => '2026-10-16'],
         ['route' => 'app_article_trends', 'lastmod' => '2026-10-16'],
         ['route' => 'app_terms', 'lastmod' => '2024-04-05'],
-        ['route' => 'app_cgv', 'lastmod' => '2026-10-29', 'locales' => ['en', 'fr']],
+        ['route' => 'app_cgv', 'lastmod' => '2026-11-02', 'locales' => ['en', 'fr']],
         ['route' => 'app_privacy', 'lastmod' => '2026-10-16'],
         ['route' => 'app_legal', 'lastmod' => '2026-10-16'],
         ['route' => 'app_contact', 'lastmod' => '2026-10-16'],
