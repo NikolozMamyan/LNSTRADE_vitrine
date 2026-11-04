@@ -399,6 +399,59 @@ svg { display: block; }
 .admin-catalog-empty h2 { margin: 0 0 7px; }
 .admin-catalog-empty p { margin: 0; color: var(--admin-muted); font-size: 10px; }
 .admin-catalog-page-grid { overflow-anchor: none; }
+.admin-product-actions { display:flex;flex-wrap:wrap;gap:10px; }
+.admin-product-search { margin-bottom:22px; }
+.admin-product-search>label { display:block;font-size:12px;font-weight:700;margin-bottom:9px; }
+.admin-product-search>div { display:flex;gap:10px; }
+.admin-product-search input { flex:1;min-width:0;min-height:45px;padding:10px 14px;border:1px solid var(--admin-line);border-radius:8px;background:white;font:inherit;font-size:14px; }
+.admin-product-table { font-size:13px; }
+.admin-product-table th { font-size:10px; }
+.admin-product-table td small { display:block;color:var(--admin-muted);font-size:11px;margin-top:5px; }
+.admin-product-identity { display:flex;align-items:center;gap:14px;white-space:normal;min-width:240px;max-width:370px; }
+.admin-product-identity img { width:62px;height:72px;object-fit:contain;flex-shrink:0; }
+.admin-product-identity strong { display:block;font-size:13px;line-height:1.5; }
+.admin-product-status { display:inline-block;padding:5px 8px;background:#eeeae1;color:#8b8273;border-radius:6px;font-size:11px;font-weight:700; }
+.admin-product-status.is-published { background:#e5efdf;color:#547443; }
+.admin-product-pagination { display:flex;align-items:center;justify-content:flex-end;gap:18px;margin-block:22px;font-size:13px; }
+.admin-product-layout { display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:start; }
+.admin-product-commercial { display:grid;gap:22px; }
+.admin-product-section { padding:26px;margin-bottom:22px;min-width:0; }
+.admin-product-commercial .admin-product-section { margin:0; }
+.admin-product-section>h2 { margin:0 0 12px;font-size:28px; }
+.admin-product-section>p { font-size:13px;color:var(--admin-muted);line-height:1.8;margin:0 0 22px; }
+.admin-product-fields { display:grid;grid-template-columns:1fr 1fr;gap:20px 18px; }
+.admin-product-fields>div { min-width:0; }
+.admin-product-full { grid-column:1/-1; }
+.admin-product-fields label { display:block;font-size:12px;font-weight:700;line-height:1.5;margin-bottom:8px; }
+.admin-product-fields input:not([type=checkbox]),.admin-product-fields select,.admin-product-fields textarea { width:100%;min-height:45px;box-sizing:border-box;border:1px solid #dcd7cd;background:#fff;border-radius:8px;padding:11px 12px;font:inherit;font-size:14px;color:var(--admin-ink); }
+.admin-product-fields textarea { resize:vertical;line-height:1.7;min-height:120px; }
+.admin-product-fields input:focus,.admin-product-fields select:focus,.admin-product-fields textarea:focus { outline:2px solid #ecb19d;outline-offset:2px; }
+.admin-product-fields .help-text,.admin-product-form .form-help { margin-top:7px;font-size:11px;line-height:1.7;color:var(--admin-muted); }
+.admin-product-form ul { color:#aa3423;background:#fff1eb;padding:12px 15px 12px 30px;border-radius:8px;font-size:12px;line-height:1.7; }
+.admin-product-checks { display:grid;gap:14px;margin-top:24px;font-size:13px; }
+.admin-product-checks>div { display:flex;align-items:center;gap:10px; }
+.admin-product-checks input { width:17px;height:17px;accent-color:var(--admin-orange); }
+.admin-product-pricing { display:grid;gap:12px;background:#f3f0e6;padding:19px;border-radius:10px;margin-top:24px; }
+.admin-product-pricing>div { display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:13px; }
+.admin-product-pricing strong { font-size:18px;white-space:nowrap; }
+.admin-product-pricing .is-total { border-top:1px solid var(--admin-line);padding-top:13px;font-weight:800; }
+.admin-product-pricing .is-total strong { font-size:25px; }
+.admin-product-section>.admin-product-help { margin:14px 0 0;font-size:11px;line-height:1.8; }
+.admin-product-images { display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin-bottom:22px; }
+.admin-product-image { display:flex;align-items:center;gap:14px;background:#f6f4ed;border:1px solid var(--admin-line);padding:13px;border-radius:10px;font-size:11px; }
+.admin-product-image>img { width:92px;height:138px;object-fit:contain;mix-blend-mode:multiply; }
+.admin-product-image>div { flex:1;min-width:0; }
+.admin-product-image label { display:block;font-size:11px;margin-bottom:5px; }
+.admin-product-image input[type=number],.admin-product-image select { width:100%;border:1px solid var(--admin-line);background:#fff;padding:8px;font:inherit;border-radius:5px;box-sizing:border-box;margin-bottom:10px; }
+.admin-product-image input[type=checkbox] { accent-color:var(--admin-orange); }
+.admin-product-translation { border-top:1px solid var(--admin-line); }
+.admin-product-translation>summary { display:flex;justify-content:space-between;align-items:center;padding:19px 0;cursor:pointer;font-size:14px;font-weight:800;list-style:none; }
+.admin-product-translation>summary::-webkit-details-marker { display:none; }
+.admin-product-translation[open]>summary>span { transform:rotate(45deg); }
+.admin-product-translation>.admin-product-fields { padding-bottom:24px; }
+.admin-product-save { position:sticky;bottom:14px;display:flex;justify-content:space-between;gap:15px;padding:16px;background:#fffdf7f5;border:1px solid var(--admin-line);border-radius:10px;box-shadow:0 5px 25px #302b1612;z-index:10; }
+@media(max-width:1180px){.admin-product-layout{grid-template-columns:1fr}.admin-product-commercial{margin-bottom:22px}}
+@media(max-width:600px){.admin-product-fields{grid-template-columns:1fr}.admin-product-section{padding:20px}.admin-product-search>div{flex-wrap:wrap}.admin-product-search input{flex-basis:100%}.admin-product-save{padding:12px;gap:10px}.admin-product-save .admin-button{padding-inline:12px}}
 .admin-catalog-page.is-saving { opacity: .6; }
 .admin-catalog-feedback { position: fixed; z-index: 100; right: 22px; bottom: 16px; max-width: min(440px,calc(100vw - 44px)); margin: 0; box-shadow: 0 8px 28px rgba(17,17,15,.12); }
 .admin-catalog-upload-previews { display: grid; grid-template-columns: repeat(auto-fill,minmax(92px,1fr)); gap: 10px; }

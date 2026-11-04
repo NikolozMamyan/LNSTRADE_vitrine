@@ -52,6 +52,11 @@
           <span>Catalogue</span>
         </a>
 
+        <a class="admin-nav-link{{ app.current_route starts with 'admin_product' ? ' is-active' : '' }}" href="{{ path('admin_product') }}"{% if app.current_route starts with 'admin_product' %} aria-current="page"{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7l9-5ZM3 7l9 5 9-5m-9 5v10M7.5 4.5l9 5"/></svg>
+          <span>Produits B2B</span>
+        </a>
+
         <a class="admin-nav-link{{ app.current_route == 'app_admin_newsletter' ? ' is-active' : '' }}" href="{{ path('app_admin_newsletter') }}"{% if app.current_route == 'app_admin_newsletter' %} aria-current="page"{% endif %}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 5l9 7 9-7"/></svg>
           <span>Newsletter</span>

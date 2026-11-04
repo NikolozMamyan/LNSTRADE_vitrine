@@ -1,0 +1,19 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Produits B2B{% endblock %}
+{% block page_name %}Produits B2B{% endblock %}
+{% block body %}
+<div class="admin-products" data-turbo="false">
+  <header class="admin-catalog-heading"><div><p class="admin-eyebrow"><span></span> Boutique professionnelle</p><h1>Produits <em>ULTRAPOP</em></h1><p>{{ listing.total }} référence{{ listing.total > 1 ? 's' : '' }} · prix, TVA, conditionnements et contenus.</p></div><div class="admin-product-actions"><a class="admin-button admin-button-light" href="{{ path('app_shop.fr') }}" target="_blank" rel="noopener">Voir la boutique ↗</a><a class="admin-button admin-button-primary" href="{{ path('admin_product_new') }}">+ Nouveau produit</a></div></header>
+  <form class="admin-product-search" method="get"><label for="product-search">Rechercher une référence, un produit ou une licence</label><div><input id="product-search" name="q" type="search" value="{{ search }}" placeholder="Référence, nom, licence, EAN…"><button class="admin-button admin-button-primary" type="submit">Rechercher</button>{% if search %}<a class="admin-button admin-button-light" href="{{ path('admin_product') }}">Tout voir</a>{% endif %}</div></form>
+  <section class="admin-panel"><div class="admin-table-wrap"><table class="admin-table admin-product-table"><thead><tr><th>Produit</th><th>PCB</th><th>Unité HT</th><th>TVA</th><th>Carton HT / TTC</th><th>Publication / stock</th><th></th></tr></thead><tbody>
+    {% for product in listing.items %}{% set pricing = product.pricing %}<tr>
+      <td><a class="admin-product-identity" href="{{ path('admin_product_edit', {id: product.id}) }}">{% if product.images|length %}<img src="{{ asset((product.images|first).path) }}" alt="" width="64" height="64" loading="lazy">{% endif %}<span><strong>{{ product.character }} · {{ product.flavor }}</strong><small>{{ product.reference }} · {{ product.license }}</small><small>{{ product.family }} · {{ product.format }}</small></span></a></td>
+      <td><strong>{{ product.pcb }}</strong><small>unités / carton</small></td><td title="{{ product.unitPriceExclTax }} €">{{ (pricing.unitPriceCents / 100)|number_format(2, ',', ' ') }} €</td><td>{{ (product.taxRateBasisPoints / 100)|number_format(2, ',', ' ') }} %</td>
+      <td><strong>{{ (pricing.cartonPriceCents / 100)|number_format(2, ',', ' ') }} € HT</strong><small>{{ (pricing.cartonPriceInclTaxCents / 100)|number_format(2, ',', ' ') }} € TTC</small></td>
+      <td><span class="admin-product-status{{ product.published ? ' is-published' : '' }}">{{ product.published ? 'Publié' : 'Brouillon' }}</span><small>{{ product.purchasable ? 'Disponible' : 'Indisponible' }}{% if product.stockCartons is not null %} · {{ product.stockCartons }} carton{{ product.stockCartons > 1 ? 's' : '' }}{% endif %}</small></td>
+      <td><a class="admin-button admin-button-light" href="{{ path('admin_product_edit', {id: product.id}) }}">Modifier ↗</a></td>
+    </tr>{% else %}<tr><td colspan="7">Aucun produit. Créez une référence ou importez le catalogue fourni.</td></tr>{% endfor %}
+  </tbody></table></div></section>
+  <nav class="admin-product-pagination" aria-label="Pagination">{% if listing.page > 1 %}<a class="admin-button admin-button-light" href="{{ path('admin_product', {q: search, page: listing.page - 1}) }}">← Précédent</a>{% endif %}<span>Page {{ listing.page }} / {{ listing.pages }}</span>{% if listing.page < listing.pages %}<a class="admin-button admin-button-light" href="{{ path('admin_product', {q: search, page: listing.page + 1}) }}">Suivant →</a>{% endif %}</nav>
+</div>
+{% endblock %}

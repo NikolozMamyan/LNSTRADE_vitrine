@@ -1,0 +1,26 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}{{ product.id ? product.reference : 'Nouveau produit' }} · Produits B2B{% endblock %}
+{% block page_name %}Produits B2B{% endblock %}
+{% block body %}
+<div class="admin-products">
+  <header class="admin-catalog-heading"><div><p class="admin-eyebrow"><span></span> Boutique professionnelle</p><h1>{{ product.id ? 'Modifier' : 'Nouveau' }} <em>produit</em></h1><p>{{ product.id ? product.reference ~ ' · ' ~ product.name : 'Créez une référence, définissez son carton et préparez sa publication.' }}</p></div><a class="admin-button admin-button-light" href="{{ path('admin_product') }}">← Tous les produits</a></header>
+  {{ form_start(form, {attr: {id: 'product-editor', 'data-controller': 'product-pricing', 'data-turbo': 'false', class: 'admin-product-form'}}) }}
+    {{ form_errors(form) }}{{ form_widget(form.priceBasis) }}
+    <div class="admin-product-layout">
+      <section class="admin-panel admin-product-section"><h2>La référence</h2><p>Les informations françaises servent de base aux autres langues.</p><div class="admin-product-fields">
+        {{ form_row(form.reference) }}{{ form_row(form.ean) }}<div class="admin-product-full">{{ form_row(form.name) }}</div>{{ form_row(form.character) }}{{ form_row(form.flavor) }}{{ form_row(form.format) }}{{ form_row(form.categoryGroup) }}{{ form_row(form.family) }}{{ form_row(form.license) }}<div class="admin-product-full">{{ form_row(form.description) }}</div><div class="admin-product-full">{{ form_row(form.ingredients) }}</div>
+      </div></section>
+      <div class="admin-product-commercial">
+        <section class="admin-panel admin-product-section"><h2>Prix & conditionnement</h2><p>Modifiez le prix HT ou TTC : les montants se recalculent ensemble, en euros.</p><div class="admin-product-fields">{{ form_row(form.unitPriceExclTax) }}{{ form_row(form.unitPriceInclTax) }}{{ form_row(form.taxRate) }}{{ form_row(form.pcb) }}</div>
+          <div class="admin-product-pricing" aria-live="polite"><div><span>Carton HT</span><strong data-product-pricing-target="cartonNet">—</strong></div><div><span>TVA du carton</span><strong data-product-pricing-target="cartonTax">—</strong></div><div class="is-total"><span>Carton TTC</span><strong data-product-pricing-target="cartonGross">—</strong></div></div><p class="admin-product-help">Les prix unitaires conservent six décimales. Les montants facturables sont arrondis au centime sur le carton ; la TVA est calculée sur son montant HT.</p>
+        </section>
+        <section class="admin-panel admin-product-section"><h2>Disponibilité</h2><div class="admin-product-fields">{{ form_row(form.stockCartons) }}{{ form_row(form.sortOrder) }}</div><div class="admin-product-checks">{{ form_row(form.published) }}{{ form_row(form.available) }}{{ form_row(form.bestseller) }}</div></section>
+      </div>
+    </div>
+    <section class="admin-panel admin-product-section"><h2>Images</h2><p>La première image est utilisée dans le catalogue. Un nouveau visuel de carton passe en tête.</p><div class="admin-product-images">{% for imageForm in form.images %}<div class="admin-product-image"><img src="{{ asset(imageForm.vars.data.path) }}" alt="" width="150" height="150" loading="lazy"><div>{{ form_row(imageForm.kind) }}{{ form_row(imageForm.position) }}{{ form_row(imageForm.remove) }}</div></div>{% endfor %}</div><div class="admin-product-fields">{{ form_row(form.newImageKind) }}{{ form_row(form.newImages) }}</div><p class="admin-product-help">JPG, PNG ou WebP · 8 Mo par image · 12 images par ajout. Les images sont optimisées en WebP.</p></section>
+    <section class="admin-panel admin-product-section"><h2>Traductions</h2><p>Un champ vide reprend le contenu français. Chaque langue peut avoir sa propre description et ses ingrédients.</p>{% for translation in form.translations %}<details class="admin-product-translation"><summary>{{ {en: 'English', de: 'Deutsch', es: 'Español', nb: 'Norsk', nl: 'Nederlands'}[translation.vars.data.locale] }}<span>+</span></summary><div class="admin-product-fields">{% for field in translation %}<div{% if field.vars.name in ['description', 'ingredients', 'name'] %} class="admin-product-full"{% endif %}>{{ form_row(field) }}</div>{% endfor %}</div></details>{% endfor %}</section>
+    {{ form_rest(form) }}
+    <footer class="admin-product-save"><a class="admin-button admin-button-light" href="{{ path('admin_product') }}">Retour à la liste</a><button class="admin-button admin-button-primary" type="submit">Enregistrer le produit ↗</button></footer>
+  {{ form_end(form, {render_rest: false}) }}
+</div>
+{% endblock %}

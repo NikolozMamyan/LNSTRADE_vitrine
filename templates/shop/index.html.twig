@@ -1,0 +1,112 @@
+{% trans_default_domain 'shop' %}
+{% set copy = {} %}
+{% for key in ['all', 'drinks', 'snacks', 'sweet', 'cart', 'cartons', 'carton', 'units', 'perCarton', 'perUnit', 'add', 'added', 'remove', 'emptyTitle', 'emptyText', 'explore', 'subtotal', 'shipping', 'shippingLater', 'priceNote', 'continue', 'back', 'close', 'stock', 'unavailable', 'pcbPending', 'packaging', 'quantity', 'reference', 'ingredients', 'originalFrench', 'noIngredients', 'details', 'variants', 'previousVariants', 'nextVariants', 'noResults', 'reset', 'results', 'decrease', 'increase', 'delivery', 'selection', 'payment', 'previewEnd', 'previewText', 'ready', 'review', 'deleteAll', 'license', 'unitPrice', 'cartonPrice', 'productIntro', 'preview', 'cartRestored'] %}
+  {% set copy = copy|merge({(key): key|trans}) %}
+{% endfor %}
+{% set shop_products = [] %}
+{% for product in products %}
+  {% set images = [] %}
+  {% for image in product.images %}{% set images = images|merge([asset(image)]) %}{% endfor %}
+  {% set shop_products = shop_products|merge([product|merge({images: images, variantImage: asset(product.variantImage)})]) %}
+{% endfor %}
+<!doctype html>
+<html lang="{{ app.request.locale }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#f8f7f2">
+  <meta name="description" content="{{ 'pageDescription'|trans }}">
+  <title>{{ 'pageTitle'|trans }} · ULTRAPOP</title>
+  <link rel="icon" href="{{ asset('favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,800;1,900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  {{ importmap('shop') }}
+</head>
+<body>
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 7h14l1 14H4L5 7Z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="m12 2 9 5v10l-9 5-9-5V7l9-5ZM3 7l9 5 9-5m-9 5v10M7.5 4.5l9 5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3 6.5L22 10l-5 5 .7 7L12 18l-5.7 4 .7-7-5-5 7-1.5L12 2Z"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="18" r="2"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6l-9-4Z"/><path d="m8 12 3 3 5-6"/></symbol>
+  </defs></svg>
+  <a class="skip-link" href="#collection">{{ 'skip'|trans }}</a>
+  <div class="pro-bar"><span>{{ 'topline'|trans }}</span><a href="{{ path('app_home.' ~ app.request.locale) }}">LNS TRADE <span aria-hidden="true">↗</span></a></div>
+  <header class="shop-header">
+    <a class="shop-logo" href="{{ path('app_shop.' ~ app.request.locale) }}" aria-label="ULTRAPOP"><img src="{{ asset('images/logo-ultrapop-official.svg') }}" alt="ULTRAPOP" width="180" height="38"><span>PRO</span></a>
+    <nav class="header-nav" aria-label="{{ 'navigation'|trans }}"><a class="active" href="#collection">{{ 'collection'|trans }}</a><a href="{{ path('app_ultrapop.' ~ app.request.locale) }}">{{ 'ourUniverse'|trans }} ↗</a></nav>
+    <div class="header-tools">
+      <label class="locale-picker"><span class="sr-only">{{ 'language'|trans }}</span><select id="shop-language">{% for locale in site_locales %}<option value="{{ path('app_shop.' ~ locale) }}"{% if locale == app.request.locale %} selected{% endif %}>{{ locale == 'nb' ? 'NO' : locale|upper }}</option>{% endfor %}</select></label>
+      <button class="header-filter-button" type="button" data-open-filters aria-controls="filter-drawer" aria-expanded="false"><svg class="icon"><use href="#i-filter"/></svg><span class="filter-label">{{ 'filters'|trans }}</span></button>
+      <button class="cart-trigger" type="button" data-open-cart><span class="header-bag"><svg class="icon"><use href="#i-bag"/></svg><span class="cart-count" data-cart-count>0</span></span><span class="header-cart-copy"><span class="cart-label">{{ 'cart'|trans }}</span><strong data-cart-total>0 €</strong></span></button>
+    </div>
+  </header>
+  <main>
+    <section class="shop-hero shell" aria-labelledby="hero-title">
+      <div class="hero-copy"><p class="eyebrow"><span></span>{{ 'heroEyebrow'|trans }}</p><h1 id="hero-title">{{ 'heroLine1'|trans }}<br><span>{{ 'heroLine2'|trans }}</span></h1><p class="hero-description">{{ 'heroText'|trans }}</p><a class="primary-button" href="#collection">{{ 'explore'|trans }}<svg class="icon"><use href="#i-arrow"/></svg></a><div class="hero-proof"><svg class="icon"><use href="#i-box"/></svg>{{ 'cartonOnly'|trans }}<span>·</span><svg class="icon"><use href="#i-shield"/></svg>{{ 'official'|trans }}</div></div>
+      <div class="hero-art hero-art-collection">
+        <img src="{{ asset('images/shop/hero-demon-slayer.webp') }}" srcset="{{ asset('images/shop/hero-demon-slayer-1280.webp') }} 1280w, {{ asset('images/shop/hero-demon-slayer.webp') }} 2200w" sizes="(max-width: 700px) 170vw, (max-width: 1512px) 90vw, 1200px" alt="ULTRAPOP · Demon Slayer · CHIPSAN, KOMESAN, LYCHEE" width="2200" height="826" fetchpriority="high">
+      </div>
+    </section>
+    {% set licenses = [
+      {image: 'licences/MENU_LICENCE-01.webp', name: 'One Piece', filter: 'One Piece'},
+      {image: 'licences/MENU_LICENCE-02.webp', name: 'Naruto', filter: 'Naruto'},
+      {image: 'licences/MENU_LICENCE-03.webp', name: 'Dragon Ball Z', filter: 'Dragon Ball'},
+      {image: 'licences/MENU_LICENCE-04.webp', name: 'Dragon Ball Super', filter: 'Dragon Ball'},
+      {image: 'licences/MENU_LICENCE-05.webp', name: 'League Of Legends', filter: 'League Of Legends'},
+      {image: 'licences/MENU_LICENCE-06.webp', name: 'Demon Slayer', filter: 'Demon Slayer'},
+      {image: 'licences/MENU_LICENCE-07.webp', name: 'Jujutsu Kaisen', filter: 'Jujutsu Kaisen'},
+      {image: 'licences/licenses-league-of-legends-c0558db7973198d0.webp', name: 'League Of Legends', filter: 'League Of Legends'}
+    ] %}
+    <section class="license-strip" aria-label="{{ 'licensed'|trans }}">
+      <div class="license-carousel-heading shell"><p class="eyebrow">{{ 'official'|trans }}</p><strong>{{ 'licensed'|trans }}</strong></div>
+      <div class="license-carousel-viewport"><div class="ticker-track license-carousel-track">
+        {% for duplicate in 0..1 %}<div class="license-carousel-group"{% if duplicate == 1 %} aria-hidden="true"{% endif %}>
+          {% for license in licenses %}<button class="license-carousel-card" type="button" data-license="{{ license.filter }}" data-scroll-collection aria-label="{{ 'viewLicense'|trans({'%license%': license.name}) }}" aria-pressed="false"{% if duplicate == 1 %} tabindex="-1"{% endif %}><img src="{{ asset(license.image) }}" alt="{{ duplicate == 0 ? license.name : '' }}" width="1615" height="695" loading="lazy" decoding="async"></button>{% endfor %}
+        </div>{% endfor %}
+      </div>
+    </section>
+    <section class="collection shell" id="collection" aria-labelledby="collection-title">
+      <div class="collection-heading"><div><p class="eyebrow">{{ 'collectionEyebrow'|trans }}</p><h2 id="collection-title">{{ 'collectionTitle'|trans }}<span>.</span></h2></div><p>{{ 'collectionText'|trans }}</p></div>
+      <div class="catalog-toolbar"><div class="category-tabs" role="group" aria-label="{{ 'categories'|trans }}">{% for group in ['all', 'drinks', 'snacks', 'sweet'] %}<button type="button" class="category-tab{{ group == 'all' ? ' is-active' : '' }}" data-group="{{ group }}" aria-pressed="{{ group == 'all' ? 'true' : 'false' }}"><span aria-hidden="true">{{ {all: '✳', drinks: '◒', snacks: '◈', sweet: '✿'}[group] }}</span>{{ group|trans }}<small data-group-count="{{ group }}">{{ group == 'all' ? products|length : products|filter(p => p.group == group)|length }}</small></button>{% endfor %}</div><label class="shop-search"><svg class="icon"><use href="#i-search"/></svg><input id="shop-search" type="search" placeholder="{{ 'search'|trans }}" aria-label="{{ 'search'|trans }}" autocomplete="off"></label></div>
+      <div class="catalog-layout">
+        <aside class="catalog-sidebar" aria-labelledby="desktop-filter-title">
+          <div class="catalog-sidebar-header"><h3 id="desktop-filter-title"><svg class="icon" aria-hidden="true"><use href="#i-filter"/></svg>{{ 'filters'|trans }}<span class="filter-count" data-filter-count hidden>0</span></h3><button class="text-button" type="button" data-reset>{{ 'reset'|trans }}</button></div>
+          <div class="catalog-sidebar-content" id="desktop-filters"></div>
+        </aside>
+        <div class="catalog-content"><div class="results-toolbar"><button class="filter-trigger" type="button" data-open-filters aria-controls="filter-drawer" aria-expanded="false"><svg class="icon"><use href="#i-filter"/></svg>{{ 'filters'|trans }}<span class="filter-count" data-filter-count hidden>0</span></button><p id="result-count" role="status" aria-live="polite">{{ products|length }} {{ 'results'|trans }}</p><label>{{ 'sort'|trans }}<select id="shop-sort"><option value="featured">{{ 'recommended'|trans }}</option><option value="price-asc">{{ 'priceAsc'|trans }}</option><option value="price-desc">{{ 'priceDesc'|trans }}</option><option value="name">{{ 'alphabetical'|trans }}</option></select></label></div><div class="product-grid" id="product-grid"></div><div class="no-results" id="no-results" hidden><span>⌕</span><h3>{{ 'noResults'|trans }}</h3><button class="primary-button" type="button" data-reset>{{ 'reset'|trans }}</button></div><noscript><p>{{ 'enableJs'|trans }}</p></noscript><p class="catalog-price-note"><svg class="icon"><use href="#i-box"/></svg>{{ 'priceNote'|trans }}</p></div>
+      </div>
+    </section>
+    <section class="shop-outro shell"><div><span>✳</span><h2>{{ 'outroTitle'|trans }}</h2></div><p>{{ 'outroText'|trans }}</p><a href="{{ path('app_contact.' ~ app.request.locale) }}">{{ 'contactUs'|trans }} ↗</a></section>
+  </main>
+  <footer class="shop-footer shell"><a href="{{ path('app_home.' ~ app.request.locale) }}">ULTRAPOP <span>BY LNS TRADE</span></a><p>© {{ 'now'|date('Y') }} ULTRAPOP</p><a href="{{ path('app_cgv.' ~ (app.request.locale == 'fr' ? 'fr' : 'en')) }}">{{ 'terms'|trans }} ↗</a><span class="preview-badge">{{ 'preview'|trans }}</span></footer>
+  <button class="floating-filter-trigger" type="button" data-open-filters aria-controls="filter-drawer" aria-expanded="false" hidden><svg class="icon"><use href="#i-filter"/></svg>{{ 'filters'|trans }}<span class="filter-count" data-filter-count hidden>0</span></button>
+  <button class="floating-cart" type="button" data-open-cart><span class="floating-cart-icon"><svg class="icon"><use href="#i-bag"/></svg><span data-cart-count>0</span></span><span class="floating-cart-copy"><strong>{{ 'cart'|trans }}</strong><small data-floating-cart-count></small></span><span class="floating-cart-price"><strong data-cart-total>0 €</strong><small>{{ 'excludingVat'|trans }}</small></span><svg class="icon cart-forward"><use href="#i-arrow"/></svg></button>
+  <dialog id="filter-drawer" class="filter-drawer" aria-labelledby="filter-title">
+    <div class="filter-drawer-header"><div><p class="eyebrow">ULTRAPOP PRO</p><h2 id="filter-title">{{ 'filters'|trans }}</h2><p>{{ 'filterIntro'|trans }}</p></div><button class="icon-button" type="button" data-close-dialog aria-label="{{ 'close'|trans }}"><svg class="icon"><use href="#i-close"/></svg></button></div>
+    <div class="filter-drawer-body"><fieldset><legend>{{ 'universes'|trans }}</legend><div class="license-filters">
+      <button class="license-option is-active" type="button" data-license="all" aria-pressed="true"><svg class="universe-icon" aria-hidden="true"><use href="{{ asset('images/shop/universes.svg') }}#all"/></svg><span>{{ 'allUniverses'|trans }}</span><small>{{ products|length }}</small></button>
+      {% set license_groups = [{name: 'One Piece', icon: 'one-piece'}, {name: 'Naruto', icon: 'naruto'}, {name: 'Dragon Ball', icon: 'dragon-ball'}, {name: 'Demon Slayer', icon: 'demon-slayer'}, {name: 'League Of Legends', icon: 'league-of-legends'}, {name: 'Jujutsu Kaisen', icon: 'jujutsu-kaisen'}] %}
+      {% for license in license_groups %}<button class="license-option" type="button" data-license="{{ license.name }}" aria-pressed="false"><svg class="universe-icon" aria-hidden="true"><use href="{{ asset('images/shop/universes.svg') }}#{{ license.icon }}"/></svg><span>{{ license.name == 'League Of Legends' ? 'League of Legends' : license.name }}</span><small>{{ products|filter(p => license.name == 'Dragon Ball' ? 'Dragon Ball' in p.license : p.license == license.name)|length }}</small></button>{% endfor %}
+    </div></fieldset>
+    <fieldset class="price-filter"><legend>{{ 'cartonPrice'|trans }}</legend><p>{{ 'priceFilterHint'|trans }}</p><div class="price-fields"><label>{{ 'minPrice'|trans }}<span><input id="filter-price-min" type="number" min="0" step="0.01" inputmode="decimal" value="0"><span>€</span></span></label><span aria-hidden="true">—</span><label>{{ 'maxPrice'|trans }}<span><input id="filter-price-max" type="number" min="0" step="0.01" inputmode="decimal"><span>€</span></span></label></div><label class="sr-only" for="filter-price-range">{{ 'maxPrice'|trans }}</label><input id="filter-price-range" type="range" min="0" step="1"></fieldset>
+    <fieldset class="availability-filter"><legend>{{ 'availability'|trans }}</legend><label><input type="checkbox" id="available-only"><span>{{ 'availableOnly'|trans }}</span></label></fieldset>
+    <div class="sidebar-note"><svg class="icon"><use href="#i-box"/></svg><strong>{{ 'cartonOnly'|trans }}</strong><p>{{ 'cartonExplanation'|trans }}</p></div></div>
+    <div class="filter-drawer-footer"><button class="text-button" type="button" data-reset>{{ 'reset'|trans }}</button><button class="primary-button" type="button" data-apply-filters>{{ 'viewProducts'|trans }}<span data-filter-result-count>{{ products|length }}</span><svg class="icon"><use href="#i-arrow"/></svg></button></div>
+  </dialog>
+  <dialog id="product-modal" class="product-modal" aria-labelledby="product-modal-title"><button class="dialog-close" type="button" data-close-dialog aria-label="{{ 'close'|trans }}"><svg class="icon"><use href="#i-close"/></svg></button><div id="product-modal-content"></div></dialog>
+  <dialog id="cart-drawer" class="cart-drawer" aria-labelledby="cart-title"><div class="cart-drawer-header"><div><p class="eyebrow">ULTRAPOP PRO</p><h2 id="cart-title">{{ 'cart'|trans }}<span data-cart-count>0</span></h2></div><button class="icon-button" type="button" data-close-dialog aria-label="{{ 'close'|trans }}"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="cart-steps"><span class="is-active" data-step-label="cart">01 {{ 'selection'|trans }}</span><span data-step-label="address">02 {{ 'delivery'|trans }}</span><span>03 {{ 'payment'|trans }}</span></div><div id="cart-content" class="cart-content"></div><div id="cart-summary" class="cart-summary"></div>
+    <form id="address-form" class="address-form" hidden><button class="text-button address-back" type="button" data-back-cart>← {{ 'back'|trans }}</button><h3>{{ 'deliveryTitle'|trans }}</h3><p>{{ 'addressPreview'|trans }}</p><div class="form-grid"><label>{{ 'firstName'|trans }}<input name="given-name" autocomplete="given-name" required maxlength="100"></label><label>{{ 'lastName'|trans }}<input name="family-name" autocomplete="family-name" required maxlength="100"></label><label class="full-width">{{ 'company'|trans }}<input name="organization" autocomplete="organization" required maxlength="200"></label><label class="full-width">{{ 'email'|trans }}<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label class="full-width">{{ 'address'|trans }}<input name="street-address" autocomplete="street-address" required maxlength="300"></label><label>{{ 'postalCode'|trans }}<input name="postal-code" autocomplete="postal-code" required maxlength="20"></label><label>{{ 'city'|trans }}<input name="address-level2" autocomplete="address-level2" required maxlength="150"></label><label class="full-width">{{ 'country'|trans }}<select name="country" autocomplete="country-name" required><option value="">{{ 'chooseCountry'|trans }}</option>{% for code in ['FR', 'BE', 'DE', 'NL', 'ES', 'IT', 'LU', 'AT', 'PT', 'IE', 'DK', 'SE', 'NO', 'FI', 'CH', 'GB', 'PL'] %}<option value="{{ code }}">{{ ('country.' ~ code)|trans }}</option>{% endfor %}</select></label></div><button class="primary-button checkout-button" type="submit">{{ 'review'|trans }}<svg class="icon"><use href="#i-arrow"/></svg></button></form>
+    <div id="checkout-preview" class="checkout-preview" hidden><span class="preview-check"><svg class="icon"><use href="#i-check"/></svg></span><h3>{{ 'ready'|trans }}</h3><p>{{ 'previewText'|trans }}</p><div id="address-preview"></div><p class="preview-total" data-review-total></p><button class="primary-button" type="button" disabled>{{ 'previewEnd'|trans }}</button><button class="text-button" type="button" data-back-cart>← {{ 'back'|trans }}</button></div>
+  </dialog>
+  <div class="shop-toast" id="shop-toast" role="status" aria-live="polite" hidden><svg class="icon"><use href="#i-check"/></svg><span></span><button type="button" data-open-cart>{{ 'viewCart'|trans }} →</button></div>
+  <script type="application/json" id="shop-data">{{ {locale: app.request.locale, products: shop_products, copy: copy}|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT'))|raw }}</script>
+</body>
+</html>
