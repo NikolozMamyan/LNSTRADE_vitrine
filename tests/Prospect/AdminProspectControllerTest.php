@@ -14,6 +14,9 @@ use App\Prospect\ProspectHubSpotSender;
 use App\Security\SessionManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -252,6 +255,94 @@ final class AdminProspectControllerTest extends WebTestCase
         self::assertSelectorTextContains($selector, 'lnstrade_europe');
         self::assertSelectorNotExists($selector.' script');
         self::assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;', $this->client->getResponse()->getContent());
+    }
+
+    public function testExcelExportContainsAllSynchronizedProspectsAndPreservesTheirText(): void
+    {
+        $hubSpot = $this->createMock(HubSpotGateway::class);
+        $hubSpot->expects(self::never())->method('submit');
+        static::getContainer()->set(HubSpotGateway::class, $hubSpot);
+        for ($number = 0; $number < 26; ++$number) {
+            $prospect = new Prospect(new ContactSubmission(
+                name: 25 === $number ? 'Élodie de La Tour' : (0 === $number ? 'Prince' : 'Contact '.$number),
+                company: '=1+1',
+                email: 'synced'.$number.'@example.com',
+                phone: 0 === $number ? '' : '00123456789',
+                vat: '',
+                message: 0 === $number ? '' : "=2+2\nDemande de tarifs : été",
+                context: '',
+                origin: '',
+                locale: 'fr',
+            ), new \DateTimeImmutable('2026-10-01'));
+            $prospect->markHubSpotSynced(new \DateTimeImmutable('2026-10-02'));
+            $this->entityManager->persist($prospect);
+        }
+        $rejected = new Prospect(new ContactSubmission(
+            name: 'Refused Contact', company: 'Example SAS', email: 'refused@example.com',
+            phone: '', vat: '', message: '', context: '', origin: '', locale: 'fr',
+        ), new \DateTimeImmutable('2026-10-01'));
+        $rejected->setHubSpotRejected(true, new \DateTimeImmutable('2026-10-02'));
+        $this->entityManager->persist($rejected);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', 'https://localhost/admin/prospects');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('a[data-turbo="false"][href="/admin/prospects/export.xlsx"]');
+        self::assertSelectorCount(25, '.admin-table tbody tr');
+
+        $this->client->request('GET', 'https://localhost/admin/prospects/export.xlsx?page=2');
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        self::assertStringContainsString('attachment; filename=lnstrade-prospects-hubspot-', $this->client->getResponse()->headers->get('Content-Disposition'));
+        self::assertStringContainsString('no-store', $this->client->getResponse()->headers->get('Cache-Control'));
+
+        $book = $this->readExcelExport();
+        try {
+            $sheet = $book->getActiveSheet();
+            $rows = $sheet->toArray(nullValue: '');
+            self::assertCount(27, $rows);
+            self::assertSame(['Nom', 'Prénom', 'E-mail', 'Entreprise', 'Téléphone', 'Message'], $rows[0]);
+            self::assertSame(['de La Tour', 'Élodie', 'synced25@example.com', '=1+1', '00123456789', "=2+2\nDemande de tarifs : été"], $rows[1]);
+            self::assertSame(['', 'Prince', 'synced0@example.com', '=1+1', '', ''], $rows[26]);
+            self::assertNotContains('alice@example.com', array_column($rows, 2));
+            self::assertNotContains('refused@example.com', array_column($rows, 2));
+            foreach (['A2', 'B2', 'C2', 'D2', 'E2', 'F2'] as $cell) {
+                self::assertSame(DataType::TYPE_STRING, $sheet->getCell($cell)->getDataType());
+            }
+        } finally {
+            $book->disconnectWorksheets();
+        }
+    }
+
+    public function testExcelExportWithoutSynchronizedProspectsContainsOnlyHeaders(): void
+    {
+        $this->client->request('GET', 'https://localhost/admin/prospects/export.xlsx');
+        self::assertResponseIsSuccessful();
+        $book = $this->readExcelExport();
+        try {
+            self::assertSame([['Nom', 'Prénom', 'E-mail', 'Entreprise', 'Téléphone', 'Message']], $book->getActiveSheet()->toArray());
+        } finally {
+            $book->disconnectWorksheets();
+        }
+    }
+
+    public function testExcelExportRequiresAnAdmin(): void
+    {
+        $this->client->getCookieJar()->clear();
+        $this->client->request('GET', 'https://localhost/admin/prospects/export.xlsx');
+        self::assertResponseRedirects('/admin/login');
+    }
+
+    private function readExcelExport(): Spreadsheet
+    {
+        $filename = tempnam(sys_get_temp_dir(), 'lnstrade_prospects_');
+        try {
+            file_put_contents($filename, $this->client->getInternalResponse()->getContent());
+
+            return (new Xlsx())->load($filename);
+        } finally {
+            unlink($filename);
+        }
     }
 
     private function token(string $action = 'hubspot'): string

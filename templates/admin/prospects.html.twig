@@ -10,7 +10,10 @@
       <h1>Prospects</h1>
       <p>Consultez les demandes reçues et envoyez les contacts à HubSpot.</p>
     </div>
-    <span class="admin-panel-count">{{ prospectCount }} au total</span>
+    <div class="admin-prospect-actions">
+      <span class="admin-panel-count">{{ prospectCount }} au total</span>
+      <a class="admin-button admin-button-primary" href="{{ path('app_admin_prospects_export') }}" data-turbo="false">Exporter les synchronisés en Excel ↓</a>
+    </div>
   </section>
 
   <section class="admin-panel activity-panel admin-prospects-panel">

@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Prospect;
 use App\HubSpot\HubSpotException;
+use App\Prospect\ProspectExporter;
 use App\Prospect\ProspectHubSpotSender;
 use App\Prospect\ProspectRecorder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +14,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -33,6 +36,20 @@ final class AdminProspectController extends AbstractController
             'page' => $page,
             'pageCount' => $pageCount,
         ]);
+    }
+
+    #[Route('/admin/prospects/export.xlsx', name: 'app_admin_prospects_export', methods: ['GET'])]
+    public function export(ProspectExporter $exporter): Response
+    {
+        $filename = 'lnstrade-prospects-hubspot-'.(new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris')))->format('Y-m-d').'.xlsx';
+        $response = new StreamedResponse(static fn () => $exporter->write('php://output'), headers: [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'private, no-store',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+        $response->headers->set('Content-Disposition', $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename));
+
+        return $response;
     }
 
     #[Route('/admin/prospects/{id}/hubspot', name: 'app_admin_prospect_hubspot', requirements: ['id' => '\d+'], methods: ['POST'])]
