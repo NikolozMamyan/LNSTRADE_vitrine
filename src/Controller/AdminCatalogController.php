@@ -5,60 +5,71 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Catalog\CatalogManager;
+use App\Entity\Catalog;
 use App\Entity\CatalogPage;
 use App\Repository\CatalogPageRepository;
+use App\Repository\CatalogRepository;
+use App\Repository\CatalogShareRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/catalogue', name: 'admin_catalog')]
 final class AdminCatalogController extends AbstractController
 {
     public function __construct(
         private readonly CatalogManager $manager,
         private readonly CatalogPageRepository $pages,
+        private readonly CatalogRepository $catalogs,
+        private readonly CatalogShareRepository $shares,
     ) {
     }
 
-    #[Route('', name: '', methods: ['GET'])]
-    public function index(): Response
+    #[Route('/admin/catalogue', name: 'admin_catalog', methods: ['GET'])]
+    #[Route('/admin/catalogues-externes/{catalogId}', name: 'admin_external_catalog', methods: ['GET'], requirements: ['catalogId' => '\\d+'])]
+    public function index(Request $request): Response
     {
-        $catalog = $this->manager->current();
+        $catalog = $this->catalog($request);
 
         return $this->render('admin/catalog/index.html.twig', [
             'adminSection' => 'catalog',
             'catalog' => $catalog,
             'catalogPages' => $this->pages->findForCatalog($catalog),
+            'catalogShares' => $catalog->isExternal() ? $this->shares->findForCatalog($catalog) : [],
         ]);
     }
 
-    #[Route('/apercu', name: '_preview', methods: ['GET'])]
-    public function preview(): Response
+    #[Route('/admin/catalogue/apercu', name: 'admin_catalog_preview', methods: ['GET'])]
+    #[Route('/admin/catalogues-externes/{catalogId}/apercu', name: 'admin_external_catalog_preview', methods: ['GET'], requirements: ['catalogId' => '\\d+'])]
+    public function preview(Request $request): Response
     {
-        $catalog = $this->manager->current();
+        $catalog = $this->catalog($request);
         $visiblePages = $this->pages->findForCatalog($catalog, true);
         if ([] === $visiblePages) {
             $this->addFlash('error', 'Activez au moins une page avant d’ouvrir l’aperçu.');
 
-            return $this->redirectToRoute('admin_catalog');
+            return $this->redirectToRoute($catalog->isExternal() ? 'admin_external_catalog' : 'admin_catalog', $catalog->isExternal() ? ['catalogId' => $catalog->getId()] : []);
         }
 
         return $this->render('catalog/index.html.twig', [
             'catalog' => $catalog,
             'catalogPages' => $visiblePages,
             'isPreview' => true,
+            'catalog_locale' => $catalog->isExternal() ? $catalog->getLocale() : null,
+            'previewAdminRoute' => $catalog->isExternal() ? 'admin_external_catalog' : 'admin_catalog',
+            'previewAdminParams' => $catalog->isExternal() ? ['catalogId' => $catalog->getId()] : [],
         ]);
     }
 
-    #[Route('/parametres', name: '_settings', methods: ['POST'])]
+    #[Route('/admin/catalogue/parametres', name: 'admin_catalog_settings', methods: ['POST'])]
+    #[Route('/admin/catalogues-externes/{catalogId}/parametres', name: 'admin_external_catalog_settings', methods: ['POST'], requirements: ['catalogId' => '\\d+'])]
     public function settings(Request $request): Response
     {
         $this->validateToken('catalog_settings', $request);
         try {
             $this->manager->saveSettings(
-                $this->manager->current(),
+                $this->catalog($request),
                 $request->request->getString('title'),
                 $request->request->getBoolean('enabled'),
             );
@@ -69,12 +80,13 @@ final class AdminCatalogController extends AbstractController
         return $this->mutationResponse($request, 'Les paramètres du catalogue ont été enregistrés.');
     }
 
-    #[Route('/ajouter-images', name: '_add_images', methods: ['POST'])]
+    #[Route('/admin/catalogue/ajouter-images', name: 'admin_catalog_add_images', methods: ['POST'])]
+    #[Route('/admin/catalogues-externes/{catalogId}/ajouter-images', name: 'admin_external_catalog_add_images', methods: ['POST'], requirements: ['catalogId' => '\\d+'])]
     public function addImages(Request $request): Response
     {
         $this->validateToken('catalog_add_images', $request);
         try {
-            $count = $this->manager->addImages($this->manager->current(), $request->files->all('images'));
+            $count = $this->manager->addImages($this->catalog($request), $request->files->all('images'));
         } catch (\InvalidArgumentException|\RuntimeException $exception) {
             return $this->mutationResponse($request, $exception->getMessage(), success: false);
         }
@@ -82,7 +94,8 @@ final class AdminCatalogController extends AbstractController
         return $this->mutationResponse($request, sprintf('%d page%s ajoutée%s au catalogue.', $count, $count > 1 ? 's' : '', $count > 1 ? 's' : ''), addedCount: $count);
     }
 
-    #[Route('/importer-pdf', name: '_import_pdf', methods: ['POST'])]
+    #[Route('/admin/catalogue/importer-pdf', name: 'admin_catalog_import_pdf', methods: ['POST'])]
+    #[Route('/admin/catalogues-externes/{catalogId}/importer-pdf', name: 'admin_external_catalog_import_pdf', methods: ['POST'], requirements: ['catalogId' => '\\d+'])]
     public function importPdf(Request $request): Response
     {
         $this->validateToken('catalog_import_pdf', $request);
@@ -93,7 +106,7 @@ final class AdminCatalogController extends AbstractController
 
         try {
             $count = $this->manager->addPdf(
-                $this->manager->current(),
+                $this->catalog($request),
                 $file,
                 $request->request->getInt('pdfPageCount'),
                 $request->request->getString('pdfTitle'),
@@ -105,10 +118,11 @@ final class AdminCatalogController extends AbstractController
         return $this->mutationResponse($request, sprintf('Le PDF a été importé en %d page%s.', $count, $count > 1 ? 's' : ''), addedCount: $count);
     }
 
-    #[Route('/page/{id}', name: '_page_update', methods: ['POST'], requirements: ['id' => '\\d+'])]
+    #[Route('/admin/catalogue/page/{id}', name: 'admin_catalog_page_update', methods: ['POST'], requirements: ['id' => '\\d+'])]
+    #[Route('/admin/catalogues-externes/{catalogId}/page/{id}', name: 'admin_external_catalog_page_update', methods: ['POST'], requirements: ['catalogId' => '\\d+', 'id' => '\\d+'])]
     public function updatePage(int $id, Request $request): Response
     {
-        $page = $this->findPage($id);
+        $page = $this->findPage($id, $request);
         $this->validateToken('catalog_page_'.$id, $request);
         $replacement = $request->files->get('media');
         try {
@@ -127,20 +141,22 @@ final class AdminCatalogController extends AbstractController
         return $this->mutationResponse($request, sprintf('La page %d a été mise à jour.', $page->getPosition()), changedPages: [$page], fragment: 'page-'.$id);
     }
 
-    #[Route('/page/{id}/deplacer/{direction}', name: '_page_move', methods: ['POST'], requirements: ['id' => '\\d+', 'direction' => 'up|down'])]
+    #[Route('/admin/catalogue/page/{id}/deplacer/{direction}', name: 'admin_catalog_page_move', methods: ['POST'], requirements: ['id' => '\\d+', 'direction' => 'up|down'])]
+    #[Route('/admin/catalogues-externes/{catalogId}/page/{id}/deplacer/{direction}', name: 'admin_external_catalog_page_move', methods: ['POST'], requirements: ['catalogId' => '\\d+', 'id' => '\\d+', 'direction' => 'up|down'])]
     public function movePage(int $id, string $direction, Request $request): Response
     {
-        $page = $this->findPage($id);
+        $page = $this->findPage($id, $request);
         $this->validateToken('catalog_move_'.$id, $request);
         $this->manager->move($page, $direction);
 
         return $this->mutationResponse($request, 'La page a été déplacée.', fragment: 'pages');
     }
 
-    #[Route('/page/{id}/supprimer', name: '_page_delete', methods: ['POST'], requirements: ['id' => '\\d+'])]
+    #[Route('/admin/catalogue/page/{id}/supprimer', name: 'admin_catalog_page_delete', methods: ['POST'], requirements: ['id' => '\\d+'])]
+    #[Route('/admin/catalogues-externes/{catalogId}/page/{id}/supprimer', name: 'admin_external_catalog_page_delete', methods: ['POST'], requirements: ['catalogId' => '\\d+', 'id' => '\\d+'])]
     public function deletePage(int $id, Request $request): Response
     {
-        $page = $this->findPage($id);
+        $page = $this->findPage($id, $request);
         $this->validateToken('catalog_delete_'.$id, $request);
         $this->manager->delete($page);
 
@@ -153,13 +169,13 @@ final class AdminCatalogController extends AbstractController
         if (!$request->isXmlHttpRequest()) {
             $this->addFlash($success ? 'success' : 'error', $message);
 
-            return $this->redirectToRoute('admin_catalog', '' === $fragment ? [] : ['_fragment' => $fragment]);
+            return $this->redirectToRoute(null === $request->attributes->get('catalogId') ? 'admin_catalog' : 'admin_external_catalog', array_filter(['catalogId' => $request->attributes->get('catalogId'), '_fragment' => $fragment], static fn ($value): bool => null !== $value && '' !== $value));
         }
         if (!$success) {
             return $this->json(['success' => false, 'message' => $message], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $catalog = $this->manager->current();
+        $catalog = $this->catalog($request);
         $catalogPages = $this->pages->findForCatalog($catalog);
         if ($addedCount > 0) {
             $changedPages = array_slice($catalogPages, -$addedCount);
@@ -178,14 +194,27 @@ final class AdminCatalogController extends AbstractController
         ]);
     }
 
-    private function findPage(int $id): CatalogPage
+    private function findPage(int $id, Request $request): CatalogPage
     {
         $page = $this->pages->find($id);
-        if (!$page instanceof CatalogPage || $page->getCatalog()->getId() !== $this->manager->current()->getId()) {
+        if (!$page instanceof CatalogPage || $page->getCatalog()->getId() !== $this->catalog($request)->getId()) {
             throw $this->createNotFoundException('Page de catalogue introuvable.');
         }
 
         return $page;
+    }
+
+    private function catalog(Request $request): Catalog
+    {
+        if (null === $request->attributes->get('catalogId')) {
+            return $this->manager->current();
+        }
+        $catalog = $this->catalogs->find($request->attributes->getInt('catalogId'));
+        if (null === $catalog || !$catalog->isExternal()) {
+            throw $this->createNotFoundException();
+        }
+
+        return $catalog;
     }
 
     private function validateToken(string $id, Request $request): void

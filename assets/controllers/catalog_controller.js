@@ -71,10 +71,10 @@ export default class extends Controller {
       this.stageTarget.classList.toggle('is-flipping', ['flipping', 'user_fold'].includes(event.data));
       this.updateNavigation(event.data);
     });
-    this.pageFlip.on('changeOrientation', () => this.updateNavigation());
+    this.pageFlip.on('changeOrientation', () => { this.updateNavigation(); this.updateVideoVisibility(); });
     this.pageFlip.loadFromHTML(this.bookPages);
     this.prepareDrag = (event) => {
-      if (event.target.closest('a, button')) return;
+      if (event.target.closest('a, button, .catalog-interactive-video')) return;
       const pages = this.pageFlip.getPageCollection();
       const nearbyPages = pages.getSpread()
         .slice(Math.max(0, pages.getCurrentSpreadIndex() - 1), pages.getCurrentSpreadIndex() + 2)
@@ -239,6 +239,7 @@ export default class extends Controller {
 
   update(index, announce = true) {
     this.currentIndex = Math.max(0, Math.min(index, this.bookPages.length - 1));
+    this.updateVideoVisibility();
     const page = this.bookPages[this.currentIndex];
     const count = this.bookPages.length;
     this.currentTitleTarget.textContent = page.dataset.title;
@@ -267,6 +268,17 @@ export default class extends Controller {
     window.clearTimeout(this.prefetchTimer);
     this.prefetchTimer = window.setTimeout(() => this.preparePagesNear(this.currentIndex), 120);
     if (announce) this.announcementTarget.textContent = `${this.copyValue.displayed} ${page.dataset.title}`;
+  }
+
+  updateVideoVisibility() {
+    const collection = this.pageFlip?.getPageCollection();
+    if (!collection) return;
+    const visiblePages = collection.getSpread()[collection.getCurrentSpreadIndex()] || [this.currentIndex];
+    this.bookPages.forEach((source, index) => {
+      const visible = visiblePages.includes(index);
+      source.dataset.catalogVisible = String(visible);
+      source.dispatchEvent(new CustomEvent('catalog:visibility', { detail: { visible } }));
+    });
   }
 
   updateNavigation(state = this.pageFlip?.getState()) {

@@ -1,0 +1,20 @@
+<section class="admin-panel admin-external-sharing" id="partage" data-controller="catalog-shares" aria-labelledby="catalog-sharing-title">
+  <header><div><p class="admin-eyebrow"><span></span> Diffusion commerciale</p><h2 id="catalog-sharing-title">Partagez votre catalogue</h2><p>Créez un lien par client ou par campagne. Chaque lien peut être désactivé séparément.</p></div></header>
+  <p class="admin-external-sharing-note"{% if catalog.enabled %} hidden{% endif %}>Activez le catalogue pour permettre l’accès par lien. Le désactiver met tous ses liens de partage en pause.</p>
+  <form class="admin-external-share-create" action="{{ path('admin_external_catalog_share_create', {catalogId: catalog.id}) }}" method="post">
+    <input type="hidden" name="_token" value="{{ csrf_token('catalog_share_' ~ catalog.id) }}">
+    <label class="admin-catalog-field"><span>Nom du lien <small>facultatif</small></span><input type="text" name="label" maxlength="120" placeholder="Ex. Client Paris · Novembre 2026"></label>
+    <button class="admin-button admin-button-primary" type="submit">Générer un lien <span>↗</span></button>
+  </form>
+  <div class="admin-external-share-list">
+    {% for share in catalogShares %}
+      <article class="admin-external-share{{ share.revoked ? ' is-revoked' : '' }}" data-share-row>
+        <div class="admin-external-share-heading"><strong>{{ share.label }}</strong><span>{% if share.revoked %}Désactivé{% else %}<span data-share-status>{{ catalog.enabled ? 'Actif' : 'En pause' }}</span>{% endif %} · {{ share.createdAt|date('d/m/Y') }}</span></div>
+        {% if not share.revoked %}
+          <div class="admin-external-share-actions"><input class="admin-share-url" type="url" readonly value="{{ url('app_catalog_share', {token: share.token}) }}" aria-label="Lien de partage : {{ share.label }}"><button class="admin-button admin-button-light" type="button" data-action="catalog-shares#copy" aria-live="polite">Copier le lien</button><a class="admin-button admin-button-light" href="{{ path('app_catalog_share', {token: share.token}) }}" target="_blank" rel="noopener noreferrer" aria-label="Ouvrir le lien : {{ share.label }}">↗</a><form action="{{ path('admin_external_catalog_share_revoke', {catalogId: catalog.id, shareId: share.id}) }}" method="post" data-confirm="Désactiver ce lien de partage ? Il ne permettra plus d’ouvrir le catalogue."><input type="hidden" name="_token" value="{{ csrf_token('catalog_share_revoke_' ~ share.id) }}"><button type="submit">Désactiver</button></form></div>
+        {% endif %}
+      </article>
+    {% else %}<p class="admin-external-share-empty">Vos liens de partage apparaîtront ici.</p>{% endfor %}
+  </div>
+  <small>Accessible sans compte à toute personne disposant du lien. Vous choisissez comment et à qui l’envoyer.</small>
+</section>

@@ -1,11 +1,12 @@
-{% set catalog_locale = site_locale.preferred(app.request) %}
+{% set catalog_locale = catalog_locale|default(site_locale.preferred(app.request)) %}
+{% set isShared = isShared|default(false) %}
 <!doctype html>
 <html lang="{{ catalog_locale }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="{{ isPreview ? 'noindex,nofollow' : 'index,follow' }}">
-  {% if not isPreview %}<link rel="canonical" href="{{ site_url|trim('/') ~ path('app_catalog') }}"><meta name="description" content="{{ 'catalog.viewer.description'|trans({}, null, catalog_locale) }}">{% endif %}
+  <meta name="robots" content="{{ isPreview or isShared ? 'noindex,nofollow' : 'index,follow' }}">
+  {% if not isPreview and not isShared %}<link rel="canonical" href="{{ site_url|trim('/') ~ path('app_catalog') }}"><meta name="description" content="{{ 'catalog.viewer.description'|trans({}, null, catalog_locale) }}">{% endif %}
   <meta name="theme-color" content="#11110f">
   <title>{{ catalog.title }} · ULTRAPOP</title>
   <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -17,7 +18,7 @@
 </head>
 <body class="catalog-body" data-controller="catalog" data-catalog-copy-value="{{ {opening: 'catalog.viewer.opening'|trans({}, null, catalog_locale), initial: 'catalog.viewer.initial'|trans({}, null, catalog_locale), loading: 'catalog.viewer.loading'|trans({}, null, catalog_locale), loading_page: 'catalog.viewer.loading_page'|trans({}, null, catalog_locale), interrupted: 'catalog.viewer.interrupted'|trans({}, null, catalog_locale), retry_hint: 'catalog.viewer.retry_hint'|trans({}, null, catalog_locale), displayed: 'catalog.viewer.displayed'|trans({}, null, catalog_locale), copied: 'catalog.viewer.copied'|trans({}, null, catalog_locale), share_error: 'catalog.viewer.share_error'|trans({}, null, catalog_locale), fullscreen_error: 'catalog.viewer.fullscreen_error'|trans({}, null, catalog_locale), fullscreen_exit: 'catalog.viewer.fullscreen_exit'|trans({}, null, catalog_locale), fullscreen: 'catalog.viewer.fullscreen'|trans({}, null, catalog_locale)}|json_encode|e('html_attr') }}" data-catalog-worker-url-value="{{ asset('vendor/pdfjs-dist/build/pdf.worker.min.mjs.js') }}" data-action="keydown@window->catalog#keyboard fullscreenchange@document->catalog#fullscreenChanged click@window->catalog#outsideClick">
   <a class="catalog-skip-link" href="#catalog-book">{{ 'catalog.viewer.skip'|trans({}, null, catalog_locale) }}</a>
-  {% if isPreview %}<div class="catalog-preview-banner">Aperçu administrateur · <a href="{{ path('admin_catalog') }}">{{ 'catalog.viewer.builder'|trans({}, null, catalog_locale) }}</a></div>{% endif %}
+  {% if isPreview %}<div class="catalog-preview-banner">Aperçu administrateur · <a href="{{ path(previewAdminRoute|default('admin_catalog'), previewAdminParams|default({})) }}">{{ 'catalog.viewer.builder'|trans({}, null, catalog_locale) }}</a></div>{% endif %}
 
   <a class="catalog-brand" href="{{ path('app_locale') }}" aria-label="{{ 'catalog.viewer.close_brand'|trans({}, null, catalog_locale) }}" data-action="catalog#returnToSite">
     <img src="{{ asset('images/logo-ultrapop-red.webp') }}" alt="ULTRAPOP" width="1600" height="352" srcset="{{ asset('images/logo-ultrapop-red-640.webp') }} 640w, {{ asset('images/logo-ultrapop-red.webp') }} 1600w" sizes="(max-width: 700px) 100vw, 50vw">
@@ -52,6 +53,10 @@
                 {% if catalogPage.linkUrl %}
                   <a class="catalog-page-link" href="{{ catalogPage.linkUrl }}"{% if catalogPage.opensLinkInNewTab %} target="_blank" rel="noopener noreferrer"{% endif %} aria-label="{{ 'catalog.viewer.open_link'|trans({}, null, catalog_locale) }} {{ catalogPage.title }}"><span>{{ 'catalog.viewer.open'|trans({}, null, catalog_locale) }}</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
                 {% endif %}
+                {% if catalog.external %}{% for element in catalogPage.elements %}
+                  {% if element.kind == 'link' %}<a class="catalog-interactive-element catalog-interactive-link" href="{{ element.url }}" target="_blank" rel="noopener noreferrer" style="left:{{ element.x }}%;top:{{ element.y }}%;width:{{ element.width }}%;height:{{ element.height }}%" aria-label="{{ element.label ?: element.url }}"><span>{{ element.label ?: '↗' }}</span></a>
+                  {% else %}<div class="catalog-interactive-element catalog-interactive-video" style="left:{{ element.x }}%;top:{{ element.y }}%;width:{{ element.width }}%;height:{{ element.height }}%" data-controller="catalog-video" data-catalog-video-url-value="{{ element.url }}" data-catalog-video-label-value="{{ element.label ?: 'Video' }}" data-action="pointerdown->catalog-video#interact mousedown->catalog-video#interact touchstart->catalog-video#interact touchmove->catalog-video#interact click->catalog-video#interact keydown->catalog-video#interact"><span>{{ element.label ?: 'Video' }}</span></div>{% endif %}
+                {% endfor %}{% endif %}
               </article>
             </div>
           {% endfor %}

@@ -52,6 +52,11 @@
           <span>Catalogue</span>
         </a>
 
+        <a class="admin-nav-link{{ app.current_route starts with 'admin_external_catalog' ? ' is-active' : '' }}" href="{{ path('admin_external_catalog_index') }}"{% if app.current_route starts with 'admin_external_catalog' %} aria-current="page"{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h12v16H4zM8 7h4M8 11h4m7-3h2v14H9v-1M14 15l6-6m-4 0h4v4"/></svg>
+          <span>Catalogues externes</span>
+        </a>
+
         <a class="admin-nav-link{{ app.current_route starts with 'admin_product' ? ' is-active' : '' }}" href="{{ path('admin_product') }}"{% if app.current_route starts with 'admin_product' %} aria-current="page"{% endif %}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7l9-5ZM3 7l9 5 9-5m-9 5v10M7.5 4.5l9 5"/></svg>
           <span>Produits B2B</span>

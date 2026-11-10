@@ -6,6 +6,7 @@ namespace App\Catalog;
 
 use App\Entity\Catalog;
 use App\Entity\CatalogPage;
+use App\Entity\CatalogShare;
 use App\Repository\CatalogPageRepository;
 use App\Repository\CatalogRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,19 +34,76 @@ final readonly class CatalogManager
         return $this->catalogs->findCurrent() ?? throw new \LogicException('Le catalogue n’est pas initialisé. Exécutez les migrations Doctrine.');
     }
 
+    public function createExternal(string $title): Catalog
+    {
+        $this->validateTitle($title);
+        $catalog = (new Catalog())->setExternal(true)->setTitle($title)->setEnabled(true);
+        $this->entityManager->persist($catalog);
+        $this->entityManager->flush();
+
+        return $catalog;
+    }
+
     public function saveSettings(Catalog $catalog, string $title, bool $enabled): void
     {
         $title = trim($title);
-        if ('' === $title || mb_strlen($title) > 180) {
-            throw new \InvalidArgumentException('Le titre doit contenir entre 1 et 180 caractères.');
-        }
-        if ($enabled && [] === $this->pages->findForCatalog($catalog, true)) {
+        $this->validateTitle($title);
+        if ($enabled && !$catalog->isExternal() && [] === $this->pages->findForCatalog($catalog, true)) {
             throw new \InvalidArgumentException('Ajoutez au moins une page visible avant de publier le catalogue.');
         }
 
         $catalog->setTitle($title)->setEnabled($enabled);
         $catalog->touch();
         $this->entityManager->flush();
+    }
+
+    public function createShare(Catalog $catalog, string $label): CatalogShare
+    {
+        $label = trim($label);
+        if (mb_strlen($label) > 120) {
+            throw new \InvalidArgumentException('Le nom du lien ne doit pas dépasser 120 caractères.');
+        }
+        if (!$catalog->isExternal() || !$catalog->isEnabled() || [] === $this->pages->findForCatalog($catalog, true)) {
+            throw new \InvalidArgumentException('Ajoutez des pages et activez le catalogue avant de créer un lien de partage.');
+        }
+        $share = new CatalogShare($catalog, '' !== $label ? $label : 'Lien de partage');
+        $this->entityManager->persist($share);
+        $this->entityManager->flush();
+
+        return $share;
+    }
+
+    public function revokeShare(CatalogShare $share): void
+    {
+        $share->revoke();
+        $this->entityManager->flush();
+    }
+
+    public function deleteExternal(Catalog $catalog): void
+    {
+        if (!$catalog->isExternal()) {
+            throw new \InvalidArgumentException('Le catalogue principal ne peut pas être supprimé ici.');
+        }
+        $media = [];
+        foreach ($this->pages->findForCatalog($catalog) as $page) {
+            $media[] = [$page->getImagePath(), $page->getPdfPath()];
+            $this->entityManager->remove($page);
+        }
+        foreach ($this->entityManager->getRepository(CatalogShare::class)->findBy(['catalog' => $catalog]) as $share) {
+            $this->entityManager->remove($share);
+        }
+        $this->entityManager->remove($catalog);
+        $this->entityManager->flush();
+        foreach ($media as [$image, $pdf]) {
+            $this->deleteUnusedMedia($image, $pdf);
+        }
+    }
+
+    private function validateTitle(string $title): void
+    {
+        if ('' === trim($title) || mb_strlen(trim($title)) > 180) {
+            throw new \InvalidArgumentException('Le titre doit contenir entre 1 et 180 caractères.');
+        }
     }
 
     /** @param list<UploadedFile> $files */
@@ -242,7 +300,7 @@ final readonly class CatalogManager
         return count($matches[0]);
     }
 
-    private function normaliseLink(string $link): ?string
+    public function normaliseLink(string $link): ?string
     {
         $link = trim(str_replace(["\r", "\n"], '', $link));
         if ('' === $link) {

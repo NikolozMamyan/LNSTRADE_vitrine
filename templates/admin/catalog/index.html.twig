@@ -1,26 +1,29 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Catalogue ULTRAPOP{% endblock %}
-{% block page_name %}Catalogue ULTRAPOP{% endblock %}
+{% block title %}{{ catalog.external ? catalog.title : 'Catalogue ULTRAPOP' }}{% endblock %}
+{% block page_name %}{{ catalog.external ? 'Catalogues externes' : 'Catalogue ULTRAPOP' }}{% endblock %}
 
 {% block body %}
-<div data-controller="catalog-admin" data-catalog-admin-worker-url-value="{{ asset('vendor/pdfjs-dist/build/pdf.worker.min.mjs.js') }}" data-action="submit->catalog-admin#submit" data-turbo="false">
+{% set catalog_route = catalog.external ? 'admin_external_catalog' : 'admin_catalog' %}
+{% set route_params = catalog.external ? {catalogId: catalog.id} : {} %}
+{% if catalog.external %}<a class="admin-external-back" href="{{ path('admin_external_catalog_index') }}">← Tous les catalogues</a>{% endif %}
+<div class="{{ catalog.external ? 'admin-external-editor' : '' }}" data-controller="catalog-admin" data-catalog-admin-external-value="{{ catalog.external ? 'true' : 'false' }}" data-catalog-admin-worker-url-value="{{ asset('vendor/pdfjs-dist/build/pdf.worker.min.mjs.js') }}" data-action="submit->catalog-admin#submit" data-turbo="false">
   <div class="admin-flash admin-catalog-feedback" data-catalog-admin-target="feedback" role="status" aria-live="polite" hidden></div>
   <header class="admin-catalog-heading">
     <div>
       <p class="admin-eyebrow"><span></span> Module commercial</p>
-      <h1>Catalogue <em>ULTRAPOP</em></h1>
-      <p>Importez votre PDF, organisez les pages et publiez le catalogue quand il est prêt.</p>
+      <h1>{% if catalog.external %}<em>{{ catalog.title }}</em>{% else %}Catalogue <em>ULTRAPOP</em>{% endif %}</h1>
+      <p>{{ catalog.external ? 'Importez vos documents, personnalisez les pages et envoyez un lien à vos clients.' : 'Importez votre PDF, organisez les pages et publiez le catalogue quand il est prêt.' }}</p>
     </div>
-    <a class="admin-button admin-button-light" href="{{ path('admin_catalog_preview') }}" target="_blank" rel="noopener">Aperçu <span>↗</span></a>
+    <div class="admin-external-editor-actions">{% if catalog.external %}<a class="admin-button admin-button-primary" href="#partage">Partager ↗</a>{% endif %}<a class="admin-button admin-button-light" href="{{ path(catalog_route ~ '_preview', route_params) }}" target="_blank" rel="noopener">Aperçu <span>↗</span></a></div>
   </header>
 
   <section class="admin-panel admin-catalog-settings">
-    <form action="{{ path('admin_catalog_settings') }}" method="post" data-catalog-operation="settings">
+    <form action="{{ path(catalog_route ~ '_settings', route_params) }}" method="post" data-catalog-operation="settings">
       <input type="hidden" name="_token" value="{{ csrf_token('catalog_settings') }}">
-      <div class="admin-catalog-status" data-catalog-admin-target="publishedStatus"><i class="{{ catalog.enabled ? 'is-online' : '' }}"></i><span><strong>{{ catalog.enabled ? 'Catalogue publié' : 'Catalogue désactivé' }}</strong><small>{{ catalog.enabled ? 'Le lecteur public est accessible.' : 'Le catalogue reste masqué tant qu’il n’est pas prêt.' }}</small></span></div>
+      <div class="admin-catalog-status" data-catalog-admin-target="publishedStatus"><i class="{{ catalog.enabled ? 'is-online' : '' }}"></i><span><strong>{{ catalog.enabled ? (catalog.external ? 'Catalogue actif' : 'Catalogue publié') : 'Catalogue désactivé' }}</strong><small>{{ catalog.external ? (catalog.enabled ? 'Accessible via vos liens de partage.' : 'Les liens de partage sont en pause.') : (catalog.enabled ? 'Le lecteur public est accessible.' : 'Le catalogue reste masqué tant qu’il n’est pas prêt.') }}</small></span></div>
       <label class="admin-catalog-field"><span>Titre du catalogue</span><input type="text" name="title" maxlength="180" required value="{{ catalog.title }}"></label>
-      <label class="admin-catalog-toggle"><input type="checkbox" name="enabled" value="1"{% if catalog.enabled %} checked{% endif %}><span><strong>Publier le catalogue</strong><small>Active le lecteur public</small></span><i><b></b></i></label>
+      <label class="admin-catalog-toggle"><input type="checkbox" name="enabled" value="1"{% if catalog.enabled %} checked{% endif %}><span><strong>{{ catalog.external ? 'Activer le partage' : 'Publier le catalogue' }}</strong><small>{{ catalog.external ? 'Autorise l’accès par lien' : 'Active le lecteur public' }}</small></span><i><b></b></i></label>
       <button class="admin-button admin-button-primary" type="submit">Enregistrer <span>✓</span></button>
     </form>
   </section>
@@ -28,7 +31,7 @@
   <div class="admin-catalog-import-grid">
     <section class="admin-panel admin-catalog-import">
       <header><span class="admin-catalog-import-icon">PDF</span><div><p class="admin-eyebrow"><span></span> Import principal</p><h2>Importer un PDF</h2><p>Un PDF multipage crée automatiquement une page par feuille.</p></div></header>
-      <form action="{{ path('admin_catalog_import_pdf') }}" method="post" enctype="multipart/form-data" data-catalog-operation="pdf">
+      <form action="{{ path(catalog_route ~ '_import_pdf', route_params) }}" method="post" enctype="multipart/form-data" data-catalog-operation="pdf">
         <input type="hidden" name="_token" value="{{ csrf_token('catalog_import_pdf') }}">
         <input type="hidden" name="pdfPageCount" data-catalog-admin-target="pdfPageCount">
         <label class="admin-catalog-field"><span>Nom du document <small>optionnel</small></span><input type="text" name="pdfTitle" maxlength="150" placeholder="Catalogue ULTRAPOP 2026"></label>
@@ -41,7 +44,7 @@
 
     <section class="admin-panel admin-catalog-import">
       <header><span class="admin-catalog-import-icon admin-catalog-import-icon-image">IMG</span><div><p class="admin-eyebrow"><span></span> Pages visuelles</p><h2>Ajouter des images</h2><p>Ajoutez plusieurs pages JPG, PNG ou WebP en une seule fois.</p></div></header>
-      <form action="{{ path('admin_catalog_add_images') }}" method="post" enctype="multipart/form-data" data-catalog-operation="images">
+      <form action="{{ path(catalog_route ~ '_add_images', route_params) }}" method="post" enctype="multipart/form-data" data-catalog-operation="images">
         <input type="hidden" name="_token" value="{{ csrf_token('catalog_add_images') }}">
         <label class="admin-catalog-file"><input type="file" name="images[]" accept="image/jpeg,image/png,image/webp" multiple required data-action="change->catalog-admin#previewImages"><span>IMG</span><strong>Choisir des images</strong><small>15 Mo maximum par image · 50 images</small></label>
         <p class="admin-catalog-file-status">Les images sont optimisées en WebP haute définition.</p>
@@ -50,6 +53,8 @@
       </form>
     </section>
   </div>
+
+  {% if catalog.external %}{% include 'admin/external_catalog/_sharing.html.twig' %}{% endif %}
 
   <section class="admin-catalog-pages" id="pages">
     <header><div><p class="admin-eyebrow"><span></span> Composition</p><h2 data-catalog-admin-target="pagesCount">{{ catalogPages|length }} page{{ catalogPages|length > 1 ? 's' : '' }}</h2><p>Modifiez le titre, le média, la visibilité et le lien de chaque page.</p></div><span data-catalog-admin-target="updatedAt">Mis à jour le {{ catalog.updatedAt|date('d/m/Y à H:i') }}</span></header>

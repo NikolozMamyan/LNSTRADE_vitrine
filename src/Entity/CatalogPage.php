@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\CatalogPageRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CatalogPageRepository::class)]
@@ -48,11 +50,17 @@ class CatalogPage
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $updatedAt;
 
+    /** @var Collection<int, CatalogPageElement> */
+    #[ORM\OneToMany(mappedBy: 'page', targetEntity: CatalogPageElement::class, cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending])]
+    private Collection $elements;
+
     public function __construct(Catalog $catalog, int $position)
     {
         $this->catalog = $catalog;
         $this->position = $position;
         $this->updatedAt = new \DateTimeImmutable();
+        $this->elements = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -66,6 +74,8 @@ class CatalogPage
     public function opensLinkInNewTab(): bool { return $this->openLinkInNewTab; }
     public function isEnabled(): bool { return $this->enabled; }
     public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
+    /** @return Collection<int, CatalogPageElement> */
+    public function getElements(): Collection { return $this->elements; }
 
     public function setPosition(int $position): self { $this->position = $position; return $this; }
     public function setTitle(string $title): self { $this->title = trim($title); return $this; }

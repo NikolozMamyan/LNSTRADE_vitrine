@@ -9,6 +9,7 @@ use App\Entity\AdminSession;
 use App\Entity\AdminUser;
 use App\Entity\Catalog;
 use App\Entity\CatalogPage;
+use App\Entity\CatalogPageElement;
 use App\Repository\CatalogPageRepository;
 use App\Repository\CatalogRepository;
 use App\Security\SessionManager;
@@ -35,7 +36,7 @@ final class AdminCatalogControllerTest extends WebTestCase
         $container = static::getContainer();
         $this->entityManager = $container->get(EntityManagerInterface::class);
         self::assertSame('pdo_sqlite', $this->entityManager->getConnection()->getParams()['driver']);
-        $metadata = array_map($this->entityManager->getClassMetadata(...), [Catalog::class, CatalogPage::class, AdminUser::class, AdminSession::class]);
+        $metadata = array_map($this->entityManager->getClassMetadata(...), [Catalog::class, CatalogPage::class, CatalogPageElement::class, AdminUser::class, AdminSession::class]);
         (new SchemaTool($this->entityManager))->createSchema($metadata);
         $catalog = (new Catalog())->setEnabled(true);
         $user = new AdminUser('catalog-test@example.com');

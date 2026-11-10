@@ -5,7 +5,7 @@ import { createCatalogRenderer } from '../catalog_media.js';
 
 export default class extends Controller {
   static targets = ['pdfInput', 'pdfPageCount', 'pdfStatus', 'pdfSubmit', 'feedback', 'pageGrid', 'pagesCount', 'updatedAt', 'publishedStatus', 'emptyState', 'pdfPreview'];
-  static values = { workerUrl: String };
+  static values = { workerUrl: String, external: Boolean };
 
   connect() {
     this.isSubmitting = false;
@@ -44,7 +44,7 @@ export default class extends Controller {
   }
 
   async submit(event) {
-    if (event.defaultPrevented) return;
+    if (event.defaultPrevented || !event.target.dataset.catalogOperation) return;
     event.preventDefault();
     if (this.isSubmitting) return;
     const form = event.target;
@@ -125,8 +125,10 @@ export default class extends Controller {
     this.pagesCountTarget.textContent = `${result.order.length} page${result.order.length > 1 ? 's' : ''}`;
     this.updatedAtTarget.textContent = `Mis à jour le ${result.updatedAt}`;
     this.publishedStatusTarget.querySelector('i').classList.toggle('is-online', result.enabled);
-    this.publishedStatusTarget.querySelector('strong').textContent = result.enabled ? 'Catalogue publié' : 'Catalogue désactivé';
-    this.publishedStatusTarget.querySelector('small').textContent = result.enabled ? 'Le lecteur public est accessible.' : 'Le catalogue reste masqué tant qu’il n’est pas prêt.';
+    this.publishedStatusTarget.querySelector('strong').textContent = result.enabled ? (this.externalValue ? 'Catalogue actif' : 'Catalogue publié') : 'Catalogue désactivé';
+    this.publishedStatusTarget.querySelector('small').textContent = this.externalValue ? (result.enabled ? 'Accessible via vos liens de partage.' : 'Les liens de partage sont en pause.') : (result.enabled ? 'Le lecteur public est accessible.' : 'Le catalogue reste masqué tant qu’il n’est pas prêt.');
+    this.element.querySelector('.admin-external-sharing-note')?.toggleAttribute('hidden', result.enabled);
+    this.element.querySelectorAll('[data-share-status]').forEach((status) => { status.textContent = result.enabled ? 'Actif' : 'En pause'; });
     if (active?.isConnected) active.focus({ preventScroll: true });
     window.scrollTo(scroll.x, scroll.y);
   }

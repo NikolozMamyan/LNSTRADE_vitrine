@@ -22,6 +22,12 @@ class Catalog
     #[ORM\Column]
     private bool $enabled = false;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $external = false;
+
+    #[ORM\Column(length: 5, options: ['default' => 'fr'])]
+    private string $locale = 'fr';
+
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $updatedAt;
 
@@ -63,6 +69,11 @@ class Catalog
     {
         return $this->updatedAt;
     }
+
+    public function isExternal(): bool { return $this->external; }
+    public function setExternal(bool $external): self { $this->external = $external; return $this; }
+    public function getLocale(): string { return $this->locale; }
+    public function setLocale(string $locale): self { $this->locale = $locale; return $this; }
 
     public function touch(): void
     {
